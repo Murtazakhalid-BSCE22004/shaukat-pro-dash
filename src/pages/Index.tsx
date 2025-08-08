@@ -1,7 +1,9 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-healthcare.jpg";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { db } from "@/storage/localDb";
+import { computeVisitSplit, isoDateOnly, formatMoney } from "@/utils/finance";
+import DashboardToday from "./DashboardToday";
 const Index = () => {
   return (
     <>
@@ -11,26 +13,18 @@ const Index = () => {
         <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : ''} />
       </Helmet>
       <main>
-        <section className="relative overflow-hidden">
-          <div className="container mx-auto grid md:grid-cols-2 items-center gap-10 py-16">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Hospital Revenue & Doctor Share Manager</h1>
-              <p className="text-lg text-muted-foreground mb-6">Add doctors with category-wise percentages, record patient visits, and get a clear daily profit summary by doctor and department.</p>
-              <div className="flex flex-wrap gap-3">
-                <a href="/visits/new"><Button variant="hero" className="">Record Visit</Button></a>
-                <a href="/doctors"><Button variant="secondary">Manage Doctors</Button></a>
-                <a href="/summary"><Button variant="outline">View Daily Summary</Button></a>
-              </div>
-            </div>
-            <div className="relative">
-              <img
-                src={heroImage}
-                alt="Modern healthcare admin dashboard illustration with teal and blue gradient"
-                className="w-full rounded-lg border"
-                loading="lazy"
-              />
-            </div>
+        <section className="container mx-auto py-6">
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6">Hospital Dashboard</h1>
+
+          {/* Quick actions */}
+          <div className="flex flex-wrap gap-3 mb-8">
+            <a href="/visits/new"><Button variant="hero">Record Visit</Button></a>
+            <a href="/doctors"><Button variant="secondary">Manage Doctors</Button></a>
+            <a href="/summary"><Button variant="outline">View Daily Summary</Button></a>
           </div>
+
+          {/* Today KPIs */}
+          <DashboardToday />
         </section>
       </main>
     </>

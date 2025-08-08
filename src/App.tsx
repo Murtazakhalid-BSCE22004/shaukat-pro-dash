@@ -10,6 +10,8 @@ import NotFound from "./pages/NotFound";
 import Doctors from "./pages/Doctors";
 import NewVisit from "./pages/NewVisit";
 import DailySummary from "./pages/DailySummary";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "./components/app-sidebar";
 
 const queryClient = new QueryClient();
 
@@ -20,15 +22,22 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/doctors" element={<Doctors />} />
-            <Route path="/visits/new" element={<NewVisit />} />
-            <Route path="/summary" element={<DailySummary />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <SidebarProvider>
+            <Header />
+            <div className="flex min-h-screen w-full">
+              <AppSidebar />
+              <main className="flex-1">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/doctors" element={<Doctors />} />
+                  <Route path="/visits/new" element={<NewVisit />} />
+                  <Route path="/summary" element={<DailySummary />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+            </div>
+          </SidebarProvider>
         </BrowserRouter>
       </TooltipProvider>
     </HelmetProvider>
