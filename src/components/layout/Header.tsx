@@ -8,8 +8,9 @@ const Header = () => {
   return (
     <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex items-center justify-between py-4">
-        <Link to="/" className="font-semibold tracking-tight text-lg">
-          Shaukat International Hospital
+        <Link to="/" className="font-semibold tracking-tight text-lg flex items-center gap-2">
+          <img src="/lovable-uploads/2b0f0307-afe5-44d4-8238-339c747daa1f.png" alt="Shaukat International Hospital logo" className="h-8 w-auto" />
+          <span>Shaukat International Hospital</span>
         </Link>
         <nav className="flex items-center gap-1">
           <NavLink to="/doctors" className={navLinkClass}>
