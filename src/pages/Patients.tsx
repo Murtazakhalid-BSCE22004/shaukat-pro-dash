@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabaseDoctorsService, type Doctor } from '@/services/supabaseDoctorsService';
 import { supabasePatientsService, type Patient } from '@/services/supabasePatientsService';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search, Filter, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Patients: React.FC = () => {
@@ -124,12 +125,30 @@ const Patients: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Patients Management</h1>
-        <Button onClick={() => { resetForm(); setShowAddForm(true); }}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Patient
-        </Button>
+      {/* Header */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Back Button */}
+            <Link to="/professional">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back to Dashboard</span>
+              </Button>
+            </Link>
+            
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Patients Management</h1>
+              <p className="text-gray-600 mt-2">Manage patient records and information</p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button onClick={() => { resetForm(); setShowAddForm(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Patient
+            </Button>
+          </div>
+        </div>
       </div>
 
       <Card>

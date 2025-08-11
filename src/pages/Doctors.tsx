@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsService";
 import { toast } from "sonner";
+import { ArrowLeft, Plus } from "lucide-react";
 
 const DoctorsPage = () => {
   const queryClient = useQueryClient();
@@ -115,8 +117,30 @@ const DoctorsPage = () => {
       </Helmet>
 
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Doctors Management</h1>
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Back Button */}
+              <Link to="/professional">
+                <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Back to Dashboard</span>
+                </Button>
+              </Link>
+              
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Doctors Management</h1>
+                <p className="text-gray-600 mt-2">Manage doctor profiles and specializations</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={resetForm}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Doctor
+              </Button>
+            </div>
+          </div>
         </div>
 
         <Card>

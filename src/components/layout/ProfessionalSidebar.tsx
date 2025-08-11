@@ -34,6 +34,8 @@ const navigation = [
   { name: 'Settings', href: '/professional/settings', icon: Settings },
 ];
 
+
+
 export const ProfessionalSidebar: React.FC<ProfessionalSidebarProps> = ({ className }) => {
   return (
     <aside className={cn("w-64 bg-white border-r border-gray-200", className)}>
@@ -46,7 +48,7 @@ export const ProfessionalSidebar: React.FC<ProfessionalSidebarProps> = ({ classN
         </div>
       </div>
       
-      <nav className="px-4 pb-6">
+      <nav className="px-4 pb-20">
         <ul className="space-y-1">
           {navigation.map((item) => (
             <li key={item.name}>
@@ -69,6 +71,8 @@ export const ProfessionalSidebar: React.FC<ProfessionalSidebarProps> = ({ classN
           ))}
         </ul>
       </nav>
+
+
       
       <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
         <div className="flex items-center space-x-3">

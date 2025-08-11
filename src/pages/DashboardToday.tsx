@@ -49,11 +49,11 @@ export default function DashboardToday() {
         id: doctor.id,
         name: doctor.name,
         percentages: {
-          OPD: 70, // Default percentages - you might want to store these in the database
-          LAB: 70,
-          OT: 70,
-          ULTRASOUND: 70,
-          ECG: 70,
+          OPD: doctor.opd_percentage ?? 0,
+          LAB: doctor.lab_percentage ?? 0,
+          OT: doctor.ot_percentage ?? 0,
+          ULTRASOUND: doctor.ultrasound_percentage ?? 0,
+          ECG: doctor.ecg_percentage ?? 0,
         },
         createdAt: doctor.created_at,
       };

@@ -8,12 +8,29 @@ import {
   Users, 
   Activity,
   ArrowLeft,
-  Construction
+  Construction,
+  Stethoscope,
+  DollarSign,
+  UserCog,
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const GeneralHospitalDashboard: React.FC = () => {
+  const dashboardNavigation = [
+    { name: 'Professional Dashboard', href: '/professional', icon: Stethoscope, color: 'text-blue-600', description: 'Doctors & Patient Management' },
+    { name: 'Expenses Dashboard', href: '/expenses', icon: DollarSign, color: 'text-green-600', description: 'Financial Management' },
+    { name: 'Salaries Dashboard', href: '/salaries', icon: UserCog, color: 'text-blue-600', description: 'Employee Salary Management' },
+  ];
+
   return (
     <>
       <Helmet>
@@ -41,6 +58,49 @@ const GeneralHospitalDashboard: React.FC = () => {
                   Back to Main
                 </Button>
               </Link>
+              
+              {/* Dashboard Navigation Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4 text-purple-600" />
+                    <span className="hidden sm:inline">Switch Dashboard</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  {dashboardNavigation.map((option) => (
+                    <DropdownMenuItem key={option.name} asChild>
+                      <Link to={option.href} className="flex items-center gap-3 p-3">
+                        <div className={cn("p-2 rounded-lg", option.color.replace('text-', 'bg-').replace('-600', '-100'))}>
+                          <option.icon className={cn("h-4 w-4", option.color)} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900">{option.name}</span>
+                          <span className="text-xs text-gray-500">{option.description}</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            
+            {/* Dashboard Navigation */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                Quick Navigation to Other Dashboards
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {dashboardNavigation.map((item) => (
+                  <Link key={item.name} to={item.href}>
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <item.icon className={cn("h-4 w-4", item.color)} />
+                      <span>{item.name}</span>
+                    </Button>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </header>

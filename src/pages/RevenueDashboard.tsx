@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,8 @@ import {
   ArrowDown,
   Filter,
   SortAsc,
-  SortDesc
+  SortDesc,
+  ArrowLeft
 } from "lucide-react";
 import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsService";
 import { supabasePatientsService } from "@/services/supabasePatientsService";
@@ -471,11 +473,21 @@ const RevenueDashboard = () => {
 
       <section className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold">Revenue Dashboard</h1>
-            <p className="text-muted-foreground">
-              Comprehensive revenue analysis and profit tracking
-            </p>
+          <div className="flex items-center gap-4">
+            {/* Back Button */}
+            <Link to="/professional">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back to Dashboard</span>
+              </Button>
+            </Link>
+            
+            <div>
+              <h1 className="text-3xl font-bold">Revenue Dashboard</h1>
+              <p className="text-muted-foreground">
+                Comprehensive revenue analysis and profit tracking
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-blue-600" />

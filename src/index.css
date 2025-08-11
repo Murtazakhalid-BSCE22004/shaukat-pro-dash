@@ -2,6 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Print styles for reports */
+@media print {
+  /* Hide non-essential elements */
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  /* Ensure proper page breaks */
+  .print\:break-inside-avoid {
+    break-inside: avoid;
+  }
+  
+  /* Remove shadows and borders for clean printing */
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+  
+  .print\:border-0 {
+    border: none !important;
+  }
+  
+  /* Adjust spacing for print */
+  .print\:py-0 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  
+  .print\:px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  .print\:pb-2 {
+    padding-bottom: 0.5rem !important;
+  }
+  
+  .print\:mb-2 {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .print\:mt-2 {
+    margin-top: 0.5rem !important;
+  }
+  
+  /* Adjust text sizes for print */
+  .print\:text-xl {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+  
+  .print\:text-lg {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
+  }
+  
+  .print\:text-sm {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+  }
+  
+  /* Ensure background colors print */
+  .print\:bg-white {
+    background-color: white !important;
+  }
+  
+  .print\:bg-gray-100 {
+    background-color: #f3f4f6 !important;
+  }
+  
+  .print\:bg-blue-100 {
+    background-color: #dbeafe !important;
+  }
+  
+  .print\:bg-green-100 {
+    background-color: #dcfce7 !important;
+  }
+  
+  .print\:bg-purple-100 {
+    background-color: #f3e8ff !important;
+  }
+  
+  /* Remove hover effects for print */
+  .print\:hover\:bg-transparent:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Ensure tables print properly */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid #d1d5db;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #f3f4f6 !important;
+    font-weight: 600;
+  }
+  
+  /* Page setup for printing */
+  @page {
+    margin: 1in;
+    size: A4;
+  }
+  
+  /* Ensure proper page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+  
+  /* Hide scrollbars in print */
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

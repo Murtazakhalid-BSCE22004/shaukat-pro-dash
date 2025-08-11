@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsS
 import { supabaseVisitsService } from "@/services/supabaseVisitsService";
 import { FEE_CATEGORIES, computeVisitSplit, formatMoney, isoDateOnly } from "@/utils/finance";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 
 const NewVisitPage = () => {
   const queryClient = useQueryClient();
@@ -56,11 +58,11 @@ const NewVisitPage = () => {
       id: selectedDoctor.id,
       name: selectedDoctor.name,
       percentages: {
-        OPD: 70, // Default percentages - you might want to store these in the database
-        LAB: 70,
-        OT: 70,
-        ULTRASOUND: 70,
-        ECG: 70,
+        OPD: selectedDoctor.opd_percentage ?? 0,
+        LAB: selectedDoctor.lab_percentage ?? 0,
+        OT: selectedDoctor.ot_percentage ?? 0,
+        ULTRASOUND: selectedDoctor.ultrasound_percentage ?? 0,
+        ECG: selectedDoctor.ecg_percentage ?? 0,
       },
       createdAt: selectedDoctor.created_at,
     };
@@ -93,6 +95,24 @@ const NewVisitPage = () => {
         <meta name="description" content="Record patient visit fees and automatically split earnings between doctor and hospital." />
         <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : ''} />
       </Helmet>
+      
+      {/* Header with Back Button */}
+      <section className="mb-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Link to="/professional">
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back to Dashboard</span>
+            </Button>
+          </Link>
+          
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">New Visit</h1>
+            <p className="text-gray-600">Record patient visit fees and automatically split earnings</p>
+          </div>
+        </div>
+      </section>
+      
       <section className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>

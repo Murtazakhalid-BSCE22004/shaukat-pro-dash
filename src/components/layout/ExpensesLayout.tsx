@@ -4,51 +4,103 @@ import {
   DollarSign, 
   Users, 
   FileText, 
-  Building2, 
   BarChart3, 
-  Settings,
   Menu,
   X,
   Home,
-  LogOut,
   TrendingUp,
-  PieChart
+  PieChart,
+  UserCog,
+  Stethoscope,
+  Building2,
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const ExpensesLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const currentTab = searchParams.get('tab') || 'overview';
+  
+  // Determine if we're in expenses or salaries section
+  const isExpenses = location.pathname.startsWith('/expenses');
+  const isSalaries = location.pathname.startsWith('/salaries');
+  
+  const dashboardTitle = isSalaries ? 'Salaries Dashboard' : 'Expenses Dashboard';
+  const dashboardIcon = isSalaries ? UserCog : DollarSign;
+    const iconColor = isSalaries ? 'text-blue-600' : 'text-green-600';
+
+  const dashboardOptions = [
+    { 
+      name: 'Professional Dashboard', 
+      href: '/professional', 
+      icon: Stethoscope, 
+      color: 'text-blue-600',
+      description: 'Doctors & Patient Management'
+    },
+    { 
+      name: 'Expenses Dashboard', 
+      href: '/expenses', 
+      icon: DollarSign, 
+      color: 'text-green-600',
+      description: 'Financial Management'
+    },
+    { 
+      name: 'Salaries Dashboard', 
+      href: '/salaries', 
+      icon: UserCog, 
+      color: 'text-blue-600',
+      description: 'Employee Salary Management'
+    },
+    { 
+      name: 'General Hospital', 
+      href: '/general', 
+      icon: Building2, 
+      color: 'text-purple-600',
+      description: 'Executive Overview'
+    },
+  ];
 
   const navigation = [
     {
       name: 'Overview',
-      href: '/expenses/overview',
+      href: isSalaries ? '/salaries/overview' : '/expenses/overview',
       icon: BarChart3,
-      current: location.pathname === '/expenses' || location.pathname === '/expenses/overview'
+      current: (isSalaries && (location.pathname === '/salaries' || location.pathname === '/salaries/overview')) ||
+               (isExpenses && (location.pathname === '/expenses' || location.pathname === '/expenses/overview'))
     },
     {
-      name: 'All Expenses',
-      href: '/expenses/overview?tab=expenses',
-      icon: FileText,
-      current: location.pathname === '/expenses/overview' && currentTab === 'expenses'
+      name: isSalaries ? 'All Employees' : 'All Expenses',
+      href: isSalaries ? '/salaries/employees' : '/expenses/overview?tab=expenses',
+      icon: isSalaries ? Users : FileText,
+      current: (isSalaries && location.pathname === '/salaries/employees') ||
+               (isExpenses && location.pathname === '/expenses/overview' && currentTab === 'expenses')
     },
     {
       name: 'Reports',
-      href: '/expenses/overview?tab=reports',
+      href: isSalaries ? '/salaries/reports' : '/expenses/overview?tab=reports',
       icon: TrendingUp,
-      current: location.pathname === '/expenses/overview' && currentTab === 'reports'
+      current: (isSalaries && location.pathname === '/salaries/reports') ||
+               (isExpenses && location.pathname === '/expenses/overview' && currentTab === 'reports')
     },
     {
       name: 'Analytics',
-      href: '/expenses/analytics',
+      href: isSalaries ? '/salaries/analytics' : '/expenses/analytics',
       icon: PieChart,
-      current: location.pathname === '/expenses/analytics'
+      current: (isSalaries && location.pathname === '/salaries/analytics') ||
+               (isExpenses && location.pathname === '/expenses/analytics')
     }
   ];
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,8 +113,8 @@ const ExpensesLayout: React.FC = () => {
         <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white">
           <div className="flex h-16 items-center justify-between px-4 border-b">
             <div className="flex items-center space-x-2">
-              <DollarSign className="h-8 w-8 text-green-600" />
-              <span className="text-xl font-bold text-gray-900">Expenses Dashboard</span>
+              <dashboardIcon className={cn("h-8 w-8", iconColor)} />
+              <span className="text-xl font-bold text-gray-900">{dashboardTitle}</span>
             </div>
             <Button
               variant="ghost"
@@ -95,6 +147,9 @@ const ExpensesLayout: React.FC = () => {
               </Link>
             ))}
           </nav>
+          
+
+          
           <div className="border-t p-4">
             <Link
               to="/"
@@ -112,8 +167,8 @@ const ExpensesLayout: React.FC = () => {
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
           <div className="flex h-16 items-center px-4 border-b">
             <div className="flex items-center space-x-2">
-              <DollarSign className="h-8 w-8 text-green-600" />
-              <span className="text-xl font-bold text-gray-900">Expenses Dashboard</span>
+              <dashboardIcon className={cn("h-8 w-8", iconColor)} />
+              <span className="text-xl font-bold text-gray-900">{dashboardTitle}</span>
             </div>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
@@ -138,6 +193,9 @@ const ExpensesLayout: React.FC = () => {
               </Link>
             ))}
           </nav>
+          
+
+          
           <div className="border-t p-4">
             <Link
               to="/"
@@ -166,7 +224,7 @@ const ExpensesLayout: React.FC = () => {
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1 items-center">
               <h1 className="text-lg font-semibold text-gray-900">
-                {location.pathname === '/expenses/analytics' ? 'Analytics Dashboard' : 
+                {location.pathname === '/expenses/analytics' || location.pathname === '/salaries/analytics' ? 'Analytics Dashboard' : 
                  navigation.find(item => item.current)?.name || 'Dashboard'}
               </h1>
             </div>
@@ -175,6 +233,32 @@ const ExpensesLayout: React.FC = () => {
                 <span className="text-sm text-gray-500">Welcome,</span>
                 <span className="text-sm font-medium text-gray-900">Administrator</span>
               </div>
+              
+              {/* Dashboard Navigation Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <dashboardIcon className={cn("h-4 w-4", iconColor)} />
+                    <span className="hidden sm:inline">Switch Dashboard</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  {dashboardOptions.map((option) => (
+                    <DropdownMenuItem key={option.name} asChild>
+                      <Link to={option.href} className="flex items-center gap-3 p-3">
+                        <div className={cn("p-2 rounded-lg", option.color.replace('text-', 'bg-').replace('-600', '-100'))}>
+                          <option.icon className={cn("h-4 w-4", option.color)} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900">{option.name}</span>
+                          <span className="text-xs text-gray-500">{option.description}</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>

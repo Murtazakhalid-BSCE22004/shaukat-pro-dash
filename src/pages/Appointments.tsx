@@ -1,10 +1,11 @@
 import React, { useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Calendar, Filter, Search, RotateCcw } from 'lucide-react';
+import { Calendar, Filter, Search, RotateCcw, ArrowLeft } from 'lucide-react';
 import { supabasePatientsService } from '@/services/supabasePatientsService';
 import { supabaseDoctorsService } from '@/services/supabaseDoctorsService';
 import { useQuery } from '@tanstack/react-query';
@@ -121,8 +122,18 @@ export default function Appointments() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Appointments</h1>
+      <div className="flex items-center gap-4 mb-6">
+        {/* Back Button */}
+        <Link to="/professional">
+          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Back to Dashboard</span>
+          </Button>
+        </Link>
+        
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold text-gray-900">Appointments</h1>
+        </div>
       </div>
 
       {/* Filter Section */}

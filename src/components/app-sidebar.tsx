@@ -19,6 +19,8 @@ const items = [
   { title: "Daily Summary", url: "/summary", icon: BarChart3 },
 ];
 
+
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -46,6 +48,8 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+
       </SidebarContent>
     </Sidebar>
   );

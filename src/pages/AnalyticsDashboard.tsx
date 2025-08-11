@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { 
@@ -16,7 +17,8 @@ import {
   DollarSign,
   Filter,
   Search,
-  X
+  X,
+  ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -234,9 +236,19 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
       {/* Header */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
-            <p className="text-gray-600 mt-2">Financial analytics and insights</p>
+          <div className="flex items-center gap-4">
+            {/* Back Button */}
+            <Link to="/professional">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back to Dashboard</span>
+              </Button>
+            </Link>
+            
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
+              <p className="text-gray-600 mt-2">Financial analytics and insights</p>
+            </div>
           </div>
           <div className="flex gap-3">
             <Button variant="outline">

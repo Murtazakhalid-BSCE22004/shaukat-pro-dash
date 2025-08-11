@@ -1,19 +1,64 @@
 import React from 'react';
-import { Bell, Search, User, Menu } from 'lucide-react';
+import { Menu, ArrowLeft, ChevronDown, Stethoscope, DollarSign, UserCog, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Link } from 'react-router-dom';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 interface ProfessionalHeaderProps {
   onMenuClick?: () => void;
 }
+
+const dashboardOptions = [
+  { 
+    name: 'Professional Dashboard', 
+    href: '/professional', 
+    icon: Stethoscope, 
+    color: 'text-blue-600',
+    description: 'Doctors & Patient Management'
+  },
+  { 
+    name: 'Expenses Dashboard', 
+    href: '/expenses', 
+    icon: DollarSign, 
+    color: 'text-green-600',
+    description: 'Financial Management'
+  },
+  { 
+    name: 'Salaries Dashboard', 
+    href: '/salaries', 
+    icon: UserCog, 
+    color: 'text-blue-600',
+    description: 'Employee Salary Management'
+  },
+  { 
+    name: 'General Hospital', 
+    href: '/general', 
+    icon: Building2, 
+    color: 'text-purple-600',
+    description: 'Executive Overview'
+  },
+];
 
 export const ProfessionalHeader: React.FC<ProfessionalHeaderProps> = ({ onMenuClick }) => {
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
+          {/* Back to Landing Page Button */}
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back to Home</span>
+            </Button>
+          </Link>
+
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden">
@@ -44,24 +89,32 @@ export const ProfessionalHeader: React.FC<ProfessionalHeaderProps> = ({ onMenuCl
           </div>
         </div>
 
+        {/* Dashboard Navigation Dropdown */}
         <div className="flex items-center space-x-4">
-          <div className="relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="search"
-              placeholder="Search patients, doctors..."
-              className="pl-10 w-64"
-            />
-          </div>
-          
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button>
-          
-          <Avatar>
-            <AvatarImage src="/placeholder.svg" alt="Admin" />
-            <AvatarFallback>AD</AvatarFallback>
-          </Avatar>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Stethoscope className="h-4 w-4 text-blue-600" />
+                <span className="hidden sm:inline">Switch Dashboard</span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              {dashboardOptions.map((option) => (
+                <DropdownMenuItem key={option.name} asChild>
+                  <Link to={option.href} className="flex items-center gap-3 p-3">
+                    <div className={cn("p-2 rounded-lg", option.color.replace('text-', 'bg-').replace('-600', '-100'))}>
+                      <option.icon className={cn("h-4 w-4", option.color)} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-gray-900">{option.name}</span>
+                      <span className="text-xs text-gray-500">{option.description}</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

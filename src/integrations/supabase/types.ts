@@ -22,6 +22,7 @@ export type Database = {
           doctor_name: string
           opd_fee: number
           lab_fee: number
+          ot_fee: number
           ultrasound_fee: number
           ecg_fee: number
           created_at: string
@@ -34,6 +35,7 @@ export type Database = {
           doctor_name: string
           opd_fee?: number
           lab_fee?: number
+          ot_fee?: number
           ultrasound_fee?: number
           ecg_fee?: number
           created_at?: string
@@ -46,6 +48,7 @@ export type Database = {
           doctor_name?: string
           opd_fee?: number
           lab_fee?: number
+          ot_fee?: number
           ultrasound_fee?: number
           ecg_fee?: number
           created_at?: string
