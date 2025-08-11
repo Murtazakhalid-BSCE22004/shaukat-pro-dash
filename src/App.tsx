@@ -38,7 +38,7 @@ const App = () => (
             {/* Landing page - default route */}
             <Route path="/" element={<LandingPage />} />
             
-            {/* Professional Dashboard Routes */}
+            {/* Redirect from /professional to /professional/dashboard */}
             <Route path="/professional" element={<ProfessionalLayout />}>
               <Route index element={<ProfessionalDashboard />} />
               <Route path="dashboard" element={<ProfessionalDashboard />} />
@@ -48,6 +48,12 @@ const App = () => (
               <Route path="visits/new" element={<NewVisit />} />
               <Route path="summary" element={<DailySummary />} />
               <Route path="revenue" element={<RevenueDashboard />} />
+              <Route path="records" element={<DailySummary />} />
+              <Route path="billing" element={<RevenueDashboard />} />
+              <Route path="analytics" element={<AnalyticsDashboard />} />
+              <Route path="reports" element={<DailySummary />} />
+              <Route path="settings" element={<ProfessionalDashboard />} />
+              <Route path="*" element={<ProfessionalDashboard />} />
             </Route>
             
             {/* Expenses Dashboard Routes */}

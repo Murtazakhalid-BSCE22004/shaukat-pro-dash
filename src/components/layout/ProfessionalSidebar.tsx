@@ -22,16 +22,16 @@ interface ProfessionalSidebarProps {
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Doctors', href: '/doctors', icon: UserCheck },
-  { name: 'Patients', href: '/patients', icon: Users },
-  { name: 'Appointments', href: '/appointments', icon: Calendar },
-  { name: 'Medical Records', href: '/records', icon: FileText },
-  { name: 'Billing', href: '/billing', icon: CreditCard },
-  { name: 'Revenue Dashboard', href: '/revenue', icon: DollarSign },
-  { name: 'Analytics', href: '/analytics', icon: TrendingUp },
-  { name: 'Reports', href: '/reports', icon: Activity },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Dashboard', href: '/professional/dashboard', icon: Home },
+  { name: 'Doctors', href: '/professional/doctors', icon: UserCheck },
+  { name: 'Patients', href: '/professional/patients', icon: Users },
+  { name: 'Appointments', href: '/professional/appointments', icon: Calendar },
+  { name: 'Medical Records', href: '/professional/records', icon: FileText },
+  { name: 'Billing', href: '/professional/billing', icon: CreditCard },
+  { name: 'Revenue Dashboard', href: '/professional/revenue', icon: DollarSign },
+  { name: 'Analytics', href: '/professional/analytics', icon: TrendingUp },
+  { name: 'Reports', href: '/professional/reports', icon: Activity },
+  { name: 'Settings', href: '/professional/settings', icon: Settings },
 ];
 
 export const ProfessionalSidebar: React.FC<ProfessionalSidebarProps> = ({ className }) => {
@@ -60,6 +60,7 @@ export const ProfessionalSidebar: React.FC<ProfessionalSidebarProps> = ({ classN
                       : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                   )
                 }
+                end={item.href === '/professional/dashboard'}
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.name}</span>
