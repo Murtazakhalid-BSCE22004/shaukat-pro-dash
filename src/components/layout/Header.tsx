@@ -12,7 +12,7 @@ const Header = () => {
           <SidebarTrigger className="mr-1" />
           <Link to="/" className="font-semibold tracking-tight text-lg flex items-center gap-2">
             <img src="/lovable-uploads/2b0f0307-afe5-44d4-8238-339c747daa1f.png" alt="Shaukat International Hospital logo" className="h-8 w-auto" />
-            <span>Shaukat International Hospital</span>
+            <span className="text-[hsl(var(--brand))]">Shaukat International Hospital</span>
           </Link>
         </div>
         <div className="hidden sm:block">

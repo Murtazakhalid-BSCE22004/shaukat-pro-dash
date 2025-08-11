@@ -1,23 +1,64 @@
-import { db } from "@/storage/localDb";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { computeVisitSplit, isoDateOnly } from "@/utils/finance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Doctor, Visit } from "@/types";
-import { useMemo } from "react";
+import { supabaseDoctorsService } from "@/services/supabaseDoctorsService";
+import { supabaseVisitsService } from "@/services/supabaseVisitsService";
 
 export default function DashboardToday() {
   const today = isoDateOnly(new Date());
-  const visits = db.getVisitsByDate(today);
-  const doctors = db.getDoctors();
 
+  // Fetch doctors and visits for today
+  const { data: doctors = [] } = useQuery({
+    queryKey: ['doctors'],
+    queryFn: supabaseDoctorsService.getAllDoctors,
+  });
+
+  const { data: visits = [] } = useQuery({
+    queryKey: ['visits', 'today', today],
+    queryFn: () => supabaseVisitsService.getVisitsByDate(today),
+  });
+
+  // Calculate totals
   const { revenueTotal, hospitalTotal, doctorTotal } = useMemo(() => {
     let revenueTotal = 0;
     let hospitalTotal = 0;
     let doctorTotal = 0;
 
-    for (const v of visits) {
-      const doc = doctors.find((d) => d.id === v.doctorId);
-      if (!doc) continue;
-      const split = computeVisitSplit(v as Visit, doc as Doctor);
+    for (const visit of visits) {
+      const doctor = doctors.find((d) => d.id === visit.doctor_id);
+      if (!doctor) continue;
+      
+      // Convert visit to the format expected by computeVisitSplit
+      const visitData = {
+        id: visit.id,
+        patientName: visit.patient_name,
+        contact: visit.contact,
+        doctorId: visit.doctor_id,
+        date: visit.visit_date,
+        fees: {
+          OPD: visit.opd_fee || 0,
+          LAB: visit.lab_fee || 0,
+          OT: visit.ot_fee || 0,
+          ULTRASOUND: visit.ultrasound_fee || 0,
+          ECG: visit.ecg_fee || 0,
+        },
+      };
+
+      const doctorData = {
+        id: doctor.id,
+        name: doctor.name,
+        percentages: {
+          OPD: 70, // Default percentages - you might want to store these in the database
+          LAB: 70,
+          OT: 70,
+          ULTRASOUND: 70,
+          ECG: 70,
+        },
+        createdAt: doctor.created_at,
+      };
+
+      const split = computeVisitSplit(visitData, doctorData);
       revenueTotal += split.feeTotal;
       hospitalTotal += split.hospitalTotal;
       doctorTotal += split.doctorTotal;

@@ -4,14 +4,21 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import Header from "./components/layout/Header";
-import Index from "./pages/Index";
+import { ProfessionalLayout } from "./components/layout/ProfessionalLayout";
+import ExpensesLayout from "./components/layout/ExpensesLayout";
+import LandingPage from "./pages/LandingPage";
+import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 import NotFound from "./pages/NotFound";
 import Doctors from "./pages/Doctors";
 import NewVisit from "./pages/NewVisit";
 import DailySummary from "./pages/DailySummary";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "./components/app-sidebar";
+import Patients from "./pages/Patients";
+import Appointments from "./pages/Appointments";
+import RevenueDashboard from "./pages/RevenueDashboard";
+import ExpensesDashboard from "./pages/ExpensesDashboard";
+import SalariesDashboard from "./pages/SalariesDashboard";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import GeneralHospitalDashboard from "./pages/GeneralHospitalDashboard";
 
 const queryClient = new QueryClient();
 
@@ -21,23 +28,50 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <SidebarProvider>
-            <Header />
-            <div className="flex min-h-screen w-full">
-              <AppSidebar />
-              <main className="flex-1">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/doctors" element={<Doctors />} />
-                  <Route path="/visits/new" element={<NewVisit />} />
-                  <Route path="/summary" element={<DailySummary />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
-            </div>
-          </SidebarProvider>
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <Routes>
+            {/* Landing page - default route */}
+            <Route path="/" element={<LandingPage />} />
+            
+            {/* Professional Dashboard Routes */}
+            <Route path="/professional" element={<ProfessionalLayout />}>
+              <Route index element={<ProfessionalDashboard />} />
+              <Route path="dashboard" element={<ProfessionalDashboard />} />
+              <Route path="doctors" element={<Doctors />} />
+              <Route path="patients" element={<Patients />} />
+              <Route path="appointments" element={<Appointments />} />
+              <Route path="visits/new" element={<NewVisit />} />
+              <Route path="summary" element={<DailySummary />} />
+              <Route path="revenue" element={<RevenueDashboard />} />
+            </Route>
+            
+            {/* Expenses Dashboard Routes */}
+            <Route path="/expenses" element={<ExpensesLayout />}>
+              <Route index element={<ExpensesDashboard />} />
+              <Route path="overview" element={<ExpensesDashboard />} />
+              <Route path="analytics" element={<AnalyticsDashboard />} />
+            </Route>
+            
+            {/* Salaries Dashboard Routes */}
+            <Route path="/salaries" element={<ExpensesLayout />}>
+              <Route index element={<SalariesDashboard />} />
+              <Route path="overview" element={<SalariesDashboard />} />
+              <Route path="employees" element={<SalariesDashboard />} />
+              <Route path="advances" element={<SalariesDashboard />} />
+              <Route path="reports" element={<SalariesDashboard />} />
+            </Route>
+            
+            {/* General Hospital Dashboard Route */}
+            <Route path="/general" element={<GeneralHospitalDashboard />} />
+            
+            {/* 404 route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </HelmetProvider>

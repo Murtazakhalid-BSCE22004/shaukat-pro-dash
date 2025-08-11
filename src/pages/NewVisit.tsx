@@ -1,55 +1,89 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { db } from "@/storage/localDb";
-import { Doctor, Visit } from "@/types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsService";
+import { supabaseVisitsService } from "@/services/supabaseVisitsService";
 import { FEE_CATEGORIES, computeVisitSplit, formatMoney, isoDateOnly } from "@/utils/finance";
 import { toast } from "sonner";
 
 const NewVisitPage = () => {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const queryClient = useQueryClient();
   const [doctorId, setDoctorId] = useState<string>("");
   const [patientName, setPatientName] = useState("");
   const [contact, setContact] = useState("");
   const [date, setDate] = useState(isoDateOnly(new Date()));
   const [fees, setFees] = useState<Record<string, number>>({});
 
-  useEffect(() => {
-    const docs = db.getDoctors();
-    setDoctors(docs);
-    if (docs.length && !doctorId) setDoctorId(docs[0].id);
-  }, []);
+  // Fetch doctors
+  const { data: doctors = [] } = useQuery({
+    queryKey: ['doctors'],
+    queryFn: supabaseDoctorsService.getAllDoctors,
+  });
+
+  // Create visit mutation
+  const createVisitMutation = useMutation({
+    mutationFn: supabaseVisitsService.createVisit,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['visits'] });
+      toast.success("Visit recorded successfully");
+      // reset
+      setPatientName("");
+      setContact("");
+      setFees({});
+    },
+    onError: (error) => {
+      toast.error("Error recording visit: " + error);
+    }
+  });
 
   const selectedDoctor = useMemo(() => doctors.find((d) => d.id === doctorId), [doctors, doctorId]);
   const preview = useMemo(() => {
     if (!selectedDoctor) return null;
-    const v: Visit = { id: "preview", patientName, contact, doctorId, date, fees } as Visit;
-    return computeVisitSplit(v, selectedDoctor);
+    const visitData = {
+      id: "preview",
+      patientName,
+      contact,
+      doctorId,
+      date,
+      fees: FEE_CATEGORIES.reduce((acc, c) => ({ ...acc, [c]: Number(fees[c] || 0) }), {} as Record<string, number>),
+    };
+    const doctorData = {
+      id: selectedDoctor.id,
+      name: selectedDoctor.name,
+      percentages: {
+        OPD: 70, // Default percentages - you might want to store these in the database
+        LAB: 70,
+        OT: 70,
+        ULTRASOUND: 70,
+        ECG: 70,
+      },
+      createdAt: selectedDoctor.created_at,
+    };
+    return computeVisitSplit(visitData, doctorData);
   }, [selectedDoctor, patientName, contact, doctorId, date, fees]);
 
   const onSubmit = () => {
     if (!selectedDoctor) return toast.error("Please add/select a doctor first");
     if (!patientName.trim()) return toast.error("Patient name is required");
 
-    const visit: Visit = {
-      id: crypto.randomUUID(),
-      patientName: patientName.trim(),
+    const visitData = {
+      patient_name: patientName.trim(),
       contact: contact.trim(),
-      doctorId: selectedDoctor.id,
-      date: new Date(date).toISOString(),
-      fees: FEE_CATEGORIES.reduce((acc, c) => ({ ...acc, [c]: Number(fees[c] || 0) }), {} as Record<string, number>),
+      doctor_id: selectedDoctor.id,
+      visit_date: date,
+      opd_fee: Number(fees['OPD'] || 0),
+      lab_fee: Number(fees['LAB'] || 0),
+      ot_fee: Number(fees['OT'] || 0),
+      ultrasound_fee: Number(fees['ULTRASOUND'] || 0),
+      ecg_fee: Number(fees['ECG'] || 0),
     };
 
-    db.addVisit(visit);
-    toast.success("Visit recorded");
-    // reset
-    setPatientName("");
-    setContact("");
-    setFees({});
+    createVisitMutation.mutate(visitData);
   };
 
   return (

@@ -34,7 +34,11 @@ export function computeVisitSplit(visit: Visit, doctor: Doctor) {
 }
 
 export function formatMoney(n: number): string {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n || 0);
+  return new Intl.NumberFormat('en-PK', { 
+    style: "currency", 
+    currency: "PKR", 
+    maximumFractionDigits: 0 
+  }).format(n || 0);
 }
 
 export function isoDateOnly(d: Date | string): string {

@@ -14,7 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      patients: {
+        Row: {
+          id: string
+          patient_name: string
+          contact_number: string
+          doctor_name: string
+          opd_fee: number
+          lab_fee: number
+          ultrasound_fee: number
+          ecg_fee: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          patient_name: string
+          contact_number: string
+          doctor_name: string
+          opd_fee?: number
+          lab_fee?: number
+          ultrasound_fee?: number
+          ecg_fee?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          patient_name?: string
+          contact_number?: string
+          doctor_name?: string
+          opd_fee?: number
+          lab_fee?: number
+          ultrasound_fee?: number
+          ecg_fee?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      doctors: {
+        Row: {
+          id: string
+          name: string
+          email: string | null
+          phone: string | null
+          specialization: string
+          license_number: string | null
+          department: string | null
+          consultation_fee: number
+          experience_years: number
+          qualification: string | null
+          address: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          opd_percentage: number | null
+          lab_percentage: number | null
+          ultrasound_percentage: number | null
+          ecg_percentage: number | null
+          ot_percentage: number | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          email?: string | null
+          phone?: string | null
+          specialization: string
+          license_number?: string | null
+          department?: string | null
+          consultation_fee?: number
+          experience_years?: number
+          qualification?: string | null
+          address?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          opd_percentage?: number | null
+          lab_percentage?: number | null
+          ultrasound_percentage?: number | null
+          ecg_percentage?: number | null
+          ot_percentage?: number | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string | null
+          phone?: string | null
+          specialization?: string
+          license_number?: string | null
+          department?: string | null
+          consultation_fee?: number
+          experience_years?: number
+          qualification?: string | null
+          address?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+          opd_percentage?: number | null
+          lab_percentage?: number | null
+          ultrasound_percentage?: number | null
+          ecg_percentage?: number | null
+          ot_percentage?: number | null
+        }
+      }
+      visits: {
+        Row: {
+          id: string
+          patient_name: string
+          contact: string
+          doctor_id: string
+          visit_date: string
+          opd_fee: number
+          lab_fee: number
+          ot_fee: number
+          ultrasound_fee: number
+          ecg_fee: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          patient_name: string
+          contact: string
+          doctor_id: string
+          visit_date: string
+          opd_fee?: number
+          lab_fee?: number
+          ot_fee?: number
+          ultrasound_fee?: number
+          ecg_fee?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          patient_name?: string
+          contact?: string
+          doctor_id?: string
+          visit_date?: string
+          opd_fee?: number
+          lab_fee?: number
+          ot_fee?: number
+          ultrasound_fee?: number
+          ecg_fee?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

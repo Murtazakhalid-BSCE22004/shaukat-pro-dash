@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { db } from "@/storage/localDb";
-import { Doctor, Visit } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsService";
+import { supabaseVisitsService, type Visit } from "@/services/supabaseVisitsService";
 import { FEE_CATEGORIES, computeVisitSplit, formatMoney, isoDateOnly } from "@/utils/finance";
 
 interface DoctorSummary {
@@ -20,16 +21,17 @@ interface DoctorSummary {
 
 const DailySummaryPage = () => {
   const [date, setDate] = useState(isoDateOnly(new Date()));
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [visits, setVisits] = useState<Visit[]>([]);
 
-  useEffect(() => {
-    setDoctors(db.getDoctors());
-  }, []);
+  // Fetch doctors and visits for the selected date
+  const { data: doctors = [] } = useQuery({
+    queryKey: ['doctors'],
+    queryFn: supabaseDoctorsService.getAllDoctors,
+  });
 
-  useEffect(() => {
-    setVisits(db.getVisitsByDate(date));
-  }, [date]);
+  const { data: visits = [] } = useQuery({
+    queryKey: ['visits', 'date', date],
+    queryFn: () => supabaseVisitsService.getVisitsByDate(date),
+  });
 
   const summaries = useMemo<DoctorSummary[]>(() => {
     const byDoctor: Record<string, DoctorSummary> = {};
@@ -46,11 +48,41 @@ const DailySummaryPage = () => {
       };
     }
 
-    for (const v of visits) {
-      const doc = doctors.find((d) => d.id === v.doctorId);
-      if (!doc) continue;
-      const s = computeVisitSplit(v, doc);
-      const bucket = byDoctor[doc.id];
+    for (const visit of visits) {
+      const doctor = doctors.find((d) => d.id === visit.doctor_id);
+      if (!doctor) continue;
+      
+      // Convert visit to the format expected by computeVisitSplit
+      const visitData = {
+        id: visit.id,
+        patientName: visit.patient_name,
+        contact: visit.contact,
+        doctorId: visit.doctor_id,
+        date: visit.visit_date,
+        fees: {
+          OPD: visit.opd_fee || 0,
+          LAB: visit.lab_fee || 0,
+          OT: visit.ot_fee || 0,
+          ULTRASOUND: visit.ultrasound_fee || 0,
+          ECG: visit.ecg_fee || 0,
+        },
+      };
+
+      const doctorData = {
+        id: doctor.id,
+        name: doctor.name,
+        percentages: {
+          OPD: 70, // Default percentages - you might want to store these in the database
+          LAB: 70,
+          OT: 70,
+          ULTRASOUND: 70,
+          ECG: 70,
+        },
+        createdAt: doctor.created_at,
+      };
+
+      const s = computeVisitSplit(visitData, doctorData);
+      const bucket = byDoctor[doctor.id];
       for (const c of FEE_CATEGORIES) {
         bucket.totals.doctorByCat[c] += s.doctorByCat[c] || 0;
         bucket.totals.hospitalByCat[c] += s.hospitalByCat[c] || 0;

@@ -17,7 +17,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 213 88% 34%;
+    /* Brand colors derived from logo: deep blue and vibrant orange */
+    --primary: 213 88% 34%; /* Blue */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -48,8 +49,8 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Brand & motion tokens */
-    --brand: 213 88% 34%;
-    --brand-2: 18 92% 57%;
+    --brand: 213 88% 34%; /* Blue */
+    --brand-2: 18 92% 57%; /* Orange */
     --hero-foreground: 210 40% 98%;
     --gradient-primary: linear-gradient(135deg, hsl(var(--brand)), hsl(var(--brand-2)));
     --shadow-elevated: 0 20px 40px -12px hsl(var(--brand) / 0.25);

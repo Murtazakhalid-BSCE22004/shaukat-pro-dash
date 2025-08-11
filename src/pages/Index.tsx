@@ -1,8 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { db } from "@/storage/localDb";
-import { computeVisitSplit, isoDateOnly, formatMoney } from "@/utils/finance";
 import DashboardToday from "./DashboardToday";
 const Index = () => {
   return (
