@@ -120,10 +120,10 @@ const NewVisitPage = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Doctor</Label>
+              <div className="space-y-2 group">
+                <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Doctor</Label>
                 <Select value={doctorId} onValueChange={setDoctorId}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300">
                     <SelectValue placeholder="Select a doctor" />
                   </SelectTrigger>
                   <SelectContent>
@@ -133,25 +133,88 @@ const NewVisitPage = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
-                <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <div className="space-y-2 group">
+                <Label htmlFor="date" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Date</Label>
+                <Input 
+                  id="date" 
+                  type="date" 
+                  value={date} 
+                  onChange={(e) => setDate(e.target.value)}
+                  className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
+                />
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="patient">Patient Name</Label>
-                <Input id="patient" value={patientName} onChange={(e) => setPatientName(e.target.value)} placeholder="John Doe" />
+              <div className="space-y-2 group">
+                <Label htmlFor="patient" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Patient Name</Label>
+                <Input 
+                  id="patient" 
+                  value={patientName} 
+                  onChange={(e) => setPatientName(e.target.value)} 
+                  placeholder="John Doe"
+                  className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="contact">Contact</Label>
-                <Input id="contact" value={contact} onChange={(e) => setContact(e.target.value)} placeholder="0300-1234567" />
+              <div className="space-y-2 group">
+                <Label htmlFor="contact" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Contact</Label>
+                <Input 
+                  id="contact" 
+                  value={contact} 
+                  onChange={(e) => setContact(e.target.value)} 
+                  placeholder="0300-1234567"
+                  className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {FEE_CATEGORIES.map((cat) => (
-                <div key={cat} className="space-y-2">
-                  <Label htmlFor={`fee-${cat}`}>{cat} Fee</Label>
+                <div key={cat} className="space-y-2 group">
+                  <Label htmlFor={`fee-${cat}`} className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">{cat} Fee</Label>
                   <Input
                     id={`fee-${cat}`}
                     type="number"
@@ -160,6 +223,22 @@ const NewVisitPage = () => {
                     value={fees[cat] ?? ""}
                     onChange={(e) => setFees((p) => ({ ...p, [cat]: parseFloat(e.target.value || "0") }))}
                     placeholder="0"
+                    className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                    style={{ 
+                      border: '1px solid #d1d5db',
+                      outline: 'none',
+                      boxShadow: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      target.style.borderColor = '#3b82f6';
+                      target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      target.style.borderColor = '#d1d5db';
+                      target.style.boxShadow = 'none';
+                    }}
                   />
                 </div>
               ))}

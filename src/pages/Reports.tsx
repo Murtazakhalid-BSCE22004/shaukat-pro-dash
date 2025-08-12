@@ -199,25 +199,25 @@ const ReportsPage = () => {
           <Card>
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Report Type</label>
+                <div className="space-y-2 group">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Report Type</label>
                   <Select value={selectedReport} onValueChange={(value: ReportType) => setSelectedReport(value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="doctor_performance">Doctor Performance</SelectItem>
                       <SelectItem value="patient_volume">Patient Volume</SelectItem>
-                      <SelectItem value="revenue_analysis">Revenue Analysis</SelectItem>
+                      <SelectItem value="revenue_analysis">Daily Revenue</SelectItem>
                       <SelectItem value="hospital_profit">Hospital Profit</SelectItem>
                       <SelectItem value="payment_status">Payment Status</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Time Range</label>
+                <div className="space-y-2 group">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Time Range</label>
                   <Select value={timeRange} onValueChange={(value: TimeRange) => setTimeRange(value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -229,8 +229,8 @@ const ReportsPage = () => {
                   </Select>
                   <p className="text-xs text-gray-500 mt-1">Dates will be automatically set based on selection</p>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                <div className="space-y-2 group">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                     Start Date
                     {timeRange !== 'daily' && <span className="text-xs text-blue-600 ml-1">(Auto)</span>}
                   </label>
@@ -238,11 +238,26 @@ const ReportsPage = () => {
                     type="date"
                     value={startDate}
                     onChange={(e) => handleStartDateChange(e.target.value)}
-                    className={timeRange !== 'daily' ? 'bg-blue-50 border-blue-200' : ''}
+                    className={`h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300 ${timeRange !== 'daily' ? 'bg-blue-50 border-blue-200' : ''}`}
+                    style={{ 
+                      border: '1px solid #d1d5db',
+                      outline: 'none',
+                      boxShadow: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      target.style.borderColor = '#3b82f6';
+                      target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      target.style.borderColor = '#d1d5db';
+                      target.style.boxShadow = 'none';
+                    }}
                   />
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                <div className="space-y-2 group">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                     End Date
                     {timeRange !== 'daily' && <span className="text-xs text-blue-600 ml-1">(Auto)</span>}
                   </label>
@@ -250,7 +265,22 @@ const ReportsPage = () => {
                     type="date"
                     value={endDate}
                     onChange={(e) => handleEndDateChange(e.target.value)}
-                    className={timeRange !== 'daily' ? 'bg-blue-50 border-blue-200' : ''}
+                    className={`h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300 ${timeRange !== 'daily' ? 'bg-blue-50 border-blue-200' : ''}`}
+                    style={{ 
+                      border: '1px solid #d1d5db',
+                      outline: 'none',
+                      boxShadow: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      target.style.borderColor = '#3b82f6';
+                      target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      target.style.borderColor = '#d1d5db';
+                      target.style.boxShadow = 'none';
+                    }}
                   />
                 </div>
                 <div className="md:col-span-4 flex justify-end">
@@ -553,8 +583,8 @@ function generateRevenueAnalysisReport(doctors: Doctor[], patients: Patient[]): 
   }));
 
   return {
-    title: 'Revenue Analysis Report',
-    description: 'Detailed breakdown of revenue by fee categories with hospital vs doctor profit splits',
+    title: 'Daily Revenue Report',
+    description: 'Daily revenue breakdown by fee categories with hospital vs doctor profit splits',
     icon: <DollarSign className="w-8 h-8 text-green-600" />,
     data: data,
     columns: ['Fee Category', 'Total Revenue', 'Hospital Profit', 'Doctor Profit', 'Hospital %', 'Patient Count']

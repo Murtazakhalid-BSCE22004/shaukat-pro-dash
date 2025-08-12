@@ -67,10 +67,8 @@ interface SortConfig {
 
 const RevenueDashboard = () => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-    return { from: start, to: end };
+    const today = new Date();
+    return { from: today, to: today };
   });
   const [selectedDoctor, setSelectedDoctor] = useState<string>("all");
   const [sortConfig, setSortConfig] = useState<SortConfig>({
@@ -83,12 +81,10 @@ const RevenueDashboard = () => {
   // Helper function to get date strings from DateRange
   const getDateStrings = () => {
     if (!dateRange?.from || !dateRange?.to) {
-      const end = new Date();
-      const start = new Date();
-      start.setDate(start.getDate() - 30);
+      const today = new Date();
       return {
-        startDate: start.toISOString().slice(0, 10),
-        endDate: end.toISOString().slice(0, 10)
+        startDate: today.toISOString().slice(0, 10),
+        endDate: today.toISOString().slice(0, 10)
       };
     }
     
@@ -438,8 +434,10 @@ const RevenueDashboard = () => {
       title: "Total Revenue",
       value: formatMoney(filteredAndSortedData.totalRevenue),
       icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-200",
+      iconColor: "text-emerald-500",
     },
     {
       title: "Hospital Profit",
@@ -447,6 +445,8 @@ const RevenueDashboard = () => {
       icon: Banknote,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
+      borderColor: "border-blue-200",
+      iconColor: "text-blue-500",
     },
     {
       title: "Doctor Payouts",
@@ -454,6 +454,8 @@ const RevenueDashboard = () => {
       icon: Wallet,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
+      borderColor: "border-purple-200",
+      iconColor: "text-purple-500",
     },
     {
       title: "Total Patients",
@@ -461,6 +463,8 @@ const RevenueDashboard = () => {
       icon: Users,
       color: "text-orange-600",
       bgColor: "bg-orange-50",
+      borderColor: "border-orange-200",
+      iconColor: "text-orange-500",
     },
   ];
 
@@ -472,57 +476,131 @@ const RevenueDashboard = () => {
       </Helmet>
 
       <section className="mb-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div className="flex items-center gap-4">
-            {/* Back Button */}
-            <Link to="/professional">
-              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Back to Dashboard</span>
-              </Button>
-            </Link>
-            
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div className="flex items-center gap-6">
+            <div className="p-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl">
+              <DollarSign className="h-8 w-8 text-blue-600" />
+            </div>
             <div>
-              <h1 className="text-3xl font-bold">Revenue Dashboard</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-4xl font-bold text-gray-800 mb-2">Revenue Dashboard</h1>
+              <p className="text-lg text-gray-600 font-medium">
                 Comprehensive revenue analysis and profit tracking
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-blue-600" />
-            <span className="text-sm text-muted-foreground">Real-time data</span>
+          <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+            <Activity className="h-5 w-5 text-emerald-600" />
+            <span className="text-sm text-emerald-700 font-semibold">Real-time data</span>
           </div>
         </div>
 
         {/* Enhanced Filters */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
+        <Card className="mb-6 border border-gray-200 shadow-sm">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <Filter className="h-5 w-5 text-blue-600" />
               Filters & Search
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div className="md:col-span-2 xl:col-span-1">
                 <Label className="text-sm font-medium text-gray-700 mb-2">Period</Label>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal h-12 border-2 border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 group shadow-sm hover:shadow-lg"
+                  className="w-full justify-start text-left font-normal h-12 border-2 border-gray-200 hover:border-blue-400 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 group shadow-sm hover:shadow-lg"
                   onClick={() => setIsPeriodSelectorOpen(true)}
                 >
-                  <div className="flex items-center gap-3 w-full">
-                    <div className="p-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg group-hover:from-blue-200 group-hover:to-indigo-200 transition-all duration-300">
+                  <div className="flex items-center gap-3 w-full min-w-0">
+                    <div className="p-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg group-hover:from-blue-200 group-hover:to-indigo-200 transition-all duration-300 flex-shrink-0">
                       <Calendar className="h-4 w-4 text-blue-600 group-hover:text-blue-700 transition-colors" />
                     </div>
-                    <span className="flex-1 text-left text-gray-700 group-hover:text-gray-900 font-medium">
+                    <span className="flex-1 text-left text-gray-700 group-hover:text-gray-900 font-medium truncate">
                       {dateRange?.from && dateRange?.to 
-                        ? `${dateRange.from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })} - ${dateRange.to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}`
+                        ? (() => {
+                            const from = dateRange.from;
+                            const to = dateRange.to;
+                            const today = new Date();
+                            
+                            // Check if it's Today
+                            const todayString = today.toDateString();
+                            if (from.toDateString() === todayString && to.toDateString() === todayString) {
+                              return "Today";
+                            }
+                            
+                            // Check if it's Yesterday
+                            const yesterday = new Date(today);
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            const yesterdayString = yesterday.toDateString();
+                            if (from.toDateString() === yesterdayString && to.toDateString() === yesterdayString) {
+                              return "Yesterday";
+                            }
+                            
+                            // Check if it's This week (Sunday to Saturday)
+                            const weekStart = new Date(today);
+                            weekStart.setDate(today.getDate() - today.getDay());
+                            const weekStartString = weekStart.toDateString();
+                            const weekEnd = new Date(weekStart);
+                            weekEnd.setDate(weekStart.getDate() + 6);
+                            const weekEndString = weekEnd.toDateString();
+                            if (from.toDateString() === weekStartString && to.toDateString() === weekEndString) {
+                              return "This Week";
+                            }
+                            
+                            // Check if it's Last week
+                            const lastWeekStart = new Date(today);
+                            lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
+                            const lastWeekStartString = lastWeekStart.toDateString();
+                            const lastWeekEnd = new Date(lastWeekStart);
+                            lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+                            const lastWeekEndString = lastWeekEnd.toDateString();
+                            if (from.toDateString() === lastWeekStartString && to.toDateString() === lastWeekEndString) {
+                              return "Last Week";
+                            }
+                            
+                            // Check if it's This month
+                            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                            const monthStartString = monthStart.toDateString();
+                            const monthEnd = new Date(today);
+                            const monthEndString = monthEnd.toDateString();
+                            if (from.toDateString() === monthStartString && to.toDateString() === monthEndString) {
+                              return "This Month";
+                            }
+                            
+                            // Check if it's Last month
+                            const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                            const lastMonthStartString = lastMonthStart.toDateString();
+                            const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+                            const lastMonthEndString = lastMonthEnd.toDateString();
+                            if (from.toDateString() === lastMonthStartString && to.toDateString() === lastMonthEndString) {
+                              return "Last Month";
+                            }
+                            
+                            // Check if it's This year
+                            const yearStart = new Date(today.getFullYear(), 0, 1);
+                            const yearStartString = yearStart.toDateString();
+                            const yearEnd = new Date(today);
+                            const yearEndString = yearEnd.toDateString();
+                            if (from.toDateString() === yearStartString && to.toDateString() === yearEndString) {
+                              return "This Year";
+                            }
+                            
+                            // Check if it's Last Year
+                            const lastYearStart = new Date(today.getFullYear() - 1, 0, 1);
+                            const lastYearStartString = lastYearStart.toDateString();
+                            const lastYearEnd = new Date(today.getFullYear() - 1, 11, 31);
+                            const lastYearEndString = lastYearEnd.toDateString();
+                            if (from.toDateString() === lastYearStartString && to.toDateString() === lastYearEndString) {
+                              return "Last Year";
+                            }
+                            
+                            // For custom ranges, show a shorter format
+                            return `${from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} - ${to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}`;
+                          })()
                         : 'Select date range'
                       }
                     </span>
-                    <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0">
                       <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-sm"></div>
                     </div>
                   </div>
@@ -530,19 +608,36 @@ const RevenueDashboard = () => {
               </div>
               <div>
                 <Label htmlFor="doctor" className="text-sm font-medium text-gray-700 mb-2">Doctor</Label>
-                <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-                  <SelectTrigger className="h-12 border-2 border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-lg">
-                    <SelectValue placeholder="Select Doctor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Doctors</SelectItem>
-                    {doctors.map((doctor) => (
-                      <SelectItem key={doctor.id} value={doctor.id}>
-                        {doctor.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <select
+                  id="doctor"
+                  value={selectedDoctor}
+                  onChange={(e) => setSelectedDoctor(e.target.value)}
+                  className="h-10 w-full border-2 border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-md px-3 py-2"
+                  style={{ border: '2px solid #d1d5db', outline: 'none', boxShadow: 'none' }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLSelectElement;
+                    target.style.borderColor = '#3b82f6';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLSelectElement;
+                    target.style.borderColor = '#d1d5db';
+                  }}
+                  onFocus={(e) => {
+                    const target = e.target as HTMLSelectElement;
+                    target.style.borderColor = '#3b82f6';
+                  }}
+                  onBlur={(e) => {
+                    const target = e.target as HTMLSelectElement;
+                    target.style.borderColor = '#d1d5db';
+                  }}
+                >
+                  <option value="all">All Doctors</option>
+                  {doctors.map((doctor) => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <Label htmlFor="search" className="text-sm font-medium text-gray-700 mb-2">Search Doctors</Label>
@@ -551,24 +646,40 @@ const RevenueDashboard = () => {
                   placeholder="Search by name..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-12 border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-lg"
+                  className="h-10 border-2 border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  style={{ border: '2px solid #d1d5db', outline: 'none', boxShadow: 'none' }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                  }}
+                  onFocus={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                  }}
+                  onBlur={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                  }}
                 />
               </div>
-              <div className="flex items-end">
+              <div className="md:col-span-2 xl:col-span-1">
+                <Label className="text-sm font-medium text-gray-700 mb-2">Actions</Label>
                 <Button 
                   onClick={() => {
-                    const end = new Date();
-                    const start = new Date();
-                    start.setDate(start.getDate() - 30);
-                    setDateRange({ from: start, to: end });
+                    const today = new Date();
+                    setDateRange({ from: today, to: today });
                     setSelectedDoctor("all");
                     setSearchTerm("");
                     setSortConfig({ field: 'totalRevenue', direction: 'desc' });
                   }}
                   variant="outline"
-                  className="w-full h-12 border-2 border-gray-200 hover:border-red-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-300 shadow-sm hover:shadow-lg text-gray-700 hover:text-red-700 font-medium"
+                  className="w-full h-12 border-2 border-gray-200 hover:border-orange-400 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 transition-all duration-300 shadow-sm hover:shadow-lg text-gray-700 hover:text-orange-700 font-medium"
                 >
-                  Reset All
+                  Reset to Today
                 </Button>
               </div>
             </div>
@@ -578,16 +689,16 @@ const RevenueDashboard = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
-            <Card key={stat.title} className="hover:shadow-lg transition-shadow">
+            <Card key={stat.title} className={`hover:shadow-lg transition-all duration-300 border-2 ${stat.borderColor} hover:scale-105`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                <CardTitle className={`text-sm font-semibold ${stat.color}`}>{stat.title}</CardTitle>
                 <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className="h-4 w-4" />
+                  <stat.icon className={`h-4 w-4 ${stat.iconColor}`} />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className={`text-2xl font-bold ${stat.color} mb-2`}>{stat.value}</div>
+                <p className="text-xs text-gray-500">
                   {dateRange?.from && dateRange?.to 
                     ? `${dateRange.from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })} - ${dateRange.to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}`
                     : 'Select date range'
@@ -599,22 +710,22 @@ const RevenueDashboard = () => {
         </div>
 
         {/* Enhanced Doctor Breakdown Table with Sorting */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
+        <Card className="mb-8 border border-gray-200 shadow-sm">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200">
+            <CardTitle className="flex items-center gap-2 text-purple-800">
+              <BarChart3 className="h-5 w-5 text-purple-600" />
               Doctor Revenue Breakdown
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-2 bg-purple-100 text-purple-700 border-purple-200">
                 {Object.keys(filteredAndSortedData.doctorBreakdown).length} doctors
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-gray-50">
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 font-semibold text-gray-700"
                     onClick={() => handleSort('name')}
                   >
                     <div className="flex items-center gap-2">
@@ -623,7 +734,7 @@ const RevenueDashboard = () => {
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 font-semibold text-gray-700"
                     onClick={() => handleSort('visits')}
                   >
                     <div className="flex items-center gap-2">
@@ -632,7 +743,7 @@ const RevenueDashboard = () => {
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 font-semibold text-gray-700"
                     onClick={() => handleSort('totalRevenue')}
                   >
                     <div className="flex items-center gap-2">
@@ -641,7 +752,7 @@ const RevenueDashboard = () => {
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 font-semibold text-gray-700"
                     onClick={() => handleSort('hospitalRevenue')}
                   >
                     <div className="flex items-center gap-2">
@@ -650,7 +761,7 @@ const RevenueDashboard = () => {
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 font-semibold text-gray-700"
                     onClick={() => handleSort('doctorRevenue')}
                   >
                     <div className="flex items-center gap-2">
@@ -659,7 +770,7 @@ const RevenueDashboard = () => {
                     </div>
                   </TableHead>
                   <TableHead 
-                    className="cursor-pointer hover:bg-gray-50"
+                    className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 font-semibold text-gray-700"
                     onClick={() => handleSort('profitMargin')}
                   >
                     <div className="flex items-center gap-2">
@@ -670,19 +781,30 @@ const RevenueDashboard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {Object.values(filteredAndSortedData.doctorBreakdown).map((data) => (
-                  <TableRow key={data.doctor.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium">{data.doctor.name}</TableCell>
-                    <TableCell>{data.patientCount}</TableCell>
-                    <TableCell className="font-semibold">{formatMoney(data.totalRevenue)}</TableCell>
-                    <TableCell className="text-blue-600 font-semibold">
+                {Object.values(filteredAndSortedData.doctorBreakdown).map((data, index) => (
+                  <TableRow key={data.doctor.id} className={`hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    <TableCell className="font-semibold text-gray-800">{data.doctor.name}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        {data.patientCount}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-bold text-emerald-600 text-lg">{formatMoney(data.totalRevenue)}</TableCell>
+                    <TableCell className="font-bold text-blue-600 text-lg">
                       {formatMoney(data.hospitalRevenue)}
                     </TableCell>
-                    <TableCell className="text-purple-600 font-semibold">
+                    <TableCell className="font-bold text-purple-600 text-lg">
                       {formatMoney(data.doctorRevenue)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={data.totalRevenue > 0 && (data.hospitalRevenue / data.totalRevenue) > 0.5 ? "default" : "secondary"}>
+                      <Badge 
+                        variant={data.totalRevenue > 0 && (data.hospitalRevenue / data.totalRevenue) > 0.5 ? "default" : "secondary"}
+                        className={`${
+                          data.totalRevenue > 0 && (data.hospitalRevenue / data.totalRevenue) > 0.5 
+                            ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
+                            : 'bg-orange-100 text-orange-700 border-orange-200'
+                        }`}
+                      >
                         {data.totalRevenue > 0 
                           ? `${((data.hospitalRevenue / data.totalRevenue) * 100).toFixed(1)}%`
                           : "0%"
@@ -697,14 +819,14 @@ const RevenueDashboard = () => {
         </Card>
 
         {/* Enhanced Category Breakdown with Sorting */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieChart className="h-5 w-5" />
+        <Card className="border border-gray-200 shadow-sm">
+          <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
+            <CardTitle className="flex items-center gap-2 text-emerald-800">
+              <PieChart className="h-5 w-5 text-emerald-600" />
               Revenue by Category
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {FEE_CATEGORIES
                 .map((category) => {
@@ -731,11 +853,11 @@ const RevenueDashboard = () => {
                 .filter(item => item.total > 0)
                 .sort((a, b) => b.total - a.total)
                 .map((item) => (
-                  <Card key={item.category} className="hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg flex items-center justify-between">
+                  <Card key={item.category} className="hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-emerald-300 hover:scale-105">
+                    <CardHeader className="pb-2 bg-gradient-to-r from-gray-50 to-emerald-50">
+                      <CardTitle className="text-lg flex items-center justify-between text-gray-800">
                         {item.category}
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs bg-emerald-100 text-emerald-700 border-emerald-200">
                           {filteredAndSortedData.totalRevenue > 0 
                             ? `${((item.total / filteredAndSortedData.totalRevenue) * 100).toFixed(1)}%`
                             : "0%"
@@ -743,27 +865,33 @@ const RevenueDashboard = () => {
                         </Badge>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Total Revenue</span>
-                          <span className="font-semibold">{formatMoney(item.total)}</span>
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center p-2 bg-emerald-50 rounded-lg">
+                          <span className="text-sm font-medium text-gray-700">Total Revenue</span>
+                          <span className="font-bold text-lg text-emerald-600">{formatMoney(item.total)}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-blue-600">Hospital Profit</span>
-                          <span className="font-semibold text-blue-600">{formatMoney(item.hospital)}</span>
+                        <div className="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                          <span className="text-sm font-medium text-gray-700">Hospital Profit</span>
+                          <span className="font-bold text-lg text-blue-600">{formatMoney(item.hospital)}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-purple-600">Doctor Payout</span>
-                          <span className="font-semibold text-purple-600">{formatMoney(item.doctor)}</span>
+                        <div className="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
+                          <span className="text-sm font-medium text-gray-700">Doctor Payout</span>
+                          <span className="font-bold text-lg text-purple-600">{formatMoney(item.doctor)}</span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                          <div
-                            className="h-2 rounded-full bg-blue-500 transition-all duration-300"
-                            style={{ 
-                              width: `${filteredAndSortedData.totalRevenue > 0 ? (item.total / filteredAndSortedData.totalRevenue) * 100 : 0}%` 
-                            }}
-                          />
+                        <div className="mt-4">
+                          <div className="flex justify-between text-xs text-gray-600 mb-1">
+                            <span>Revenue Share</span>
+                            <span>{filteredAndSortedData.totalRevenue > 0 ? ((item.total / filteredAndSortedData.totalRevenue) * 100).toFixed(1) : 0}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div
+                              className="h-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500"
+                              style={{ 
+                                width: `${filteredAndSortedData.totalRevenue > 0 ? (item.total / filteredAndSortedData.totalRevenue) * 100 : 0}%` 
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
                     </CardContent>

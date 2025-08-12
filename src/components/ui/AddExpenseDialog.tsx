@@ -126,12 +126,12 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Category */}
-            <div className="space-y-2">
-              <Label htmlFor="category" className="text-sm font-medium text-gray-700">
+            <div className="space-y-2 group">
+              <Label htmlFor="category" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                 Category *
               </Label>
               <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                <SelectTrigger className="h-10">
+                <SelectTrigger className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300">
                   <SelectValue placeholder="Select expense category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -145,12 +145,12 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
             </div>
 
             {/* Amount */}
-            <div className="space-y-2">
-              <Label htmlFor="amount" className="text-sm font-medium text-gray-700">
+            <div className="space-y-2 group">
+              <Label htmlFor="amount" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                 Amount (PKR) *
               </Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₨</span>
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-hover:text-blue-500 transition-colors duration-300">₨</span>
                 <Input
                   id="amount"
                   type="number"
@@ -159,15 +159,30 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
                   onChange={(e) => handleInputChange('amount', e.target.value)}
                   min="0"
                   step="0.01"
-                  className="h-10 pl-8"
+                  className="h-10 pl-8 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
           </div>
 
           {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium text-gray-700">
+          <div className="space-y-2 group">
+            <Label htmlFor="description" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
               Description *
             </Label>
             <Textarea
@@ -176,30 +191,60 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={3}
-              className="resize-none"
+              className="resize-none border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+              style={{ 
+                border: '1px solid #d1d5db',
+                outline: 'none',
+                boxShadow: 'none'
+              }}
+              onMouseEnter={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.borderColor = '#3b82f6';
+                target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.borderColor = '#d1d5db';
+                target.style.boxShadow = 'none';
+              }}
             />
           </div>
 
                      {/* Expense Date */}
-           <div className="space-y-2">
-             <Label htmlFor="expense_date" className="text-sm font-medium text-gray-700">
+           <div className="space-y-2 group">
+             <Label htmlFor="expense_date" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                Expense Date *
              </Label>
              <div className="relative">
-               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" />
                <Input
                  id="expense_date"
                  type="date"
                  value={formData.expense_date}
                  onChange={(e) => handleInputChange('expense_date', e.target.value)}
-                 className="h-10 pl-10"
+                 className="h-10 pl-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                 style={{ 
+                   border: '1px solid #d1d5db',
+                   outline: 'none',
+                   boxShadow: 'none'
+                 }}
+                 onMouseEnter={(e) => {
+                   const target = e.target as HTMLInputElement;
+                   target.style.borderColor = '#3b82f6';
+                   target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                 }}
+                 onMouseLeave={(e) => {
+                   const target = e.target as HTMLInputElement;
+                   target.style.borderColor = '#d1d5db';
+                   target.style.boxShadow = 'none';
+                 }}
                />
              </div>
            </div>
 
                      {/* Receipt URL */}
-           <div className="space-y-2">
-             <Label htmlFor="receipt_url" className="text-sm font-medium text-gray-700">
+           <div className="space-y-2 group">
+             <Label htmlFor="receipt_url" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                Receipt URL (Optional)
              </Label>
              <Input
@@ -207,14 +252,29 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
                placeholder="Enter receipt URL or file path"
                value={formData.receipt_url}
                onChange={(e) => handleInputChange('receipt_url', e.target.value)}
-               className="h-10"
+               className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+               style={{ 
+                 border: '1px solid #d1d5db',
+                 outline: 'none',
+                 boxShadow: 'none'
+               }}
+               onMouseEnter={(e) => {
+                 const target = e.target as HTMLInputElement;
+                 target.style.borderColor = '#3b82f6';
+                 target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+               }}
+               onMouseLeave={(e) => {
+                 const target = e.target as HTMLInputElement;
+                 target.style.borderColor = '#d1d5db';
+                 target.style.boxShadow = 'none';
+               }}
              />
            </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Paid By */}
-            <div className="space-y-2">
-              <Label htmlFor="paid_by" className="text-sm font-medium text-gray-700">
+            <div className="space-y-2 group">
+              <Label htmlFor="paid_by" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                 Paid By *
               </Label>
               <Input
@@ -222,13 +282,28 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
                 placeholder="Enter name of person who paid"
                 value={formData.paid_by}
                 onChange={(e) => handleInputChange('paid_by', e.target.value)}
-                className="h-10"
+                className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                style={{ 
+                  border: '1px solid #d1d5db',
+                  outline: 'none',
+                  boxShadow: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  target.style.borderColor = '#3b82f6';
+                  target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  target.style.borderColor = '#d1d5db';
+                  target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             {/* Received By */}
-            <div className="space-y-2">
-              <Label htmlFor="received_by" className="text-sm font-medium text-gray-700">
+            <div className="space-y-2 group">
+              <Label htmlFor="received_by" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                 Received By *
               </Label>
               <Input
@@ -236,7 +311,22 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
                 placeholder="Enter name of person who received"
                 value={formData.received_by}
                 onChange={(e) => handleInputChange('received_by', e.target.value)}
-                className="h-10"
+                className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                style={{ 
+                  border: '1px solid #d1d5db',
+                  outline: 'none',
+                  boxShadow: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  target.style.borderColor = '#3b82f6';
+                  target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  target.style.borderColor = '#d1d5db';
+                  target.style.boxShadow = 'none';
+                }}
               />
             </div>
           </div>

@@ -26,7 +26,7 @@ const navigation = [
   { name: 'Doctors', href: '/professional/doctors', icon: UserCheck },
   { name: 'Patients', href: '/professional/patients', icon: Users },
   { name: 'Appointments', href: '/professional/appointments', icon: Calendar },
-  { name: 'Medical Records', href: '/professional/records', icon: FileText },
+  { name: 'Daily Report', href: '/professional/records', icon: FileText },
   { name: 'Billing', href: '/professional/billing', icon: CreditCard },
   { name: 'Revenue Dashboard', href: '/professional/revenue', icon: DollarSign },
   { name: 'Analytics', href: '/professional/analytics', icon: TrendingUp },

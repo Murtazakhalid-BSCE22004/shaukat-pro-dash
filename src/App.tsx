@@ -21,6 +21,7 @@ import ExpensesDashboard from "./pages/ExpensesDashboard";
 import SalariesDashboard from "./pages/SalariesDashboard";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import GeneralHospitalDashboard from "./pages/GeneralHospitalDashboard";
+import BillingPage from "./pages/Billing";
 
 const queryClient = new QueryClient();
 
@@ -52,7 +53,7 @@ const App = () => (
                 <Route path="summary" element={<DailySummary />} />
                 <Route path="revenue" element={<RevenueDashboard />} />
                 <Route path="records" element={<DailySummary />} />
-                <Route path="billing" element={<RevenueDashboard />} />
+                <Route path="billing" element={<BillingPage />} />
                 <Route path="analytics" element={<AnalyticsDashboard />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="settings" element={<ProfessionalDashboard />} />

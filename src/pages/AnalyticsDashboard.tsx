@@ -18,7 +18,9 @@ import {
   Filter,
   Search,
   X,
-  ArrowLeft
+  ArrowLeft,
+  Users,
+  Activity
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,6 +33,9 @@ import PeriodSelector from '@/components/ui/period-selector';
 import { DateRange } from 'react-day-picker';
 import { formatCurrency } from '@/utils/currency';
 import { supabaseExpensesService } from '@/services/supabaseExpensesService';
+import { supabasePatientsService } from '@/services/supabasePatientsService';
+import { supabaseDoctorsService } from '@/services/supabaseDoctorsService';
+import { supabaseVisitsService } from '@/services/supabaseVisitsService';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
 
 interface AnalyticsDashboardProps {
@@ -42,12 +47,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
   const urlTab = searchParams.get('tab') || initialTab;
   const [activeTab, setActiveTab] = useState(urlTab);
 
-  // Filter states
+  // Filter states - Default to today
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-    return { from: start, to: end };
+    const today = new Date();
+    return { from: today, to: today };
   });
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,6 +79,22 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
   const { data: expenses = [] } = useQuery({
     queryKey: ['expenses'],
     queryFn: supabaseExpensesService.getAllExpenses,
+  });
+
+  // Fetch additional data for comprehensive analytics
+  const { data: patients = [] } = useQuery({
+    queryKey: ['patients'],
+    queryFn: supabasePatientsService.getAllPatients,
+  });
+
+  const { data: doctors = [] } = useQuery({
+    queryKey: ['doctors'],
+    queryFn: supabaseDoctorsService.getAllDoctors,
+  });
+
+  const { data: visits = [] } = useQuery({
+    queryKey: ['visits'],
+    queryFn: supabaseVisitsService.getAllVisits,
   });
 
   // Calculate analytics data with filtering
@@ -163,6 +182,119 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
       });
     }
 
+    // Calculate patient analytics with date filtering
+    let filteredPatients = patients;
+    if (dateRange?.from && dateRange?.to) {
+      filteredPatients = patients.filter(p => {
+        const patientDate = new Date(p.created_at);
+        return patientDate >= dateRange.from! && patientDate <= dateRange.to!;
+      });
+    }
+
+    // Calculate visit analytics with date filtering
+    let filteredVisits = visits;
+    if (dateRange?.from && dateRange?.to) {
+      filteredVisits = visits.filter(v => {
+        const visitDate = new Date(v.visit_date);
+        return visitDate >= dateRange.from! && visitDate <= dateRange.to!;
+      });
+    }
+
+    // Patient analytics
+    const patientAnalytics = {
+      totalPatients: filteredPatients.length,
+      totalRevenue: filteredPatients.reduce((sum, p) => 
+        sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
+      ),
+      avgRevenuePerPatient: filteredPatients.length > 0 ? 
+        filteredPatients.reduce((sum, p) => 
+          sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
+        ) / filteredPatients.length : 0,
+      
+      // Fee category breakdown
+      feeBreakdown: {
+        opd: filteredPatients.reduce((sum, p) => sum + (p.opd_fee || 0), 0),
+        lab: filteredPatients.reduce((sum, p) => sum + (p.lab_fee || 0), 0),
+        ultrasound: filteredPatients.reduce((sum, p) => sum + (p.ultrasound_fee || 0), 0),
+        ecg: filteredPatients.reduce((sum, p) => sum + (p.ecg_fee || 0), 0),
+        ot: filteredPatients.reduce((sum, p) => sum + (p.ot_fee || 0), 0)
+      },
+
+      // Doctor-wise patient distribution
+      doctorDistribution: doctors.reduce((acc, doctor) => {
+        const doctorPatients = filteredPatients.filter(p => p.doctor_name === doctor.name);
+        const doctorRevenue = doctorPatients.reduce((sum, p) => 
+          sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
+        );
+        acc[doctor.name] = {
+          patients: doctorPatients.length,
+          revenue: doctorRevenue,
+          avgRevenue: doctorPatients.length > 0 ? doctorRevenue / doctorPatients.length : 0
+        };
+        return acc;
+      }, {} as Record<string, { patients: number; revenue: number; avgRevenue: number }>)
+    };
+
+    // Doctor analytics
+    const doctorAnalytics = {
+      totalDoctors: doctors.length,
+      activeDoctors: doctors.filter(d => d.is_active).length,
+      totalVisits: filteredVisits.length,
+      
+      // Doctor performance data
+      doctorPerformance: doctors.map(doctor => {
+        const doctorVisits = filteredVisits.filter(v => v.doctor_id === doctor.id);
+        const doctorRevenue = doctorVisits.reduce((sum, v) => 
+          sum + (v.opd_fee || 0) + (v.lab_fee || 0) + (v.ultrasound_fee || 0) + (v.ecg_fee || 0) + (v.ot_fee || 0), 0
+        );
+        return {
+          name: doctor.name,
+          visits: doctorVisits.length,
+          revenue: doctorRevenue,
+          avgRevenue: doctorVisits.length > 0 ? doctorRevenue / doctorVisits.length : 0,
+          patients: filteredPatients.filter(p => p.doctor_name === doctor.name).length
+        };
+      }).sort((a, b) => b.revenue - a.revenue),
+
+      // Specialization distribution
+      specializationData: doctors.reduce((acc, doctor) => {
+        const spec = doctor.specialization || 'General';
+        acc[spec] = (acc[spec] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    };
+
+    // Monthly trends for all data types
+    const monthlyTrends = Array.from({ length: 6 }, (_, i) => {
+      const month = new Date();
+      month.setMonth(month.getMonth() - i);
+      
+      const monthExpenses = filteredExpenses.filter(exp => {
+        const expenseDate = new Date(exp.expense_date);
+        return expenseDate.getMonth() === month.getMonth() && expenseDate.getFullYear() === month.getFullYear();
+      });
+      
+      const monthPatients = filteredPatients.filter(p => {
+        const patientDate = new Date(p.created_at);
+        return patientDate.getMonth() === month.getMonth() && patientDate.getFullYear() === month.getFullYear();
+      });
+      
+      const monthVisits = filteredVisits.filter(v => {
+        const visitDate = new Date(v.visit_date);
+        return visitDate.getMonth() === month.getMonth() && visitDate.getFullYear() === month.getFullYear();
+      });
+      
+      return {
+        month: month.toLocaleDateString('en-US', { month: 'short' }),
+        expenses: monthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0),
+        patients: monthPatients.length,
+        visits: monthVisits.length,
+        revenue: monthPatients.reduce((sum, p) => 
+          sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
+        )
+      };
+    }).reverse();
+
     return {
       filteredExpenses,
       thisMonthExpenses,
@@ -171,9 +303,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
       totalSpent: filteredExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0),
       pieChartData,
       monthlyTrendData,
-      totalFilteredTransactions: filteredExpenses.length
+      totalFilteredTransactions: filteredExpenses.length,
+      patientAnalytics,
+      doctorAnalytics,
+      monthlyTrends
     };
-  }, [expenses, dateRange, selectedCategory, searchTerm]);
+  }, [expenses, patients, doctors, visits, dateRange, selectedCategory, searchTerm]);
 
   // Get unique categories for filter dropdown
   const uniqueCategories = useMemo(() => {
@@ -181,19 +316,27 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
     return categories.sort();
   }, [expenses]);
 
+  // Chart colors
+  const chartColors = {
+    primary: '#3B82F6',
+    secondary: '#10B981',
+    tertiary: '#F59E0B',
+    quaternary: '#EF4444',
+    quinary: '#8B5CF6',
+    senary: '#06B6D4'
+  };
+
   // Reset all filters
   const resetFilters = () => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-    setDateRange({ from: start, to: end });
+    const today = new Date();
+    setDateRange({ from: today, to: today });
     setSelectedCategory("all");
     setSearchTerm("");
   };
 
   const stats = [
     {
-      title: 'Total Expenses (Filtered)',
+      title: 'Total Expenses',
       value: formatCurrency(analyticsData.totalSpent),
       change: `${analyticsData.totalFilteredTransactions} transactions`,
       icon: BarChart3,
@@ -202,29 +345,28 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
       trend: 'up'
     },
     {
-      title: 'Average Daily Expense',
-      value: formatCurrency(analyticsData.totalSpent / 30),
-      change: 'Daily average',
-      icon: TrendingUp,
+      title: 'Total Patients',
+      value: analyticsData.patientAnalytics.totalPatients.toString(),
+      change: 'Registered patients',
+      icon: Users,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
       trend: 'neutral'
     },
     {
-      title: 'Expense Categories',
-      value: Object.keys(analyticsData.expensesByCategory).length.toString(),
-      change: 'Active categories',
-      icon: PieChart,
+      title: 'Total Revenue',
+      value: `Rs. ${analyticsData.patientAnalytics.totalRevenue.toLocaleString()}`,
+      change: 'From patients',
+      icon: DollarSign,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
-      trend: 'neutral'
+      trend: 'up'
     },
     {
-      title: 'Highest Category',
-      value: Object.entries(analyticsData.expensesByCategory)
-        .sort(([,a], [,b]) => b - a)[0]?.[0] || 'None',
-      change: 'Top spending area',
-      icon: Target,
+      title: 'Active Doctors',
+      value: analyticsData.doctorAnalytics.activeDoctors.toString(),
+      change: 'Treating patients',
+      icon: Activity,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
       trend: 'neutral'
@@ -374,9 +516,11 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="expenses">Expense Analysis</TabsTrigger>
+          <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          <TabsTrigger value="patients">Patients</TabsTrigger>
+          <TabsTrigger value="doctors">Doctors</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
         </TabsList>
 
@@ -621,68 +765,281 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
           </Card>
         </TabsContent>
 
-        {/* Trends Tab */}
-        <TabsContent value="trends" className="space-y-6">
+        {/* Patients Tab */}
+        <TabsContent value="patients" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Fee Category Breakdown */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2" />
+                  Fee Category Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { name: 'OPD', value: analyticsData.patientAnalytics.feeBreakdown.opd },
+                      { name: 'Lab', value: analyticsData.patientAnalytics.feeBreakdown.lab },
+                      { name: 'Ultrasound', value: analyticsData.patientAnalytics.feeBreakdown.ultrasound },
+                      { name: 'ECG', value: analyticsData.patientAnalytics.feeBreakdown.ecg },
+                      { name: 'OT', value: analyticsData.patientAnalytics.feeBreakdown.ot }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [`Rs. ${value}`, 'Amount']} />
+                      <Bar dataKey="value" fill={chartColors.primary} name="Revenue" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Revenue Distribution Pie Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <PieChart className="h-5 w-5 mr-2" />
+                  Revenue Distribution
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Pie
+                        data={[
+                          { name: 'OPD', value: analyticsData.patientAnalytics.feeBreakdown.opd, color: chartColors.primary },
+                          { name: 'Lab', value: analyticsData.patientAnalytics.feeBreakdown.lab, color: chartColors.secondary },
+                          { name: 'Ultrasound', value: analyticsData.patientAnalytics.feeBreakdown.ultrasound, color: chartColors.tertiary },
+                          { name: 'ECG', value: analyticsData.patientAnalytics.feeBreakdown.ecg, color: chartColors.quaternary },
+                          { name: 'OT', value: analyticsData.patientAnalytics.feeBreakdown.ot, color: chartColors.quinary }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {[
+                          { name: 'OPD', value: analyticsData.patientAnalytics.feeBreakdown.opd, color: chartColors.primary },
+                          { name: 'Lab', value: analyticsData.patientAnalytics.feeBreakdown.lab, color: chartColors.secondary },
+                          { name: 'Ultrasound', value: analyticsData.patientAnalytics.feeBreakdown.ultrasound, color: chartColors.tertiary },
+                          { name: 'ECG', value: analyticsData.patientAnalytics.feeBreakdown.ecg, color: chartColors.quaternary },
+                          { name: 'OT', value: analyticsData.patientAnalytics.feeBreakdown.ot, color: chartColors.quinary }
+                        ].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`Rs. ${value}`, 'Amount']} />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Doctor Performance Overview */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center">
-                Expense Trends Analysis
-                {dateRange?.from && dateRange?.to && (
-                  <Badge variant="outline" className="ml-2">
-                    Filtered Period
-                  </Badge>
-                )}
+                <Users className="h-5 w-5 mr-2" />
+                Doctor Performance Overview
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {/* Monthly Trend Chart */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4">6-Month Expense Trend</h3>
-                  {analyticsData.monthlyTrendData.length > 0 ? (
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={analyticsData.monthlyTrendData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="month" />
-                          <YAxis />
-                          <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                          <Legend />
-                          <Bar dataKey="expenses" fill="#3B82F6" name="Monthly Expenses" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      No trend data available for selected filters
-                    </div>
-                  )}
-                </div>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={Object.entries(analyticsData.patientAnalytics.doctorDistribution).map(([name, data]) => ({
+                    name,
+                    patients: data.patients,
+                    revenue: data.revenue
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value}`, 'Count/Amount']} />
+                    <Legend />
+                    <Bar dataKey="patients" fill={chartColors.primary} name="Patients" />
+                    <Bar dataKey="revenue" fill={chartColors.secondary} name="Revenue" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-                {/* Trend Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <TrendingUp className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-blue-600">
-                      {analyticsData.monthlyTrendData.length}
-                    </div>
-                    <p className="text-sm text-gray-600">Months Analyzed</p>
-                  </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <BarChart3 className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-green-600">
-                      {analyticsData.totalSpent > 0 ? 'Active' : 'No Data'}
-                    </div>
-                    <p className="text-sm text-gray-600">Current Period</p>
-                  </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <PieChart className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-purple-600">
-                      {Object.keys(analyticsData.expensesByCategory).length}
-                    </div>
-                    <p className="text-sm text-gray-600">Categories</p>
-                  </div>
+        {/* Doctors Tab */}
+        <TabsContent value="doctors" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Top Performing Doctors */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2" />
+                  Top Performing Doctors
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analyticsData.doctorAnalytics.doctorPerformance.slice(0, 8)}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [`Rs. ${value}`, 'Revenue']} />
+                      <Legend />
+                      <Bar dataKey="revenue" fill={chartColors.primary} name="Revenue" />
+                      <Bar dataKey="visits" fill={chartColors.secondary} name="Visits" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Doctor Specializations */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <PieChart className="h-5 w-5 mr-2" />
+                  Doctor Specializations
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Pie
+                        data={Object.entries(analyticsData.doctorAnalytics.specializationData).map(([name, value]) => ({
+                          name,
+                          value,
+                          color: chartColors[name as keyof typeof chartColors] || chartColors.primary
+                        }))}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {Object.entries(analyticsData.doctorAnalytics.specializationData).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={chartColors[entry[0] as keyof typeof chartColors] || chartColors.primary} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Average Revenue per Doctor */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold flex items-center">
+                <TrendingUp className="h-5 w-5 mr-2" />
+                Average Revenue per Doctor
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={analyticsData.doctorAnalytics.doctorPerformance.map(doctor => ({
+                    name: doctor.name,
+                    avgRevenue: doctor.avgRevenue
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`Rs. ${value}`, 'Avg Revenue']} />
+                    <Bar dataKey="avgRevenue" fill={chartColors.tertiary} name="Avg Revenue" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Trends Tab */}
+        <TabsContent value="trends" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Monthly Patient Trends */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2" />
+                  Monthly Patient Trends
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analyticsData.monthlyTrends}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="patients" fill={chartColors.primary} name="Patients" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Monthly Revenue Trends */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold flex items-center">
+                  <DollarSign className="h-5 w-5 mr-2" />
+                  Monthly Revenue Trends
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analyticsData.monthlyTrends}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [`Rs. ${value}`, 'Revenue']} />
+                      <Legend />
+                      <Bar dataKey="revenue" fill={chartColors.secondary} name="Revenue" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Combined Trends Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold flex items-center">
+                <BarChart3 className="h-5 w-5 mr-2" />
+                Combined Trends Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={analyticsData.monthlyTrends}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`${value}`, 'Count/Amount']} />
+                    <Legend />
+                    <Bar dataKey="patients" fill={chartColors.primary} name="Patients" />
+                    <Bar dataKey="visits" fill={chartColors.tertiary} name="Visits" />
+                    <Bar dataKey="expenses" fill={chartColors.quaternary} name="Expenses" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>

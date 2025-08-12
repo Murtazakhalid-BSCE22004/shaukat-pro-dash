@@ -147,24 +147,39 @@ export default function Appointments() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search by Name or Contact */}
-            <div>
-              <Label>Search by Name or Contact</Label>
+            <div className="space-y-2 group">
+              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Search by Name or Contact</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" />
                 <Input
                   placeholder="Search patients..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
 
             {/* Doctor Selection */}
-            <div>
-              <Label>Doctor</Label>
+            <div className="space-y-2 group">
+              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Doctor</Label>
               <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300">
                   <SelectValue placeholder="Select doctor" />
                 </SelectTrigger>
                 <SelectContent>
@@ -179,14 +194,14 @@ export default function Appointments() {
             </div>
 
             {/* Start Date */}
-            <div>
-              <Label>Start Date</Label>
+            <div className="space-y-2 group">
+              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Start Date</Label>
               <div className="relative">
                 <button
                   type="button"
                   aria-label="Pick start date"
                   onClick={() => openPicker(startDateRef.current)}
-                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500"
+                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500 group-hover:text-blue-500 transition-colors duration-300"
                 >
                   <Calendar className="h-4 w-4" />
                 </button>
@@ -195,20 +210,35 @@ export default function Appointments() {
                   type="date" 
                   value={startDate} 
                   onChange={(e) => setStartDate(e.target.value)} 
-                  className="pl-10" 
+                  className="pl-10 h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
 
             {/* End Date */}
-            <div>
-              <Label>End Date</Label>
+            <div className="space-y-2 group">
+              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">End Date</Label>
               <div className="relative">
                 <button
                   type="button"
                   aria-label="Pick end date"
                   onClick={() => openPicker(endDateRef.current)}
-                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500"
+                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500 group-hover:text-blue-500 transition-colors duration-300"
                 >
                   <Calendar className="h-4 w-4" />
                 </button>
@@ -217,7 +247,22 @@ export default function Appointments() {
                   type="date" 
                   value={endDate} 
                   onChange={(e) => setEndDate(e.target.value)} 
-                  className="pl-10" 
+                  className="pl-10 h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
@@ -225,14 +270,14 @@ export default function Appointments() {
 
           {/* Time Range */}
           <div className="grid grid-cols-2 gap-4 max-w-xs">
-            <div>
-              <Label>From Time</Label>
+            <div className="space-y-2 group">
+              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">From Time</Label>
               <div className="relative">
                 <button
                   type="button"
                   aria-label="Pick start time"
                   onClick={() => openPicker(fromRef.current)}
-                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500"
+                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500 group-hover:text-blue-500 transition-colors duration-300"
                 >
                   <Calendar className="h-4 w-4" />
                 </button>
@@ -241,18 +286,33 @@ export default function Appointments() {
                   type="time" 
                   value={startTime} 
                   onChange={(e) => setStartTime(e.target.value)} 
-                  className="pl-10" 
+                  className="pl-10 h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
-            <div>
-              <Label>To Time</Label>
+            <div className="space-y-2 group">
+              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">To Time</Label>
               <div className="relative">
                 <button
                   type="button"
                   aria-label="Pick end time"
                   onClick={() => openPicker(toRef.current)}
-                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500"
+                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500 group-hover:text-blue-500 transition-colors duration-300"
                 >
                   <Calendar className="h-4 w-4" />
                 </button>
@@ -261,7 +321,22 @@ export default function Appointments() {
                   type="time" 
                   value={endTime} 
                   onChange={(e) => setEndTime(e.target.value)} 
-                  className="pl-10" 
+                  className="pl-10 h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
+                  style={{ 
+                    border: '1px solid #d1d5db',
+                    outline: 'none',
+                    boxShadow: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#3b82f6';
+                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = '#d1d5db';
+                    target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             </div>
