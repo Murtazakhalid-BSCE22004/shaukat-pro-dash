@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,7 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsService";
 import { supabasePatientsService, type Patient } from "@/services/supabasePatientsService";
 import { FEE_CATEGORIES, computeVisitSplit, formatMoney, isoDateOnly } from "@/utils/finance";
-import { ArrowLeft } from "lucide-react";
 
 interface DoctorSummary {
   doctor: Doctor;
@@ -23,7 +21,13 @@ interface DoctorSummary {
 }
 
 const DailySummaryPage = () => {
-  const [date, setDate] = useState(isoDateOnly(new Date()));
+  const [date, setDate] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
 
   // Fetch doctors and patients for the selected date
   const { data: doctors = [] } = useQuery({
@@ -142,19 +146,9 @@ const DailySummaryPage = () => {
         {/* Header Section */}
         <section className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              {/* Back Button */}
-              <Link to="/professional">
-                <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                  <ArrowLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Back to Dashboard</span>
-                </Button>
-              </Link>
-              
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Daily Summary</h1>
-                <p className="text-gray-600">Revenue breakdown and profit analysis by doctor</p>
-              </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Daily Summary</h1>
+              <p className="text-gray-600">Revenue breakdown and profit analysis by doctor</p>
             </div>
             <div className="flex items-center gap-3">
               <label htmlFor="date" className="text-sm font-medium text-gray-700">Select Date</label>

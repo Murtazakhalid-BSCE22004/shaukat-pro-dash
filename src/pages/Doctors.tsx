@@ -8,8 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsService";
-import { supabaseVisitsService } from "@/services/supabaseVisitsService";
-import { supabasePatientsService } from "@/services/supabasePatientsService";
+
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Users } from "lucide-react";
 
@@ -23,6 +22,7 @@ const DoctorsPage = () => {
   const [ecgPercentage, setEcgPercentage] = useState(0);
   const [otPercentage, setOtPercentage] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
 
 
@@ -62,6 +62,7 @@ const DoctorsPage = () => {
     setEcgPercentage(0);
     setOtPercentage(0);
     setEditingId(null);
+    setShowForm(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -102,6 +103,7 @@ const DoctorsPage = () => {
     setUltrasoundPercentage(doctor.ultrasound_percentage || 0);
     setEcgPercentage(doctor.ecg_percentage || 0);
     setOtPercentage(doctor.ot_percentage || 0);
+    setShowForm(true);
   };
 
   const removeDoctor = async (id: string) => {
@@ -117,84 +119,7 @@ const DoctorsPage = () => {
 
 
 
-  // Chart colors
-  const chartColors = {
-    primary: '#3B82F6',
-    secondary: '#10B981',
-    tertiary: '#F59E0B',
-    quaternary: '#EF4444',
-    quinary: '#8B5CF6'
-  };
 
-  // Get period display text
-  const getPeriodDisplayText = () => {
-    if (!dateRange?.from || !dateRange?.to) {
-      return 'Select date range';
-    }
-
-    const now = new Date();
-    const from = dateRange.from;
-    const to = dateRange.to;
-
-    // Check for Today
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    if (from.toDateString() === today.toDateString() && to.toDateString() === today.toDateString()) {
-      return 'Today';
-    }
-
-    // Check for Yesterday
-    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    if (from.toDateString() === yesterday.toDateString() && to.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    }
-
-    // Check for This Week
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - now.getDay());
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    if (from.toDateString() === weekStart.toDateString() && to.toDateString() === weekEnd.toDateString()) {
-      return 'This Week';
-    }
-
-    // Check for Last Week
-    const lastWeekStart = new Date(now);
-    lastWeekStart.setDate(now.getDate() - now.getDay() - 7);
-    const lastWeekEnd = new Date(lastWeekStart);
-    lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
-    if (from.toDateString() === lastWeekStart.toDateString() && to.toDateString() === lastWeekEnd.toDateString()) {
-      return 'Last Week';
-    }
-
-    // Check for This Month
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    if (from.toDateString() === monthStart.toDateString() && to.toDateString() === now.toDateString()) {
-      return 'This Month';
-    }
-
-    // Check for Last Month
-    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-    if (from.toDateString() === lastMonthStart.toDateString() && to.toDateString() === lastMonthEnd.toDateString()) {
-      return 'Last Month';
-    }
-
-    // Check for This Year
-    const yearStart = new Date(now.getFullYear(), 0, 1);
-    if (from.toDateString() === yearStart.toDateString() && to.toDateString() === now.toDateString()) {
-      return 'This Year';
-    }
-
-    // Check for Last Year
-    const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
-    const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31);
-    if (from.toDateString() === lastYearStart.toDateString() && to.toDateString() === lastYearEnd.toDateString()) {
-      return 'Last Year';
-    }
-
-    // For custom ranges, show a shorter format
-    return `${from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} - ${to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}`;
-  };
 
   return (
     <>
@@ -209,15 +134,18 @@ const DoctorsPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Doctors Management</h1>
-              <p className="text-gray-600 mt-2">Manage doctor profiles and view analytics</p>
+              <p className="text-gray-600 mt-2">Manage doctor profiles and their details</p>
             </div>
             <div className="flex gap-3">
               <Button 
-                onClick={resetForm}
+                onClick={() => {
+                  resetForm();
+                  setShowForm(true);
+                }}
                 className="px-5 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                New Doctor
+                Add Doctor
               </Button>
             </div>
           </div>
@@ -225,15 +153,16 @@ const DoctorsPage = () => {
 
         {/* Doctor List Content */}
 
-        <Card className="border border-gray-200 shadow-sm bg-white">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
-            <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <Plus className="h-4 w-4 text-gray-600" />
-              {editingId ? "Edit Doctor" : "Add New Doctor"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
+        {showForm && (
+          <Card className="border border-gray-200 shadow-sm bg-white">
+            <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">
+              <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <Plus className="h-4 w-4 text-gray-600" />
+                {editingId ? "Edit Doctor" : "Add New Doctor"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Information Section */}
               <div className="space-y-4">
                 <h3 className="text-base font-medium text-gray-700 border-b border-gray-200 pb-2">
@@ -489,20 +418,19 @@ const DoctorsPage = () => {
                     editingId ? "Update Doctor" : "Add Doctor"
                   )}
                 </Button>
-                {editingId && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={resetForm}
-                    className="px-5 py-2 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 bg-white text-gray-700"
-                  >
-                    Cancel
-                  </Button>
-                )}
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={resetForm}
+                  className="px-5 py-2 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 bg-white text-gray-700"
+                >
+                  Cancel
+                </Button>
               </div>
             </form>
           </CardContent>
         </Card>
+        )}
 
         <Card className="border border-gray-200 shadow-sm bg-white">
           <CardHeader className="bg-gray-50 border-b border-gray-200">
@@ -583,214 +511,8 @@ const DoctorsPage = () => {
                 </Table>
               </div>
             )}
-                  </CardContent>
-      </Card>
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-6">
-          {/* Analytics Header with Period Selector */}
-          <Card className="border border-gray-200 shadow-sm bg-white">
-            <CardHeader className="bg-gray-50 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-gray-800">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
-                  Doctor Analytics
-                </CardTitle>
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={() => setIsPeriodSelectorOpen(true)}
-                >
-                  <Calendar className="h-4 w-4" />
-                  {getPeriodDisplayText()}
-                </Button>
-              </div>
-            </CardHeader>
-          </Card>
-
-          {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Users className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Total Doctors</p>
-                    <p className="text-2xl font-bold text-gray-900">{analyticsData.totalDoctors}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Activity className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Active Doctors</p>
-                    <p className="text-2xl font-bold text-gray-900">{analyticsData.activeDoctors}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Calendar className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Total Visits</p>
-                    <p className="text-2xl font-bold text-gray-900">{analyticsData.filteredVisits.length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <DollarSign className="h-5 w-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Total Revenue</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      Rs. {analyticsData.filteredVisits.reduce((sum, v) => 
-                        sum + (v.opd_fee || 0) + (v.lab_fee || 0) + (v.ultrasound_fee || 0) + (v.ecg_fee || 0) + (v.ot_fee || 0), 0
-                      ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Doctor Performance Bar Chart */}
-            <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
-                <CardTitle className="flex items-center gap-2 text-gray-800">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
-                  Doctor Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {analyticsData.doctorPerformance.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={analyticsData.doctorPerformance.slice(0, 5)}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip formatter={(value) => [value, 'Revenue']} />
-                      <Legend />
-                      <Bar dataKey="revenue" fill="#3B82F6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="text-center py-10 text-gray-500">
-                    <BarChart3 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>No performance data available</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Specialization Distribution Pie Chart */}
-            <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
-                                  <CardTitle className="flex items-center gap-2 text-gray-800">
-                    <PieChart className="w-4 h-4 text-green-600" />
-                    Specialization Distribution
-                  </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {Object.keys(analyticsData.specializationData).length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RechartsPieChart>
-                      <Pie
-                        data={Object.entries(analyticsData.specializationData).map(([spec, count]) => ({
-                          name: spec,
-                          value: count,
-                          color: chartColors.primary
-                        }))}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {Object.entries(analyticsData.specializationData).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={chartColors.primary} />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value) => [value, 'Doctors']} />
-                      <Legend />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="text-center py-10 text-gray-500">
-                    <RechartsPieChart className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>No specialization data available</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Monthly Trends Line Chart */}
-            <Card className="border border-gray-200 shadow-sm bg-white lg:col-span-2">
-              <CardHeader className="bg-gray-50 border-b border-gray-200">
-                <CardTitle className="flex items-center gap-2 text-gray-800">
-                  <TrendingUp className="w-4 h-4 text-purple-600" />
-                  Monthly Trends
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {analyticsData.monthlyTrends.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={analyticsData.monthlyTrends}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis yAxisId="left" />
-                      <YAxis yAxisId="right" orientation="right" />
-                      <Tooltip 
-                        formatter={(value, name) => [
-                          name === 'visits' ? value : `Rs. ${Number(value).toLocaleString()}`, 
-                          name === 'visits' ? 'Visits' : 'Revenue'
-                        ]} 
-                      />
-                      <Legend />
-                      <Line yAxisId="left" type="monotone" dataKey="visits" stroke="#3B82F6" strokeWidth={2} />
-                      <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={2} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="text-center py-10 text-gray-500">
-                    <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>No trend data available</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Period Selector Modal */}
-      <PeriodSelector
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-        isOpen={isPeriodSelectorOpen}
-        onClose={() => setIsPeriodSelectorOpen(false)}
-      />
+          </CardContent>
+        </Card>
       </div>
     </>
   );
