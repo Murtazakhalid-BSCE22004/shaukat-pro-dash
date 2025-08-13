@@ -118,8 +118,9 @@ const ReportsPage = () => {
   const { data: patients = [] } = useQuery({
     queryKey: ['patients', 'date-range', startDate, endDate],
     queryFn: async () => {
-      const startISO = new Date(`${startDate}T00:00:00.000Z`).toISOString();
-      const endISO = new Date(`${endDate}T23:59:59.999Z`).toISOString();
+      // Use local timezone to avoid UTC conversion issues
+      const startISO = `${startDate}T00:00:00.000+05:00`;
+      const endISO = `${endDate}T23:59:59.999+05:00`;
       return await supabasePatientsService.getPatientsByDateRange(startISO, endISO);
     },
   });
@@ -378,7 +379,7 @@ const ReportsPage = () => {
                       <TableRow key={rowIndex} className="hover:bg-gray-50 print:hover:bg-transparent print:border-b print:border-gray-200">
                         {Object.values(row).map((cell, cellIndex) => (
                           <TableCell key={cellIndex} className="text-center print:text-sm print:py-2 print:border print:border-gray-200">
-                            {typeof cell === 'number' ? formatMoney(cell) : cell}
+                            {typeof cell === 'number' ? formatMoney(cell) : String(cell)}
                           </TableCell>
                         ))}
                       </TableRow>

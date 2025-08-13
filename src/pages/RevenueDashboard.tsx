@@ -106,9 +106,20 @@ const RevenueDashboard = () => {
       };
     }
     
+    // For different days, construct date strings directly to avoid timezone issues
+    const startYear = start.getFullYear();
+    const startMonth = String(start.getMonth() + 1).padStart(2, '0');
+    const startDay = String(start.getDate()).padStart(2, '0');
+    const startDateString = `${startYear}-${startMonth}-${startDay}`;
+    
+    const endYear = end.getFullYear();
+    const endMonth = String(end.getMonth() + 1).padStart(2, '0');
+    const endDay = String(end.getDate()).padStart(2, '0');
+    const endDateString = `${endYear}-${endMonth}-${endDay}`;
+    
     return {
-      startDate: start.toISOString().slice(0, 10),
-      endDate: end.toISOString().slice(0, 10)
+      startDate: startDateString,
+      endDate: endDateString
     };
   };
 
@@ -159,14 +170,18 @@ const RevenueDashboard = () => {
     queryFn: async () => {
       // Use Supabase patients by created_at range
       // For better precision, use start of day and start of next day
-      const startISO = new Date(`${startDate}T00:00:00.000Z`).toISOString();
+      // Use local timezone to avoid UTC conversion issues
+      const startISO = `${startDate}T00:00:00.000+05:00`;
       
       // For end date, use start of next day to avoid timezone precision issues
       // This approach: startDate <= created_at < endDate (next day start)
       // is more reliable than: startDate <= created_at <= endDate (end of day)
       const nextDay = new Date(endDate);
       nextDay.setDate(nextDay.getDate() + 1);
-      const endISO = new Date(`${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, '0')}-${String(nextDay.getDate()).padStart(2, '0')}T00:00:00.000Z`).toISOString();
+      const nextDayYear = nextDay.getFullYear();
+      const nextDayMonth = String(nextDay.getMonth() + 1).padStart(2, '0');
+      const nextDayDate = String(nextDay.getDate()).padStart(2, '0');
+      const endISO = `${nextDayYear}-${nextDayMonth}-${nextDayDate}T00:00:00.000+05:00`;
       
       console.log('Fetching patients for date range:', { startDate, endDate, startISO, endISO });
       console.log('Date objects:', { 

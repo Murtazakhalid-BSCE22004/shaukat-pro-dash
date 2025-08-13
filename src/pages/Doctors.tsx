@@ -11,28 +11,7 @@ import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsS
 import { supabaseVisitsService } from "@/services/supabaseVisitsService";
 import { supabasePatientsService } from "@/services/supabasePatientsService";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, BarChart3, TrendingUp, Users, Activity, DollarSign, Calendar, Filter, PieChart } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import PeriodSelector from "@/components/ui/period-selector";
-import { DateRange } from "react-day-picker";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  AreaChart,
-  Area
-} from 'recharts';
+import { ArrowLeft, Plus, Users } from "lucide-react";
 
 const DoctorsPage = () => {
   const queryClient = useQueryClient();
@@ -45,13 +24,7 @@ const DoctorsPage = () => {
   const [otPercentage, setOtPercentage] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Analytics state
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    const today = new Date();
-    return { from: today, to: today };
-  });
-  const [isPeriodSelectorOpen, setIsPeriodSelectorOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'list' | 'analytics'>('list');
+
 
   // Fetch all doctors
   const { data: doctors = [], isLoading } = useQuery({
@@ -59,16 +32,7 @@ const DoctorsPage = () => {
     queryFn: supabaseDoctorsService.getAllDoctors,
   });
 
-  // Fetch additional data for analytics
-  const { data: visits = [] } = useQuery({
-    queryKey: ['visits'],
-    queryFn: supabaseVisitsService.getAllVisits,
-  });
 
-  const { data: patients = [] } = useQuery({
-    queryKey: ['patients'],
-    queryFn: supabasePatientsService.getAllPatients,
-  });
 
   // Create or update doctor mutation
   const saveDoctorMutation = useMutation({
@@ -151,63 +115,7 @@ const DoctorsPage = () => {
     }
   };
 
-  // Analytics calculations
-  const analyticsData = {
-    totalDoctors: doctors.length,
-    activeDoctors: doctors.filter(d => d.is_active).length,
-    totalVisits: visits.length,
-    totalPatients: patients.length,
-    
-    // Filter data by date range
-    filteredVisits: dateRange?.from && dateRange?.to ? visits.filter(v => {
-      const visitDate = new Date(v.visit_date);
-      return visitDate >= dateRange.from! && visitDate <= dateRange.to!;
-    }) : visits,
-    
-    filteredPatients: dateRange?.from && dateRange?.to ? patients.filter(p => {
-      const patientDate = new Date(p.created_at);
-      return patientDate >= dateRange.from! && patientDate <= dateRange.to!;
-    }) : patients,
-    
-    // Doctor performance data
-    doctorPerformance: doctors.map(doctor => {
-      const doctorVisits = visits.filter(v => v.doctor_id === doctor.id);
-      const doctorRevenue = doctorVisits.reduce((sum, v) => 
-        sum + (v.opd_fee || 0) + (v.lab_fee || 0) + (v.ultrasound_fee || 0) + (v.ecg_fee || 0) + (v.ot_fee || 0), 0
-      );
-      return {
-        name: doctor.name,
-        visits: doctorVisits.length,
-        revenue: doctorRevenue,
-        avgRevenue: doctorVisits.length > 0 ? doctorRevenue / doctorVisits.length : 0,
-        patients: patients.filter(p => p.doctor_name === doctor.name).length
-      };
-    }).sort((a, b) => b.revenue - a.revenue),
 
-    // Monthly trends (last 6 months)
-    monthlyTrends: Array.from({ length: 6 }, (_, i) => {
-      const month = new Date();
-      month.setMonth(month.getMonth() - i);
-      const monthVisits = visits.filter(v => {
-        const visitDate = new Date(v.visit_date);
-        return visitDate.getMonth() === month.getMonth() && visitDate.getFullYear() === month.getFullYear();
-      });
-      return {
-        month: month.toLocaleDateString('en-US', { month: 'short' }),
-        visits: monthVisits.length,
-        revenue: monthVisits.reduce((sum, v) => 
-          sum + (v.opd_fee || 0) + (v.lab_fee || 0) + (v.ultrasound_fee || 0) + (v.ecg_fee || 0) + (v.ot_fee || 0), 0
-        )
-      };
-    }).reverse(),
-
-    // Specialization distribution
-    specializationData: doctors.reduce((acc, doctor) => {
-      const spec = doctor.specialization || 'General';
-      acc[spec] = (acc[spec] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
-  };
 
   // Chart colors
   const chartColors = {
@@ -315,20 +223,7 @@ const DoctorsPage = () => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'list' | 'analytics')} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="list" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Doctor List
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="list" className="space-y-6">
+        {/* Doctor List Content */}
 
         <Card className="border border-gray-200 shadow-sm bg-white">
           <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-200">

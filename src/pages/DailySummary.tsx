@@ -35,8 +35,9 @@ const DailySummaryPage = () => {
     queryKey: ['patients', 'date', date],
     queryFn: async () => {
       // Get patients created on the selected date
-      const startISO = new Date(`${date}T00:00:00.000Z`).toISOString();
-      const endISO = new Date(`${date}T23:59:59.999Z`).toISOString();
+      // Use local timezone to avoid UTC conversion issues
+      const startISO = `${date}T00:00:00.000+05:00`;
+      const endISO = `${date}T23:59:59.999+05:00`;
       return await supabasePatientsService.getPatientsByDateRange(startISO, endISO);
     },
   });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,52 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   onClose,
   isOpen = false
 }) => {
+  console.log('PeriodSelector: Initial dateRange prop:', dateRange);
   const [localDateRange, setLocalDateRange] = useState<DateRange | undefined>(dateRange);
+
+  // Sync local state with prop changes
+  useEffect(() => {
+    console.log('PeriodSelector: dateRange prop changed:', dateRange);
+    setLocalDateRange(dateRange);
+  }, [dateRange]);
+
+  // Log when local state changes
+  useEffect(() => {
+    console.log('PeriodSelector: localDateRange changed:', localDateRange);
+  }, [localDateRange]);
+
+  // Ensure initial state is set correctly
+  useEffect(() => {
+    if (dateRange && !localDateRange) {
+      console.log('PeriodSelector: Setting initial localDateRange from prop');
+      setLocalDateRange(dateRange);
+    }
+  }, [dateRange, localDateRange]);
+
+  // Ensure initial state is set on mount
+  useEffect(() => {
+    if (dateRange) {
+      console.log('PeriodSelector: Setting initial state on mount');
+      setLocalDateRange(dateRange);
+    }
+  }, []);
+
+  // Debug: Log current state
+  console.log('PeriodSelector: Current state:', {
+    dateRange,
+    localDateRange,
+    isToday: localDateRange?.from?.toDateString() === new Date().toDateString() && 
+             localDateRange?.to?.toDateString() === new Date().toDateString(),
+    fromDate: localDateRange?.from?.toDateString(),
+    toDate: localDateRange?.to?.toDateString(),
+    todayDate: new Date().toDateString(),
+    fromLocal: localDateRange?.from?.toLocaleString(),
+    toLocal: localDateRange?.to?.toLocaleString(),
+    todayLocal: new Date().toLocaleString(),
+    fromISO: localDateRange?.from?.toISOString(),
+    toISO: localDateRange?.to?.toISOString(),
+    todayISO: new Date().toISOString()
+  });
 
   const handlePredefinedPeriod = (period: string) => {
     const now = new Date();
@@ -28,12 +73,38 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
 
     switch (period) {
       case "Today":
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        // Create separate Date objects to avoid reference issues
+        start = new Date();
+        start.setHours(0, 0, 0, 0); // Set to 00:00:00.000 local time
+        
+        end = new Date();
+        end.setHours(23, 59, 59, 999); // Set to 23:59:59.999 local time
         break;
       case "Yesterday":
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-        end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        // Create separate Date objects to avoid reference issues
+        // Get yesterday's date
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        start = new Date(yesterday);
+        start.setHours(0, 0, 0, 0); // Set to 00:00:00.000 local time
+        
+        end = new Date(yesterday);
+        end.setHours(23, 59, 59, 999); // Set to 23:59:59.999 local time
+        
+        // Debug: Log the exact dates being set
+        console.log('Yesterday period - Setting dates:', {
+          now: now.toDateString(),
+          yesterday: yesterday.toDateString(),
+          startDate: start.toDateString(),
+          endDate: end.toDateString(),
+          startLocal: start.toLocaleString(),
+          endLocal: end.toLocaleString(),
+          startUTC: start.toUTCString(),
+          endUTC: end.toUTCString(),
+          startISO: start.toISOString(),
+          endISO: end.toISOString()
+        });
         break;
       case "This week":
         start = new Date(now);
@@ -86,12 +157,31 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
       console.log('Today calculation details:', {
         now: now.toDateString(),
         startDate: start.toDateString(),
+        startLocal: start.toLocaleString(),
+        endLocal: end.toLocaleString(),
+        startUTC: start.toUTCString(),
+        endUTC: end.toUTCString(),
+        startTime: start.getTime(),
+        endTime: end.getTime(),
+        areSame: start.getTime() === end.getTime()
+      });
+    }
+    
+    // Additional debugging for Yesterday
+    if (period === "Yesterday") {
+      console.log('Yesterday calculation details:', {
+        now: now.toDateString(),
+        startDate: start.toDateString(),
         endDate: end.toDateString(),
         startISO: start.toISOString(),
         endISO: end.toISOString(),
         startTime: start.getTime(),
         endTime: end.getTime(),
-        areSame: start.getTime() === end.getTime()
+        areSame: start.getTime() === end.getTime(),
+        startLocal: start.toLocaleString(),
+        endLocal: end.toLocaleString(),
+        startUTC: start.toUTCString(),
+        endUTC: end.toUTCString()
       });
     }
     
@@ -129,6 +219,7 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
         const fromString = localDateRange.from.toDateString();
         const toString = localDateRange.to.toDateString();
         isActive = fromString === todayString && toString === todayString;
+        console.log('Today button check:', { fromString, toString, todayString, isActive });
         break;
       case "Yesterday":
         const yesterday = new Date(now);
@@ -193,6 +284,7 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
         break;
     }
     
+    console.log(`Button variant for ${period}:`, isActive ? "default" : "outline");
     return isActive ? "default" : "outline";
   };
 

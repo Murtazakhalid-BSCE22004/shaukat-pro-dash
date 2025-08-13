@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabaseDoctorsService, type Doctor } from '@/services/supabaseDoctorsService';
@@ -42,14 +42,30 @@ const Patients: React.FC = () => {
     ot_fee: ''
   });
 
-  // Period selector state
+  // Period selector state - default to today
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-    return { from: start, to: end };
+    const today = new Date();
+    const startOfDay = new Date(today);
+    startOfDay.setHours(0, 0, 0, 0); // Set to 00:00:00.000 local time
+    
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999); // Set to 23:59:59.999 local time
+    
+    return { from: startOfDay, to: endOfDay };
   });
   const [isPeriodSelectorOpen, setIsPeriodSelectorOpen] = useState(false);
+
+  // Ensure date range is set to today when component mounts
+  useEffect(() => {
+    const today = new Date();
+    const startOfDay = new Date(today);
+    startOfDay.setHours(0, 0, 0, 0); // Set to 00:00:00.000 local time
+    
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999); // Set to 23:59:59.999 local time
+    
+    setDateRange({ from: startOfDay, to: endOfDay });
+  }, []);
 
   // Fetch active doctors for dropdown
   const { data: doctors = [], isLoading: isDoctorsLoading } = useQuery<Doctor[]>({
@@ -63,12 +79,10 @@ const Patients: React.FC = () => {
   // Helper function to get date strings from DateRange
   const getDateStrings = () => {
     if (!dateRange?.from || !dateRange?.to) {
-      const end = new Date();
-      const start = new Date();
-      start.setDate(start.getDate() - 30);
+      const today = new Date();
       return {
-        startDate: start.toISOString().slice(0, 10),
-        endDate: end.toISOString().slice(0, 10)
+        startDate: today.toISOString().slice(0, 10),
+        endDate: today.toISOString().slice(0, 10)
       };
     }
     
@@ -90,9 +104,20 @@ const Patients: React.FC = () => {
       };
     }
     
+    // For different days, construct date strings directly to avoid timezone issues
+    const startYear = start.getFullYear();
+    const startMonth = String(start.getMonth() + 1).padStart(2, '0');
+    const startDay = String(start.getDate()).padStart(2, '0');
+    const startDateString = `${startYear}-${startMonth}-${startDay}`;
+    
+    const endYear = end.getFullYear();
+    const endMonth = String(end.getMonth() + 1).padStart(2, '0');
+    const endDay = String(end.getDate()).padStart(2, '0');
+    const endDateString = `${endYear}-${endMonth}-${endDay}`;
+    
     return {
-      startDate: start.toISOString().slice(0, 10),
-      endDate: end.toISOString().slice(0, 10)
+      startDate: startDateString,
+      endDate: endDateString
     };
   };
 
@@ -108,24 +133,33 @@ const Patients: React.FC = () => {
     const from = dateRange.from;
     const to = dateRange.to;
 
-    // Check for Today
+    // Check for Today - use more robust comparison
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    if (from.toDateString() === today.toDateString() && to.toDateString() === today.toDateString()) {
+    const fromDate = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    const toDate = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
+    if (fromDate.getTime() === todayDate.getTime() && toDate.getTime() === todayDate.getTime()) {
       return 'Today';
     }
 
-    // Check for Yesterday
+    // Check for Yesterday - use more robust comparison
     const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    if (from.toDateString() === yesterday.toDateString() && to.toDateString() === yesterday.toDateString()) {
+    const yesterdayDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+    
+    if (fromDate.getTime() === yesterdayDate.getTime() && toDate.getTime() === yesterdayDate.getTime()) {
       return 'Yesterday';
     }
 
-    // Check for This Week
+    // Check for This Week - use more robust comparison
     const weekStart = new Date(now);
     weekStart.setDate(now.getDate() - now.getDay());
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
-    if (from.toDateString() === weekStart.toDateString() && to.toDateString() === weekEnd.toDateString()) {
+    const weekStartDate = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+    const weekEndDate = new Date(weekEnd.getFullYear(), weekEnd.getMonth(), weekEnd.getDate());
+    
+    if (fromDate.getTime() === weekStartDate.getTime() && toDate.getTime() === weekEndDate.getTime()) {
       return 'This Week';
     }
 
@@ -176,16 +210,24 @@ const Patients: React.FC = () => {
     dateRangeFrom: dateRange?.from?.toDateString(),
     dateRangeTo: dateRange?.to?.toDateString(),
     startDateISO: startDate,
-    endDateISO: endDate
+    endDateISO: endDate,
+    periodDisplayText: getPeriodDisplayText(),
+    isToday: dateRange?.from?.toDateString() === new Date().toDateString() && 
+             dateRange?.to?.toDateString() === new Date().toDateString()
   });
 
   const { data: patients = [], isLoading } = useQuery({
     queryKey: ['patients', { selectedDoctor, startDate, endDate, searchTerm }],
     queryFn: async () => {
+      // Create proper ISO strings for the date range
+      // Use local timezone to avoid UTC conversion issues
       const range = {
-        startISO: startDate ? new Date(`${startDate}T00:00:00.000Z`).toISOString() : undefined,
-        endISO: endDate ? new Date(`${endDate}T23:59:59.999Z`).toISOString() : undefined,
+        startISO: startDate ? `${startDate}T00:00:00.000+05:00` : undefined,
+        endISO: endDate ? `${endDate}T23:59:59.999+05:00` : undefined,
       };
+      
+      console.log('Query date range:', { startDate, endDate, range });
+      
       return await supabasePatientsService.getPatientsByFilters({
         doctorName: selectedDoctor !== 'all' ? selectedDoctor : undefined,
         startDate: range.startISO,
@@ -805,6 +847,7 @@ const Patients: React.FC = () => {
 
       {/* Period Selector Modal */}
       <PeriodSelector
+        key={`period-selector-${dateRange?.from?.toDateString()}-${dateRange?.to?.toDateString()}`}
         dateRange={dateRange}
         onDateRangeChange={setDateRange}
         isOpen={isPeriodSelectorOpen}

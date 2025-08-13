@@ -116,8 +116,9 @@ const StatisticalDashboard: React.FC = () => {
   const { data: visits = [] } = useQuery({
     queryKey: ['visits', 'range', dateRange.start, dateRange.end],
     queryFn: () => supabaseVisitsService.getVisitsByDateRange(
-      new Date(`${dateRange.start}T00:00:00.000Z`).toISOString(),
-      new Date(`${dateRange.end}T23:59:59.999Z`).toISOString()
+      // Use local timezone to avoid UTC conversion issues
+      `${dateRange.start}T00:00:00.000+05:00`,
+      `${dateRange.end}T23:59:59.999+05:00`
     ),
   });
 

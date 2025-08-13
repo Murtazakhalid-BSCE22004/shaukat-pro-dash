@@ -32,8 +32,9 @@ const ProfessionalDashboard: React.FC = () => {
   const { data: todaysPatients = [] } = useQuery({
     queryKey: ['patients', 'today', today],
     queryFn: async () => {
-      const startISO = new Date(`${today}T00:00:00.000Z`).toISOString();
-      const endISO = new Date(`${today}T23:59:59.999Z`).toISOString();
+      // Use local timezone to avoid UTC conversion issues
+      const startISO = `${today}T00:00:00.000+05:00`;
+      const endISO = `${today}T23:59:59.999+05:00`;
       return await supabasePatientsService.getPatientsByDateRange(startISO, endISO);
     },
   });
