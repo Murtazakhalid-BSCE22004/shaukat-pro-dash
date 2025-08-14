@@ -33,6 +33,7 @@ import {
 import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsService";
 import { supabasePatientsService } from "@/services/supabasePatientsService";
 import { formatMoney, FEE_CATEGORIES } from "@/utils/finance";
+import DoctorSelect from "@/components/DoctorSelect";
 
 interface RevenueData {
   totalRevenue: number;
@@ -622,37 +623,16 @@ const RevenueDashboard = () => {
                 </Button>
               </div>
               <div>
-                <Label htmlFor="doctor" className="text-sm font-medium text-gray-700 mb-2">Doctor</Label>
-                <select
-                  id="doctor"
+                <Label className="text-sm font-medium text-gray-700 mb-2">Doctor</Label>
+                <DoctorSelect
                   value={selectedDoctor}
-                  onChange={(e) => setSelectedDoctor(e.target.value)}
-                  className="h-10 w-full border-2 border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-md px-3 py-2"
-                  style={{ border: '2px solid #d1d5db', outline: 'none', boxShadow: 'none' }}
-                  onMouseEnter={(e) => {
-                    const target = e.target as HTMLSelectElement;
-                    target.style.borderColor = '#3b82f6';
-                  }}
-                  onMouseLeave={(e) => {
-                    const target = e.target as HTMLSelectElement;
-                    target.style.borderColor = '#d1d5db';
-                  }}
-                  onFocus={(e) => {
-                    const target = e.target as HTMLSelectElement;
-                    target.style.borderColor = '#3b82f6';
-                  }}
-                  onBlur={(e) => {
-                    const target = e.target as HTMLSelectElement;
-                    target.style.borderColor = '#d1d5db';
-                  }}
-                >
-                  <option value="all">All Doctors</option>
-                  {doctors.map((doctor) => (
-                    <option key={doctor.id} value={doctor.id}>
-                      {doctor.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setSelectedDoctor}
+                  doctors={doctors}
+                  allowAll
+                  allValue="all"
+                  allLabel="All Doctors"
+                  valueKey="id"
+                />
               </div>
               <div>
                 <Label htmlFor="search" className="text-sm font-medium text-gray-700 mb-2">Search Doctors</Label>

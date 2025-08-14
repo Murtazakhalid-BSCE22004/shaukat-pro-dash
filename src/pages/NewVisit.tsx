@@ -12,6 +12,7 @@ import { supabaseVisitsService } from "@/services/supabaseVisitsService";
 import { FEE_CATEGORIES, computeVisitSplit, formatMoney, isoDateOnly } from "@/utils/finance";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import DoctorSelect from "@/components/DoctorSelect";
 
 const NewVisitPage = () => {
   const queryClient = useQueryClient();
@@ -122,16 +123,13 @@ const NewVisitPage = () => {
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2 group">
                 <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Doctor</Label>
-                <Select value={doctorId} onValueChange={setDoctorId}>
-                  <SelectTrigger className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300">
-                    <SelectValue placeholder="Select a doctor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {doctors.map((d) => (
-                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <DoctorSelect
+                  value={doctorId}
+                  onChange={setDoctorId}
+                  doctors={doctors}
+                  placeholder="Select a doctor"
+                  valueKey="id"
+                />
               </div>
               <div className="space-y-2 group">
                 <Label htmlFor="date" className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Date</Label>

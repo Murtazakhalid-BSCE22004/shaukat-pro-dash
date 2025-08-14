@@ -166,13 +166,6 @@ const ReportsPage = () => {
         <section className="mb-8 print:hidden">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              {/* Back Button */}
-              <Link to="/professional">
-                <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                  <ArrowLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Back to Dashboard</span>
-                </Button>
-              </Link>
               
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Reports & Analytics</h1>
@@ -199,7 +192,7 @@ const ReportsPage = () => {
         <section className="mb-8 print:hidden">
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2 group">
                   <label className="text-sm font-medium text-gray-700 mb-2 block group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Report Type</label>
                   <Select value={selectedReport} onValueChange={(value: ReportType) => setSelectedReport(value)}>
@@ -230,61 +223,7 @@ const ReportsPage = () => {
                   </Select>
                   <p className="text-xs text-gray-500 mt-1">Dates will be automatically set based on selection</p>
                 </div>
-                <div className="space-y-2 group">
-                  <label className="text-sm font-medium text-gray-700 mb-2 block group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
-                    Start Date
-                    {timeRange !== 'daily' && <span className="text-xs text-blue-600 ml-1">(Auto)</span>}
-                  </label>
-                  <Input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => handleStartDateChange(e.target.value)}
-                    className={`h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300 ${timeRange !== 'daily' ? 'bg-blue-50 border-blue-200' : ''}`}
-                    style={{ 
-                      border: '1px solid #d1d5db',
-                      outline: 'none',
-                      boxShadow: 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      const target = e.target as HTMLInputElement;
-                      target.style.borderColor = '#3b82f6';
-                      target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      const target = e.target as HTMLInputElement;
-                      target.style.borderColor = '#d1d5db';
-                      target.style.boxShadow = 'none';
-                    }}
-                  />
-                </div>
-                <div className="space-y-2 group">
-                  <label className="text-sm font-medium text-gray-700 mb-2 block group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
-                    End Date
-                    {timeRange !== 'daily' && <span className="text-xs text-blue-600 ml-1">(Auto)</span>}
-                  </label>
-                  <Input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => handleEndDateChange(e.target.value)}
-                    className={`h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300 ${timeRange !== 'daily' ? 'bg-blue-50 border-blue-200' : ''}`}
-                    style={{ 
-                      border: '1px solid #d1d5db',
-                      outline: 'none',
-                      boxShadow: 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      const target = e.target as HTMLInputElement;
-                      target.style.borderColor = '#3b82f6';
-                      target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      const target = e.target as HTMLInputElement;
-                      target.style.borderColor = '#d1d5db';
-                      target.style.boxShadow = 'none';
-                    }}
-                  />
-                </div>
-                <div className="md:col-span-4 flex justify-end">
+                <div className="md:col-span-2 flex justify-end">
                   <Button
                     variant="outline"
                     size="sm"

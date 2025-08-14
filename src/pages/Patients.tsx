@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import PeriodSelector from '@/components/ui/period-selector';
 import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
+import DoctorSelect from '@/components/DoctorSelect';
 
 const Patients: React.FC = () => {
   const queryClient = useQueryClient();
@@ -380,35 +381,16 @@ const Patients: React.FC = () => {
             </div>
             <div className="space-y-2 group">
               <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Doctor</Label>
-              <select
-                className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300"
+              <DoctorSelect
                 value={selectedDoctor}
-                onChange={(e) => setSelectedDoctor(e.target.value)}
-                style={{ 
-                  border: '1px solid #d1d5db',
-                  outline: 'none',
-                  boxShadow: 'none'
-                }}
-                onMouseEnter={(e) => {
-                  const target = e.target as HTMLSelectElement;
-                  target.style.borderColor = '#3b82f6';
-                  target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
-                }}
-                onMouseLeave={(e) => {
-                  const target = e.target as HTMLSelectElement;
-                  target.style.borderColor = '#d1d5db';
-                  target.style.boxShadow = 'none';
-                }}
-              >
-                <option value="all">All Doctors</option>
-                {isDoctorsLoading ? (
-                  <option disabled>Loading...</option>
-                ) : (
-                  doctors.map((doc) => (
-                    <option key={doc.id} value={doc.name}>{doc.name}</option>
-                  ))
-                )}
-              </select>
+                onChange={setSelectedDoctor}
+                doctors={doctors}
+                loading={isDoctorsLoading}
+                allowAll
+                allLabel="All Doctors"
+                allValue="all"
+                valueKey="name"
+              />
             </div>
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">Period</Label>
@@ -505,36 +487,14 @@ const Patients: React.FC = () => {
                     <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                       Doctor Name <span className="text-red-500">*</span>
                     </Label>
-                    <select
-                      className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300"
+                    <DoctorSelect
                       value={newPatient.doctor_name}
-                      onChange={(e) => handleInputChange('doctor_name', e.target.value)}
-                      required
-                      style={{ 
-                        border: '1px solid #d1d5db',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                      onMouseEnter={(e) => {
-                        const target = e.target as HTMLSelectElement;
-                        target.style.borderColor = '#3b82f6';
-                        target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        const target = e.target as HTMLSelectElement;
-                        target.style.borderColor = '#d1d5db';
-                        target.style.boxShadow = 'none';
-                      }}
-                    >
-                      <option value="" className="text-gray-400">Select Doctor</option>
-                      {isDoctorsLoading ? (
-                        <option disabled className="text-gray-400">Loading...</option>
-                      ) : (
-                        doctors.map((doc) => (
-                          <option key={doc.id} value={doc.name} className="text-gray-900">{doc.name}</option>
-                        ))
-                      )}
-                    </select>
+                      onChange={(val) => handleInputChange('doctor_name', val)}
+                      doctors={doctors}
+                      loading={isDoctorsLoading}
+                      placeholder="Select Doctor"
+                      valueKey="name"
+                    />
                   </div>
                 </div>
               </div>

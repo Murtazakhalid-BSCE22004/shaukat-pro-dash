@@ -10,6 +10,7 @@ import { supabasePatientsService } from '@/services/supabasePatientsService';
 import { supabaseDoctorsService } from '@/services/supabaseDoctorsService';
 import { useQuery } from '@tanstack/react-query';
 import { Tables } from '@/integrations/supabase/types';
+import DoctorSelect from '@/components/DoctorSelect';
 
 type Patient = Tables<'patients'>;
 type Doctor = Tables<'doctors'>;
@@ -178,19 +179,15 @@ export default function Appointments() {
             {/* Doctor Selection */}
             <div className="space-y-2 group">
               <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Doctor</Label>
-              <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-                <SelectTrigger className="h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 group-hover:border-blue-300">
-                  <SelectValue placeholder="Select doctor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Doctors</SelectItem>
-                  {doctors.map((doctor) => (
-                    <SelectItem key={doctor.id} value={doctor.name}>
-                      {doctor.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <DoctorSelect
+                value={selectedDoctor}
+                onChange={setSelectedDoctor}
+                doctors={doctors}
+                allowAll
+                allValue="all"
+                allLabel="All Doctors"
+                valueKey="name"
+              />
             </div>
 
             {/* Start Date */}

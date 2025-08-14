@@ -1,42 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
-import { 
-  TrendingUp, 
-  PieChart,
-  BarChart3,
-  Calendar,
-  ArrowUpRight,
-  ArrowDownRight,
-  AlertTriangle,
-  Target,
-  Clock,
-  CheckCircle,
-  XCircle,
-  DollarSign,
-  Filter,
-  Search,
-  X,
-  ArrowLeft,
-  Users,
-  Activity
-} from 'lucide-react';
+import { TrendingUp, PieChart, BarChart3, DollarSign, ArrowLeft, Users, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import PeriodSelector from '@/components/ui/period-selector';
-import { DateRange } from 'react-day-picker';
-import { formatCurrency } from '@/utils/currency';
-import { supabaseExpensesService } from '@/services/supabaseExpensesService';
 import { supabasePatientsService } from '@/services/supabasePatientsService';
 import { supabaseDoctorsService } from '@/services/supabaseDoctorsService';
 import { supabaseVisitsService } from '@/services/supabaseVisitsService';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
+import TopPerformingDoctorsChart from '@/components/charts/TopPerformingDoctorsChart';
 
 interface AnalyticsDashboardProps {
   initialTab?: 'overview' | 'expenses' | 'trends';
@@ -46,40 +20,14 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
   const [searchParams] = useSearchParams();
   const urlTab = searchParams.get('tab') || initialTab;
   const [activeTab, setActiveTab] = useState(urlTab);
+  const [periodMode, setPeriodMode] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
 
-  // Filter states - Default to today
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    const today = new Date();
-    return { from: today, to: today };
-  });
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isPeriodSelectorOpen, setIsPeriodSelectorOpen] = useState(false);
-
-  // Get color for category - moved to top to fix hoisting issue
-  const getCategoryColor = (category: string): string => {
-    const colors = {
-      'Salaries': '#3B82F6',
-      'Equipment': '#10B981',
-      'Utilities': '#F59E0B',
-      'Medicines': '#EF4444',
-      'Maintenance': '#8B5CF6',
-      'Supplies': '#06B6D4',
-      'Other': '#6B7280'
-    };
-    return colors[category as keyof typeof colors] || '#6B7280';
-  };
+  // Expense filters and period controls removed per request
 
   // Update active tab when URL changes
   useEffect(() => {
     setActiveTab(urlTab);
   }, [urlTab]);
-
-  // Fetch expenses data
-  const { data: expenses = [] } = useQuery({
-    queryKey: ['expenses'],
-    queryFn: supabaseExpensesService.getAllExpenses,
-  });
 
   // Fetch additional data for comprehensive analytics
   const { data: patients = [] } = useQuery({
@@ -97,224 +45,216 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
     queryFn: supabaseVisitsService.getAllVisits,
   });
 
-  // Calculate analytics data with filtering
+  // Calculate analytics data (expenses removed) with period filtering
   const analyticsData = useMemo(() => {
-    let filteredExpenses = expenses;
+    // Helper functions for date filtering
+    const getDateRange = () => {
+      const now = new Date();
+      const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+      const endOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
 
-    // Apply date range filter
-    if (dateRange?.from && dateRange?.to) {
-      filteredExpenses = expenses.filter(exp => {
-        const expenseDate = new Date(exp.expense_date);
-        return expenseDate >= dateRange.from! && expenseDate <= dateRange.to!;
-      });
-    }
-
-    // Apply category filter
-    if (selectedCategory !== "all") {
-      filteredExpenses = filteredExpenses.filter(exp => exp.category === selectedCategory);
-    }
-
-    // Apply search filter
-    if (searchTerm.trim()) {
-      filteredExpenses = filteredExpenses.filter(exp => 
-        exp.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        exp.category?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    
-    // Filter current month expenses for comparison
-    const thisMonthExpenses = expenses.filter(exp => {
-      const expenseDate = new Date(exp.expense_date);
-      return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
-    });
-
-    // Group filtered expenses by category
-    const expensesByCategory: Record<string, number> = {};
-    filteredExpenses.forEach(exp => {
-      expensesByCategory[exp.category] = (expensesByCategory[exp.category] || 0) + (exp.amount || 0);
-    });
-
-    // Find highest single expense from filtered data
-    const highestExpense = filteredExpenses.reduce((max, exp) => 
-      (exp.amount || 0) > (max.amount || 0) ? exp : max, 
-      { amount: 0, description: '', category: '', expense_date: '' }
-    );
-
-    // Prepare pie chart data for top expense categories
-    const pieChartData = Object.entries(expensesByCategory)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 6)
-      .map(([category, amount]) => ({
-        name: category,
-        value: amount,
-        color: getCategoryColor(category)
-      }));
-
-    // Prepare monthly trend data (last 6 months) - using filtered data if date range is set
-    const monthlyTrendData = [];
-    for (let i = 5; i >= 0; i--) {
-      const month = new Date(currentYear, currentMonth - i, 1);
-      let monthExpenses;
-      
-      if (dateRange?.from && dateRange?.to) {
-        // If date range is set, only show data within that range
-        monthExpenses = filteredExpenses.filter(exp => {
-          const expenseDate = new Date(exp.expense_date);
-          return expenseDate.getMonth() === month.getMonth() && expenseDate.getFullYear() === month.getFullYear();
-        });
-      } else {
-        // If no date range, show all data for the month
-        monthExpenses = expenses.filter(exp => {
-          const expenseDate = new Date(exp.expense_date);
-          return expenseDate.getMonth() === month.getMonth() && expenseDate.getFullYear() === month.getFullYear();
-        });
+      if (periodMode === 'daily') {
+        // Last 7 days
+        const start = startOfDay(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000));
+        const end = endOfDay(now);
+        return { start, end };
       }
       
-      const monthTotal = monthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+      if (periodMode === 'weekly') {
+        // Current week (Monday to Sunday)
+        const day = now.getDay();
+        const mondayOffset = (day + 6) % 7;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - mondayOffset);
+        const start = startOfDay(monday);
+        const end = endOfDay(new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000));
+        return { start, end };
+      }
       
-      monthlyTrendData.push({
-        month: month.toLocaleDateString('en-US', { month: 'short' }),
-        expenses: monthTotal
-      });
-    }
+      if (periodMode === 'yearly') {
+        // Last 5 years
+        const start = new Date(now.getFullYear() - 4, 0, 1);
+        const end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        return { start, end };
+      }
+      
+      // Monthly - Last 6 months
+      const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+      return { start, end };
+    };
 
-    // Calculate patient analytics with date filtering
-    let filteredPatients = patients;
-    if (dateRange?.from && dateRange?.to) {
-      filteredPatients = patients.filter(p => {
-        const patientDate = new Date(p.created_at);
-        return patientDate >= dateRange.from! && patientDate <= dateRange.to!;
-      });
-    }
+    const { start: dateStart, end: dateEnd } = getDateRange();
 
-    // Calculate visit analytics with date filtering
-    let filteredVisits = visits;
-    if (dateRange?.from && dateRange?.to) {
-      filteredVisits = visits.filter(v => {
+    // Filter data based on selected period
+    const filteredPatients = patients.filter(p => {
+      const createdAt = new Date(p.created_at);
+      return createdAt >= dateStart && createdAt <= dateEnd;
+    });
+
+    const filteredVisits = visits.filter(v => {
         const visitDate = new Date(v.visit_date);
-        return visitDate >= dateRange.from! && visitDate <= dateRange.to!;
+      return visitDate >= dateStart && visitDate <= dateEnd;
       });
-    }
 
-    // Patient analytics
     const patientAnalytics = {
       totalPatients: filteredPatients.length,
       totalRevenue: filteredPatients.reduce((sum, p) => 
         sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
       ),
-      avgRevenuePerPatient: filteredPatients.length > 0 ? 
-        filteredPatients.reduce((sum, p) => 
+      avgRevenuePerPatient: filteredPatients.length > 0
+        ? filteredPatients.reduce((sum, p) =>
           sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
-        ) / filteredPatients.length : 0,
-      
-      // Fee category breakdown
+          ) / filteredPatients.length
+        : 0,
       feeBreakdown: {
         opd: filteredPatients.reduce((sum, p) => sum + (p.opd_fee || 0), 0),
         lab: filteredPatients.reduce((sum, p) => sum + (p.lab_fee || 0), 0),
         ultrasound: filteredPatients.reduce((sum, p) => sum + (p.ultrasound_fee || 0), 0),
         ecg: filteredPatients.reduce((sum, p) => sum + (p.ecg_fee || 0), 0),
-        ot: filteredPatients.reduce((sum, p) => sum + (p.ot_fee || 0), 0)
+        ot: filteredPatients.reduce((sum, p) => sum + (p.ot_fee || 0), 0),
       },
-
-      // Doctor-wise patient distribution
       doctorDistribution: doctors.reduce((acc, doctor) => {
-        const doctorPatients = filteredPatients.filter(p => p.doctor_name === doctor.name);
+        const doctorPatients = filteredPatients.filter((p) => p.doctor_name === doctor.name);
         const doctorRevenue = doctorPatients.reduce((sum, p) => 
           sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
         );
         acc[doctor.name] = {
           patients: doctorPatients.length,
           revenue: doctorRevenue,
-          avgRevenue: doctorPatients.length > 0 ? doctorRevenue / doctorPatients.length : 0
+          avgRevenue: doctorPatients.length > 0 ? doctorRevenue / doctorPatients.length : 0,
         };
         return acc;
-      }, {} as Record<string, { patients: number; revenue: number; avgRevenue: number }>)
+      }, {} as Record<string, { patients: number; revenue: number; avgRevenue: number }>),
     };
 
-    // Doctor analytics
     const doctorAnalytics = {
       totalDoctors: doctors.length,
-      activeDoctors: doctors.filter(d => d.is_active).length,
-      totalVisits: filteredVisits.length,
-      
-      // Doctor performance data
-      doctorPerformance: doctors.map(doctor => {
-        const doctorVisits = filteredVisits.filter(v => v.doctor_id === doctor.id);
-        const doctorRevenue = doctorVisits.reduce((sum, v) => 
-          sum + (v.opd_fee || 0) + (v.lab_fee || 0) + (v.ultrasound_fee || 0) + (v.ecg_fee || 0) + (v.ot_fee || 0), 0
-        );
-        return {
-          name: doctor.name,
-          visits: doctorVisits.length,
-          revenue: doctorRevenue,
-          avgRevenue: doctorVisits.length > 0 ? doctorRevenue / doctorVisits.length : 0,
-          patients: filteredPatients.filter(p => p.doctor_name === doctor.name).length
-        };
-      }).sort((a, b) => b.revenue - a.revenue),
-
-      // Specialization distribution
+      activeDoctors: doctors.filter((d) => d.is_active).length,
+      totalVisits: filteredPatients.length,  // Use patients since visits are 0
+      doctorPerformance: doctors
+        .map((doctor) => {
+          const doctorPatients = filteredPatients.filter((p) => p.doctor_name === doctor.name);
+          const doctorRevenue = doctorPatients.reduce((sum, p) => 
+            sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
+          );
+          return {
+            name: doctor.name,
+            patients: doctorPatients.length,
+            revenue: doctorRevenue,
+            avgRevenue: doctorPatients.length > 0 ? doctorRevenue / doctorPatients.length : 0,
+          };
+        })
+        .sort((a, b) => b.revenue - a.revenue),
       specializationData: doctors.reduce((acc, doctor) => {
         const spec = doctor.specialization || 'General';
         acc[spec] = (acc[spec] || 0) + 1;
         return acc;
-      }, {} as Record<string, number>)
+      }, {} as Record<string, number>),
     };
 
-    // Monthly trends for all data types
-    const monthlyTrends = Array.from({ length: 6 }, (_, i) => {
-      const month = new Date();
-      month.setMonth(month.getMonth() - i);
+    // Dynamic trends based on period mode
+    const getTrendBuckets = () => {
+      const now = new Date();
+      const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+      const endOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
+      if (periodMode === 'daily') {
+        return Array.from({ length: 7 }, (_, i) => {
+          const day = new Date(now);
+          day.setDate(now.getDate() - (6 - i));
+          return {
+            label: day.toLocaleDateString('en-US', { weekday: 'short' }),
+            start: startOfDay(day),
+            end: endOfDay(day),
+          };
+        });
+      }
       
-      const monthExpenses = filteredExpenses.filter(exp => {
-        const expenseDate = new Date(exp.expense_date);
-        return expenseDate.getMonth() === month.getMonth() && expenseDate.getFullYear() === month.getFullYear();
-      });
+      if (periodMode === 'weekly') {
+        return Array.from({ length: 8 }, (_, i) => {
+          const weekStart = new Date(now);
+          const daysToMonday = (now.getDay() + 6) % 7;
+          weekStart.setDate(now.getDate() - daysToMonday - (7 * (7 - i)));
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+          
+          return {
+            label: `W${8 - i}`,
+            start: startOfDay(weekStart),
+            end: endOfDay(weekEnd),
+          };
+        });
+      }
       
-      const monthPatients = filteredPatients.filter(p => {
-        const patientDate = new Date(p.created_at);
-        return patientDate.getMonth() === month.getMonth() && patientDate.getFullYear() === month.getFullYear();
-      });
+      if (periodMode === 'yearly') {
+        return Array.from({ length: 5 }, (_, i) => {
+          const year = now.getFullYear() - (4 - i);
+          return {
+            label: String(year),
+            start: new Date(year, 0, 1),
+            end: new Date(year, 11, 31, 23, 59, 59, 999),
+          };
+        });
+      }
       
-      const monthVisits = filteredVisits.filter(v => {
-        const visitDate = new Date(v.visit_date);
-        return visitDate.getMonth() === month.getMonth() && visitDate.getFullYear() === month.getFullYear();
-      });
-      
+      // monthly (default)
+      return Array.from({ length: 6 }, (_, i) => {
+        const month = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
       return {
-        month: month.toLocaleDateString('en-US', { month: 'short' }),
-        expenses: monthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0),
-        patients: monthPatients.length,
-        visits: monthVisits.length,
-        revenue: monthPatients.reduce((sum, p) => 
-          sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
-        )
-      };
-    }).reverse();
+          label: month.toLocaleDateString('en-US', { month: 'short' }),
+          start: new Date(month.getFullYear(), month.getMonth(), 1),
+          end: new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59, 999),
+        };
+      });
+    };
+
+    const trendBuckets = getTrendBuckets();
+
+    const periodTrends = trendBuckets.map(bucket => {
+      const bucketPatients = filteredPatients.filter((p) => {
+        const d = new Date(p.created_at);
+        return d >= bucket.start && d <= bucket.end;
+      });
+
+      const bucketVisits = filteredVisits.filter((v) => {
+        const d = new Date(v.visit_date);
+        return d >= bucket.start && d <= bucket.end;
+      });
 
     return {
-      filteredExpenses,
-      thisMonthExpenses,
-      expensesByCategory,
-      highestExpense,
-      totalSpent: filteredExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0),
-      pieChartData,
-      monthlyTrendData,
-      totalFilteredTransactions: filteredExpenses.length,
-      patientAnalytics,
-      doctorAnalytics,
-      monthlyTrends
-    };
-  }, [expenses, patients, doctors, visits, dateRange, selectedCategory, searchTerm]);
+        period: bucket.label,
+        patients: bucketPatients.length,
+        visits: bucketVisits.length,
+        revenue: bucketPatients.reduce((sum, p) => 
+          sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
+        ),
+      };
+    });
 
-  // Get unique categories for filter dropdown
-  const uniqueCategories = useMemo(() => {
-    const categories = [...new Set(expenses.map(exp => exp.category))];
-    return categories.sort();
-  }, [expenses]);
+    const periodCategoryTrends = trendBuckets.map(bucket => {
+      const bucketPatients = filteredPatients.filter((p) => {
+        const pd = new Date(p.created_at);
+        return pd >= bucket.start && pd <= bucket.end;
+      });
+
+      const totals = bucketPatients.reduce(
+        (acc, p) => {
+          acc.OPD += p.opd_fee || 0;
+          acc.LAB += p.lab_fee || 0;
+          acc.ULTRASOUND += p.ultrasound_fee || 0;
+          acc.ECG += p.ecg_fee || 0;
+          acc.OT += p.ot_fee || 0;
+          return acc;
+        },
+        { OPD: 0, LAB: 0, ULTRASOUND: 0, ECG: 0, OT: 0 }
+      );
+
+      return { period: bucket.label, ...totals };
+    });
+
+    return { patientAnalytics, doctorAnalytics, periodTrends, periodCategoryTrends };
+  }, [patients, doctors, visits, periodMode]);
 
   // Chart colors
   const chartColors = {
@@ -325,25 +265,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
     quinary: '#8B5CF6',
     senary: '#06B6D4'
   };
-
-  // Reset all filters
-  const resetFilters = () => {
-    const today = new Date();
-    setDateRange({ from: today, to: today });
-    setSelectedCategory("all");
-    setSearchTerm("");
-  };
-
   const stats = [
-    {
-      title: 'Total Expenses',
-      value: formatCurrency(analyticsData.totalSpent),
-      change: `${analyticsData.totalFilteredTransactions} transactions`,
-      icon: BarChart3,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      trend: 'up'
-    },
     {
       title: 'Total Patients',
       value: analyticsData.patientAnalytics.totalPatients.toString(),
@@ -351,7 +273,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
       icon: Users,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
-      trend: 'neutral'
     },
     {
       title: 'Total Revenue',
@@ -360,7 +281,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
       icon: DollarSign,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
-      trend: 'up'
     },
     {
       title: 'Active Doctors',
@@ -369,156 +289,160 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
       icon: Activity,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
-      trend: 'neutral'
     },
   ];
+
+  // Build timeseries for Overview charts based on selected period
+  const doctorByName = useMemo(() => {
+    const map: Record<string, typeof doctors[number]> = {};
+    doctors.forEach((d) => { map[d.name] = d; });
+    return map;
+  }, [doctors]);
+
+  const overviewSeries = useMemo(() => {
+    // Helpers
+    const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+    const endOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
+    type Bucket = { label: string; start: Date; end: Date };
+    const buckets: Bucket[] = (() => {
+      const now = new Date();
+      if (periodMode === 'daily') {
+        const b: Bucket[] = [];
+        for (let i = 6; i >= 0; i--) {
+          const dayDate = new Date(now);
+          dayDate.setDate(now.getDate() - i);
+          b.push({
+            label: dayDate.toLocaleDateString('en-US', { weekday: 'short' }),
+            start: startOfDay(dayDate),
+            end: endOfDay(dayDate),
+          });
+        }
+        return b;
+      }
+      if (periodMode === 'weekly') {
+        const day = now.getDay(); // 0..6 (Sun..Sat)
+        const mondayOffset = (day + 6) % 7; // days since Monday
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - mondayOffset);
+        const b: Bucket[] = [];
+        for (let i = 0; i < 7; i++) {
+          const dayDate = new Date(monday);
+          dayDate.setDate(monday.getDate() + i);
+          b.push({
+            label: dayDate.toLocaleDateString('en-US', { weekday: 'short' }),
+            start: startOfDay(dayDate),
+            end: endOfDay(dayDate),
+          });
+        }
+        return b;
+      }
+      if (periodMode === 'yearly') {
+        const b: Bucket[] = [];
+        const currentYear = now.getFullYear();
+        for (let i = 4; i >= 0; i--) {
+          const year = currentYear - i;
+          const start = new Date(year, 0, 1);
+          const end = new Date(year, 11, 31, 23, 59, 59, 999);
+          b.push({ label: String(year), start, end });
+        }
+        return b;
+      }
+      // monthly (last 6 months)
+      const b: Bucket[] = [];
+      for (let i = 5; i >= 0; i--) {
+        const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const start = new Date(m.getFullYear(), m.getMonth(), 1);
+        const end = new Date(m.getFullYear(), m.getMonth() + 1, 0, 23, 59, 59, 999);
+        b.push({ label: m.toLocaleDateString('en-US', { month: 'short' }), start, end });
+      }
+      return b;
+    })();
+
+    // Revenue and Hospital Profit from patients
+    const revenueSeries = buckets.map((bucket) => {
+      let sum = 0;
+      patients.forEach((p) => {
+        const pd = new Date(p.created_at);
+        if (pd >= bucket.start && pd <= bucket.end) {
+          sum += (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0);
+        }
+      });
+      return { label: bucket.label, value: sum };
+    });
+
+    const hospitalSeries = buckets.map((bucket) => {
+      let sum = 0;
+      patients.forEach((p) => {
+        const pd = new Date(p.created_at);
+        if (pd >= bucket.start && pd <= bucket.end) {
+          const d = doctorByName[p.doctor_name];
+          const perc = {
+            OPD: d?.opd_percentage ?? 0,
+            LAB: d?.lab_percentage ?? 0,
+            ULTRASOUND: d?.ultrasound_percentage ?? 0,
+            ECG: d?.ecg_percentage ?? 0,
+            OT: d?.ot_percentage ?? 0,
+          };
+          sum += (p.opd_fee || 0) * (100 - perc.OPD) / 100
+              + (p.lab_fee || 0) * (100 - perc.LAB) / 100
+              + (p.ultrasound_fee || 0) * (100 - perc.ULTRASOUND) / 100
+              + (p.ecg_fee || 0) * (100 - perc.ECG) / 100
+              + (p.ot_fee || 0) * (100 - perc.OT) / 100;
+        }
+      });
+      return { label: bucket.label, value: sum };
+    });
+
+    const patientsSeries = buckets.map((bucket) => {
+      const count = patients.reduce((acc, p) => {
+        const pd = new Date(p.created_at);
+        return acc + (pd >= bucket.start && pd <= bucket.end ? 1 : 0);
+      }, 0);
+      return { label: bucket.label, value: count };
+    });
+
+    return { revenueSeries, hospitalSeries, patientsSeries };
+  }, [periodMode, patients, doctorByName]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {/* Back Button */}
-            <Link to="/professional">
-              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Back to Dashboard</span>
-              </Button>
-            </Link>
-            
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
-              <p className="text-gray-600 mt-2">Financial analytics and insights</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button variant="outline">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Export Analytics
-            </Button>
-            <Button>
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Generate Report
-            </Button>
-          </div>
-        </div>
+            <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+            <p className="text-gray-600 mt-2">Overview of revenue, profit and patient volume</p>
       </div>
 
-      {/* Enhanced Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Filters & Search
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2">Period</Label>
+          {/* Global Period Selector */}
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-700">Time Period:</span>
+            <div className="inline-flex rounded-md border border-gray-200 bg-white p-1">
+              {(['daily','weekly','monthly','yearly'] as const).map((opt) => (
               <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal h-12 border-2 border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 group shadow-sm hover:shadow-lg"
-                onClick={() => setIsPeriodSelectorOpen(true)}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="p-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg group-hover:from-blue-200 group-hover:to-indigo-200 transition-all duration-300">
-                    <Calendar className="h-4 w-4 text-blue-600 group-hover:text-blue-700 transition-colors" />
-                  </div>
-                  <span className="flex-1 text-left text-gray-700 group-hover:text-gray-900 font-medium">
-                    {dateRange?.from && dateRange?.to 
-                      ? `${dateRange.from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })} - ${dateRange.to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}`
-                      : 'Select date range'
-                    }
-                  </span>
-                  <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-sm"></div>
-                  </div>
-                </div>
+                  key={opt}
+                  variant={periodMode === opt ? 'default' : 'ghost'}
+                  size="sm"
+                  className={periodMode === opt ? 'bg-blue-600 text-white' : 'text-gray-700'}
+                  onClick={() => setPeriodMode(opt)}
+                >
+                  {opt.charAt(0).toUpperCase() + opt.slice(1)}
               </Button>
+              ))}
             </div>
-            <div>
-              <Label htmlFor="category" className="text-sm font-medium text-gray-700 mb-2">Category</Label>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="h-12 border-2 border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-lg">
-                  <SelectValue placeholder="Select Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {uniqueCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
-            <div>
-              <Label htmlFor="search" className="text-sm font-medium text-gray-700 mb-2">Search</Label>
-              <Input
-                id="search"
-                placeholder="Search expenses..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-12 border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-lg"
-              />
-            </div>
-            <div className="flex items-end">
-              <Button 
-                onClick={resetFilters}
-                variant="outline"
-                className="w-full h-12 border-2 border-gray-200 hover:border-red-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 transition-all duration-300 shadow-sm hover:shadow-lg text-gray-700 hover:text-red-700 font-medium"
-              >
-                Reset All
-              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Period Selector Modal */}
-      {isPeriodSelectorOpen && (
-        <PeriodSelector
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-          onClose={() => setIsPeriodSelectorOpen(false)}
-          isOpen={isPeriodSelectorOpen}
-        />
-      )}
+      {/* Filters removed per request */}
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="flex items-center space-x-1">
-                {stat.trend === 'up' && <ArrowUpRight className="h-3 w-3 text-green-600" />}
-                {stat.trend === 'down' && <ArrowDownRight className="h-3 w-3 text-red-600" />}
-                <p className="text-xs text-gray-600 font-medium">{stat.change}</p>
-              </div>
-              {dateRange?.from && dateRange?.to && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {dateRange.from.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })} - {dateRange.to.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            {/* Stats cards removed per request */}
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
           <TabsTrigger value="patients">Patients</TabsTrigger>
           <TabsTrigger value="doctors">Doctors</TabsTrigger>
           <TabsTrigger value="trends">Trends</TabsTrigger>
@@ -526,244 +450,108 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Top Expense Categories Pie Chart */}
+          {/* Charts - Extended Layout */}
+          <div className="space-y-8">
+            {/* Revenue Chart - Full Width */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold flex items-center">
-                  <PieChart className="h-5 w-5 mr-2" />
-                  Top Expense Categories
-                  {Object.keys(analyticsData.expensesByCategory).length > 0 && (
-                    <Badge variant="secondary" className="ml-2">
-                      {Object.keys(analyticsData.expensesByCategory).length} categories
-                    </Badge>
+                <CardTitle className="text-xl font-semibold flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
+                  Revenue Trend
+                  {overviewSeries.revenueSeries.every(item => item.value === 0) && (
+                    <span className="ml-2 text-sm text-gray-500 font-normal">(No visit data)</span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {analyticsData.pieChartData.length > 0 ? (
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Pie
-                          data={analyticsData.pieChartData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {analyticsData.pieChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                        <Legend />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
+                <div className="h-96">
+                  {overviewSeries.revenueSeries.every(item => item.value === 0) ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      <div className="text-center">
+                        <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg font-medium">No Revenue Data</p>
+                        <p className="text-sm">Revenue will appear when visits are recorded</p>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-center h-32 text-gray-500">
-                    No expense data available for selected filters
                   </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Monthly Trend Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Monthly Expense Trend
-                  {dateRange?.from && dateRange?.to && (
-                    <Badge variant="outline" className="ml-2">
-                      Filtered
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {analyticsData.monthlyTrendData.length > 0 ? (
-                  <div className="h-80">
+                  ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={analyticsData.monthlyTrendData}>
+                      <BarChart data={overviewSeries.revenueSeries} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                        <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="expenses" 
-                          stroke="#3B82F6" 
-                          strokeWidth={2}
-                          name="Monthly Expenses"
-                        />
-                      </LineChart>
+                        <XAxis dataKey="label" fontSize={12} />
+                        <YAxis fontSize={12} />
+                        <Tooltip formatter={(value) => [`Rs. ${value}`, 'Revenue']} />
+                        <Bar dataKey="value" fill="#3B82F6" name="Revenue" radius={[4, 4, 0, 0]} />
+                      </BarChart>
                     </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center h-32 text-gray-500">
-                    No trend data available for selected filters
-                  </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Key Metrics Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Highest Single Expense */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-orange-600" />
-                  Highest Single Expense
-                  {dateRange?.from && dateRange?.to && (
-                    <Badge variant="outline" className="ml-2">
-                      Filtered
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {analyticsData.highestExpense.amount > 0 ? (
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-orange-600 mb-2">
-                      {formatCurrency(analyticsData.highestExpense.amount)}
-                    </div>
-                    <p className="text-sm text-gray-600 mb-1">
-                      {analyticsData.highestExpense.description}
-                    </p>
-                    <Badge variant="outline" className="mt-2">
-                      {analyticsData.highestExpense.category}
-                    </Badge>
-                  </div>
-                ) : (
-                  <div className="text-center text-gray-500">
-                    No expenses found for selected filters
-                  </div>
-                )}
+                </div>
               </CardContent>
             </Card>
 
-            {/* Expense Summary */}
+            {/* Hospital Profit Chart - Full Width */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold flex items-center">
+                <CardTitle className="text-xl font-semibold flex items-center">
                   <DollarSign className="h-5 w-5 mr-2 text-green-600" />
-                  Expense Summary
-                  {dateRange?.from && dateRange?.to && (
-                    <Badge variant="outline" className="ml-2">
-                      Filtered
-                    </Badge>
+                  Hospital Profit
+                  {overviewSeries.hospitalSeries.every(item => item.value === 0) && (
+                    <span className="ml-2 text-sm text-gray-500 font-normal">(No visit data)</span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-2">
-                    {formatCurrency(analyticsData.totalSpent)}
+                <div className="h-96">
+                  {overviewSeries.hospitalSeries.every(item => item.value === 0) ? (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="text-center">
+                        <DollarSign className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg font-medium">No Profit Data</p>
+                        <p className="text-sm">Hospital profit will appear when visits are recorded</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Total {dateRange?.from && dateRange?.to ? 'for Period' : 'This Month'}
-                  </p>
-                  <div className="text-sm text-gray-600">
-                    {analyticsData.totalFilteredTransactions} transactions
-                  </div>
+                ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={overviewSeries.hospitalSeries} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="label" fontSize={12} />
+                        <YAxis fontSize={12} />
+                        <Tooltip formatter={(value) => [`Rs. ${value}`, 'Hospital Profit']} />
+                        <Bar dataKey="value" fill="#10B981" name="Hospital Profit" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Patient Volume Chart - Full Width */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold flex items-center">
+                  <Users className="h-5 w-5 mr-2 text-orange-600" />
+                  Patient Volume
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={overviewSeries.patientsSeries} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="label" fontSize={12} />
+                      <YAxis fontSize={12} />
+                      <Tooltip formatter={(value) => [`${value}`, 'Patients']} />
+                      <Bar dataKey="value" fill="#F59E0B" name="Patients" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          {/* Key Metrics Row removed per request */}
         </TabsContent>
 
-        {/* Expense Analysis Tab */}
-        <TabsContent value="expenses" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center">
-                Detailed Expense Analysis
-                {dateRange?.from && dateRange?.to && (
-                  <Badge variant="outline" className="ml-2">
-                    Filtered Period
-                  </Badge>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Category Breakdown */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Expenses by Category</h3>
-                  {Object.keys(analyticsData.expensesByCategory).length > 0 ? (
-                    <div className="space-y-3">
-                      {Object.entries(analyticsData.expensesByCategory).map(([category, amount]) => {
-                        const percentage = (amount / analyticsData.totalSpent) * 100;
-                        return (
-                          <div key={category} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center space-x-3">
-                              <div 
-                                className="w-4 h-4 rounded-full"
-                                style={{ backgroundColor: getCategoryColor(category) }}
-                              ></div>
-                              <span className="font-medium">{category}</span>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-semibold">{formatCurrency(amount)}</div>
-                              <div className="text-sm text-gray-600">{percentage.toFixed(1)}%</div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      No expenses found for selected filters
-                    </div>
-                  )}
-                </div>
-
-                {/* Top 5 Expenses */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Top 5 Expenses</h3>
-                  {analyticsData.filteredExpenses.length > 0 ? (
-                    <div className="space-y-3">
-                      {analyticsData.filteredExpenses
-                        .sort((a, b) => (b.amount || 0) - (a.amount || 0))
-                        .slice(0, 5)
-                        .map((expense, index) => (
-                          <div key={expense.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
-                                {index + 1}
-                              </div>
-                              <div>
-                                <div className="font-medium">{expense.description}</div>
-                                <div className="text-sm text-gray-600">{expense.category}</div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-semibold">{formatCurrency(expense.amount)}</div>
-                              <div className="text-sm text-gray-600">
-                                {new Date(expense.expense_date).toLocaleDateString()}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      No expenses found for selected filters
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {/* Expense tab removed per request */}
 
         {/* Patients Tab */}
         <TabsContent value="patients" className="space-y-6">
@@ -810,32 +598,44 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Pie
-                        data={[
-                          { name: 'OPD', value: analyticsData.patientAnalytics.feeBreakdown.opd, color: chartColors.primary },
-                          { name: 'Lab', value: analyticsData.patientAnalytics.feeBreakdown.lab, color: chartColors.secondary },
-                          { name: 'Ultrasound', value: analyticsData.patientAnalytics.feeBreakdown.ultrasound, color: chartColors.tertiary },
-                          { name: 'ECG', value: analyticsData.patientAnalytics.feeBreakdown.ecg, color: chartColors.quaternary },
-                          { name: 'OT', value: analyticsData.patientAnalytics.feeBreakdown.ot, color: chartColors.quinary }
-                        ]}
+                        data={Object.entries(analyticsData.patientAnalytics.feeBreakdown)
+                          .filter(([_, value]) => value > 0)
+                          .map(([name, value]) => ({
+                            name: name.toUpperCase(),
+                            value,
+                            color: {
+                              opd: chartColors.primary,
+                              lab: chartColors.secondary,
+                              ultrasound: chartColors.tertiary,
+                              ecg: chartColors.quaternary,
+                              ot: chartColors.quinary
+                            }[name.toLowerCase()]
+                          }))}
                         cx="50%"
                         cy="50%"
-                        labelLine={false}
+                        labelLine={true}
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
+                        outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {[
-                          { name: 'OPD', value: analyticsData.patientAnalytics.feeBreakdown.opd, color: chartColors.primary },
-                          { name: 'Lab', value: analyticsData.patientAnalytics.feeBreakdown.lab, color: chartColors.secondary },
-                          { name: 'Ultrasound', value: analyticsData.patientAnalytics.feeBreakdown.ultrasound, color: chartColors.tertiary },
-                          { name: 'ECG', value: analyticsData.patientAnalytics.feeBreakdown.ecg, color: chartColors.quaternary },
-                          { name: 'OT', value: analyticsData.patientAnalytics.feeBreakdown.ot, color: chartColors.quinary }
-                        ].map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        {Object.entries(analyticsData.patientAnalytics.feeBreakdown)
+                          .filter(([_, value]) => value > 0)
+                          .map(([name, _], index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={{
+                                opd: chartColors.primary,
+                                lab: chartColors.secondary,
+                                ultrasound: chartColors.tertiary,
+                                ecg: chartColors.quaternary,
+                                ot: chartColors.quinary
+                              }[name.toLowerCase()]} 
+                            />
                         ))}
                       </Pie>
                       <Tooltip formatter={(value) => [`Rs. ${value}`, 'Amount']} />
+                      <Legend />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
@@ -886,17 +686,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
               </CardHeader>
               <CardContent>
                 <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analyticsData.doctorAnalytics.doctorPerformance.slice(0, 8)}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip formatter={(value) => [`Rs. ${value}`, 'Revenue']} />
-                      <Legend />
-                      <Bar dataKey="revenue" fill={chartColors.primary} name="Revenue" />
-                      <Bar dataKey="visits" fill={chartColors.secondary} name="Visits" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <TopPerformingDoctorsChart data={analyticsData.doctorAnalytics.doctorPerformance.slice(0, 8)} />
                 </div>
               </CardContent>
             </Card>
@@ -969,20 +759,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
         {/* Trends Tab */}
         <TabsContent value="trends" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Monthly Patient Trends */}
+            {/* Patient Trends */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg font-semibold flex items-center">
                   <TrendingUp className="h-5 w-5 mr-2" />
-                  Monthly Patient Trends
+                  {periodMode.charAt(0).toUpperCase() + periodMode.slice(1)} Patient Trends
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analyticsData.monthlyTrends}>
+                    <BarChart data={analyticsData.periodTrends}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="period" />
                       <YAxis />
                       <Tooltip />
                       <Legend />
@@ -993,20 +783,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
               </CardContent>
             </Card>
 
-            {/* Monthly Revenue Trends */}
+            {/* Revenue Trends */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg font-semibold flex items-center">
                   <DollarSign className="h-5 w-5 mr-2" />
-                  Monthly Revenue Trends
+                  {periodMode.charAt(0).toUpperCase() + periodMode.slice(1)} Revenue Trends
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analyticsData.monthlyTrends}>
+                    <BarChart data={analyticsData.periodTrends}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="period" />
                       <YAxis />
                       <Tooltip formatter={(value) => [`Rs. ${value}`, 'Revenue']} />
                       <Legend />
@@ -1018,26 +808,105 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
             </Card>
           </div>
 
+          {/* Revenue by Category (Stacked Columns) */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold flex items-center">
+                <BarChart3 className="h-5 w-5 mr-2" />
+                {periodMode.charAt(0).toUpperCase() + periodMode.slice(1)} Revenue by Category
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-96">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={analyticsData.periodCategoryTrends} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey="period" 
+                      fontSize={12}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      interval={0}
+                    />
+                    <YAxis 
+                      fontSize={12}
+                      tickFormatter={(value) => `Rs. ${value.toLocaleString()}`}
+                    />
+                    <Tooltip 
+                      formatter={(value, name) => [`Rs. ${value.toLocaleString()}`, name]}
+                      labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ paddingTop: '20px' }}
+                      iconType="circle"
+                    />
+                    <Bar 
+                      dataKey="OPD" 
+                      stackId="revenue" 
+                      fill={chartColors.primary} 
+                      name="OPD"
+                      radius={[0, 0, 0, 0]}
+                    />
+                    <Bar 
+                      dataKey="LAB" 
+                      stackId="revenue" 
+                      fill={chartColors.secondary} 
+                      name="LAB"
+                      radius={[0, 0, 0, 0]}
+                    />
+                    <Bar 
+                      dataKey="ULTRASOUND" 
+                      stackId="revenue" 
+                      fill={chartColors.tertiary} 
+                      name="Ultrasound"
+                      radius={[0, 0, 0, 0]}
+                    />
+                    <Bar 
+                      dataKey="ECG" 
+                      stackId="revenue" 
+                      fill={chartColors.quaternary} 
+                      name="ECG"
+                      radius={[0, 0, 0, 0]}
+                    />
+                    <Bar 
+                      dataKey="OT" 
+                      stackId="revenue" 
+                      fill={chartColors.quinary} 
+                      name="OT"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Combined Trends Chart */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center">
                 <BarChart3 className="h-5 w-5 mr-2" />
-                Combined Trends Analysis
+                Combined {periodMode.charAt(0).toUpperCase() + periodMode.slice(1)} Trends Analysis
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={analyticsData.monthlyTrends}>
+                  <BarChart data={analyticsData.periodTrends}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
+                    <XAxis dataKey="period" />
                     <YAxis />
                     <Tooltip formatter={(value) => [`${value}`, 'Count/Amount']} />
                     <Legend />
                     <Bar dataKey="patients" fill={chartColors.primary} name="Patients" />
                     <Bar dataKey="visits" fill={chartColors.tertiary} name="Visits" />
-                    <Bar dataKey="expenses" fill={chartColors.quaternary} name="Expenses" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
