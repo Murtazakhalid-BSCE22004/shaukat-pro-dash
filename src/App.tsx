@@ -18,8 +18,13 @@ import Patients from "./pages/Patients";
 import Appointments from "./pages/Appointments";
 import RevenueDashboard from "./pages/RevenueDashboard";
 import ExpensesDashboard from "./pages/ExpensesDashboard";
+import AllExpenses from "./pages/AllExpenses";
+import ExpensesReports from "./pages/ExpensesReports";
 import SalariesDashboard from "./pages/SalariesDashboard";
+import AllEmployees from "./pages/AllEmployees";
+import ManageEmployees from "./pages/ManageEmployees";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import ExpenseAnalytics from "./pages/ExpenseAnalytics";
 import GeneralHospitalDashboard from "./pages/GeneralHospitalDashboard";
 import BillingPage from "./pages/Billing";
 
@@ -64,15 +69,17 @@ const App = () => (
               <Route path="/expenses" element={<ExpensesLayout />}>
                 <Route index element={<ExpensesDashboard />} />
                 <Route path="overview" element={<ExpensesDashboard />} />
-                <Route path="analytics" element={<AnalyticsDashboard />} />
+                <Route path="expenses" element={<AllExpenses />} />
+                <Route path="reports" element={<ExpensesReports />} />
+                <Route path="analytics" element={<ExpenseAnalytics />} />
               </Route>
               
               {/* Salaries Dashboard Routes */}
               <Route path="/salaries" element={<ExpensesLayout />}>
                 <Route index element={<SalariesDashboard />} />
                 <Route path="overview" element={<SalariesDashboard />} />
-                <Route path="employees" element={<SalariesDashboard />} />
-                <Route path="advances" element={<SalariesDashboard />} />
+                <Route path="employees" element={<AllEmployees />} />
+                <Route path="manage" element={<ManageEmployees />} />
                 <Route path="reports" element={<SalariesDashboard />} />
               </Route>
               

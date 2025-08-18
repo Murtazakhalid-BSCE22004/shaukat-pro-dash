@@ -142,9 +142,9 @@ const DoctorsPage = () => {
                   resetForm();
                   setShowForm(true);
                 }}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200"
+                className="px-5 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group border-0"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4 mr-2 group-hover:scale-110 group-hover:rotate-90 transition-all duration-200" />
                 Add Doctor
               </Button>
             </div>
@@ -168,7 +168,7 @@ const DoctorsPage = () => {
                 <h3 className="text-base font-medium text-gray-700 border-b border-gray-200 pb-2">
                   Basic Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div className="space-y-2 group">
                     <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                       Name <span className="text-red-500">*</span>
@@ -233,7 +233,7 @@ const DoctorsPage = () => {
                 <h3 className="text-base font-medium text-gray-700 border-b border-gray-200 pb-2">
                   Percentage Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                   <div className="space-y-2 group">
                     <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                       OPD Percentage
@@ -407,7 +407,7 @@ const DoctorsPage = () => {
                 <Button 
                   type="submit" 
                   disabled={saveDoctorMutation.isPending}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                  className="px-5 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-400 disabled:to-gray-500 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group border-0"
                 >
                   {saveDoctorMutation.isPending ? (
                     <div className="flex items-center gap-2">
@@ -458,40 +458,108 @@ const DoctorsPage = () => {
                 <p className="text-sm text-gray-500">Add your first doctor to get started.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50 hover:bg-gray-50">
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Name</TableHead>
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Qualification</TableHead>
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">OPD %</TableHead>
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Lab %</TableHead>
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Ultrasound %</TableHead>
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">ECG %</TableHead>
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">OT %</TableHead>
-                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {doctors.map((doctor: Doctor, index: number) => (
-                      <TableRow 
-                        key={doctor.id}
-                        className={`hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
-                      >
-                        <TableCell className="font-medium text-gray-900 py-3">{doctor.name}</TableCell>
-                        <TableCell className="text-gray-700 py-3">{doctor.qualification || "N/A"}</TableCell>
-                        <TableCell className="text-gray-700 py-3">{doctor.opd_percentage || 0}%</TableCell>
-                        <TableCell className="text-gray-700 py-3">{doctor.lab_percentage || 0}%</TableCell>
-                        <TableCell className="text-gray-700 py-3">{doctor.ultrasound_percentage || 0}%</TableCell>
-                        <TableCell className="text-gray-700 py-3">{doctor.ecg_percentage || 0}%</TableCell>
-                        <TableCell className="text-gray-700 py-3">{doctor.ot_percentage || 0}%</TableCell>
-                        <TableCell className="py-3">
-                          <div className="flex gap-2">
+              <>
+                {/* Desktop Table View - Hidden on mobile */}
+                <div className="hidden lg:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50 hover:bg-gray-50">
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">Name</TableHead>
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">Qualification</TableHead>
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">OPD %</TableHead>
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">Lab %</TableHead>
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">Ultrasound %</TableHead>
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">ECG %</TableHead>
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">OT %</TableHead>
+                        <TableHead className="font-medium text-gray-700 py-3 text-sm">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {doctors.map((doctor: Doctor, index: number) => (
+                        <TableRow 
+                          key={doctor.id}
+                          className={`hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                        >
+                          <TableCell className="font-medium text-gray-900 py-3">{doctor.name}</TableCell>
+                          <TableCell className="text-gray-700 py-3">{doctor.qualification || "N/A"}</TableCell>
+                          <TableCell className="text-gray-700 py-3">{doctor.opd_percentage || 0}%</TableCell>
+                          <TableCell className="text-gray-700 py-3">{doctor.lab_percentage || 0}%</TableCell>
+                          <TableCell className="text-gray-700 py-3">{doctor.ultrasound_percentage || 0}%</TableCell>
+                          <TableCell className="text-gray-700 py-3">{doctor.ecg_percentage || 0}%</TableCell>
+                          <TableCell className="text-gray-700 py-3">{doctor.ot_percentage || 0}%</TableCell>
+                          <TableCell className="py-3">
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => startEdit(doctor)}
+                                className="h-7 px-2.5 text-xs border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => removeDoctor(doctor.id)}
+                                className="h-7 px-2.5 text-xs bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Card View - Visible only on mobile */}
+                <div className="lg:hidden space-y-4">
+                  {doctors.map((doctor: Doctor) => (
+                    <Card key={doctor.id} className="border border-gray-200 hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex flex-col space-y-3">
+                          {/* Doctor Info */}
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-semibold text-gray-900 text-lg">{doctor.name}</h3>
+                              <p className="text-sm text-gray-600">{doctor.qualification || 'No qualification listed'}</p>
+                            </div>
+                          </div>
+
+                          {/* Percentage Grid */}
+                          <div className="grid grid-cols-2 gap-3 mt-4">
+                            <div className="bg-blue-50 p-3 rounded-lg">
+                              <div className="text-xs text-blue-600 font-medium">OPD</div>
+                              <div className="text-lg font-bold text-blue-700">{doctor.opd_percentage || 0}%</div>
+                            </div>
+                            <div className="bg-green-50 p-3 rounded-lg">
+                              <div className="text-xs text-green-600 font-medium">Lab</div>
+                              <div className="text-lg font-bold text-green-700">{doctor.lab_percentage || 0}%</div>
+                            </div>
+                            <div className="bg-purple-50 p-3 rounded-lg">
+                              <div className="text-xs text-purple-600 font-medium">Ultrasound</div>
+                              <div className="text-lg font-bold text-purple-700">{doctor.ultrasound_percentage || 0}%</div>
+                            </div>
+                            <div className="bg-orange-50 p-3 rounded-lg">
+                              <div className="text-xs text-orange-600 font-medium">ECG</div>
+                              <div className="text-lg font-bold text-orange-700">{doctor.ecg_percentage || 0}%</div>
+                            </div>
+                          </div>
+
+                          {/* OT Percentage - Full width */}
+                          <div className="bg-red-50 p-3 rounded-lg">
+                            <div className="text-xs text-red-600 font-medium">Operation Theater (OT)</div>
+                            <div className="text-lg font-bold text-red-700">{doctor.ot_percentage || 0}%</div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 pt-2">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => startEdit(doctor)}
-                              className="h-7 px-2.5 text-xs border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
+                              className="flex-1 h-9 text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
                             >
                               Edit
                             </Button>
@@ -499,17 +567,17 @@ const DoctorsPage = () => {
                               size="sm"
                               variant="destructive"
                               onClick={() => removeDoctor(doctor.id)}
-                              className="h-7 px-2.5 text-xs bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                              className="flex-1 h-9 text-sm bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
                             >
                               Delete
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

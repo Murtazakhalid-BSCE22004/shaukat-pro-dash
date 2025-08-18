@@ -41,7 +41,19 @@ export const supabaseEmployeesService = {
   async createEmployee(employee: Omit<Employee, 'id' | 'created_at' | 'updated_at'>): Promise<Employee> {
     const { data, error } = await supabase
       .from('employees')
-      .insert(employee)
+      .insert({
+        name: employee.name,
+        age: employee.age,
+        cnic: employee.cnic,
+        contact_number: employee.contact_number,
+        address: employee.address,
+        position: employee.position,
+        department: employee.department,
+        salary: employee.salary,
+        hire_date: employee.hire_date,
+        is_active: employee.is_active,
+        email: employee.email || null,
+      })
       .select()
       .single();
     
@@ -67,6 +79,30 @@ export const supabaseEmployeesService = {
     const { error } = await supabase
       .from('employees')
       .update({ is_active: false })
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+
+  // Activate employee (reactivate deactivated employee)
+  async activateEmployee(id: string): Promise<Employee> {
+    const { data, error } = await supabase
+      .from('employees')
+      .update({ is_active: true })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  // Permanent delete employee (hard delete - removes from database entirely)
+  // Note: This will cascade delete related records like salary_payments
+  async permanentDeleteEmployee(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('employees')
+      .delete()
       .eq('id', id);
     
     if (error) throw error;

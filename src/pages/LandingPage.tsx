@@ -40,8 +40,8 @@ const LandingPage: React.FC = () => {
       title: 'Expenses Dashboard',
       description: 'Track and manage daily hospital expenses, operational costs, and financial records',
       icon: DollarSign,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
       features: [
         'Daily hospital expense tracking',
         'Expense categorization and reporting',
@@ -186,7 +186,7 @@ const LandingPage: React.FC = () => {
                     <Link to="/professional" className="block">
                       <Button 
                         variant="default" 
-                        className="w-full bg-blue-600 hover:bg-blue-700 group-hover:shadow-lg transition-all duration-300"
+                        className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 group-hover:shadow-lg transition-all duration-300 border-0"
                       >
                         Access Professional Dashboard
                         <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -244,7 +244,7 @@ const LandingPage: React.FC = () => {
                     <Link to="/general" className="block">
                       <Button 
                         variant="default" 
-                        className="w-full bg-purple-600 hover:bg-purple-700 group-hover:shadow-lg transition-all duration-300"
+                        className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 group-hover:shadow-lg transition-all duration-300 border-0"
                       >
                         Access General Dashboard
                         <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -301,7 +301,7 @@ const LandingPage: React.FC = () => {
                      <Link to="/expenses" className="block">
                        <Button 
                          variant="default" 
-                         className="w-full bg-blue-600 hover:bg-blue-700 group-hover:shadow-md transition-all duration-300"
+                         className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 group-hover:shadow-md transition-all duration-300 border-0"
                        >
                          Access Expenses Dashboard
                          <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -339,7 +339,7 @@ const LandingPage: React.FC = () => {
                      <Link to="/salaries" className="block">
                        <Button 
                          variant="default" 
-                         className="w-full bg-purple-600 hover:bg-purple-700 group-hover:shadow-md transition-all duration-300"
+                         className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 group-hover:shadow-md transition-all duration-300 border-0"
                        >
                          Access Salaries Dashboard
                          <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />

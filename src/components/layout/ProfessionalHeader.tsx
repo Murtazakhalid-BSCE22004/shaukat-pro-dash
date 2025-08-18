@@ -51,14 +51,14 @@ export const ProfessionalHeader: React.FC<ProfessionalHeaderProps> = ({ onMenuCl
     <header className="bg-white border-b border-gray-200 px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          
+
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
+            <SheetContent side="left" className="w-72 sm:w-80 p-0">
               <div className="flex flex-col h-full py-4">
                 <div className="px-4 mb-6">
                   <div className="flex items-center space-x-3">
@@ -155,7 +155,7 @@ export const ProfessionalHeader: React.FC<ProfessionalHeaderProps> = ({ onMenuCl
                   >
                     Revenue
                   </NavLink>
-                </nav>
+              </nav>
               </div>
             </SheetContent>
           </Sheet>
@@ -164,23 +164,23 @@ export const ProfessionalHeader: React.FC<ProfessionalHeaderProps> = ({ onMenuCl
             <img
               src="/lovable-uploads/2b0f0307-afe5-44d4-8238-339c747daa1f.png"
               alt="Shaukat International Hospital logo"
-              className="h-8 w-auto"
+              className="h-6 sm:h-8 w-auto"
             />
             <div className="flex flex-col leading-tight">
-              <h1 className="text-xl font-bold text-gray-900">Shaukat International Hospital</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">Shaukat International Hospital</h1>
               <span className="text-xs text-[hsl(var(--brand))] font-medium">Healthcare Management System</span>
             </div>
           </div>
         </div>
 
         {/* Dashboard Navigation Dropdown */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3">
                 <Stethoscope className="h-4 w-4 text-blue-600" />
-                <span className="hidden sm:inline">Switch Dashboard</span>
-                <ChevronDown className="h-4 w-4" />
+                <span className="hidden sm:inline text-sm">Switch Dashboard</span>
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64">

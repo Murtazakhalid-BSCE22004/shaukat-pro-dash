@@ -89,7 +89,7 @@ const BillingPage = () => {
                     For now, you can use the Revenue Dashboard for financial overview
                   </p>
                   <Link to="/professional/revenue">
-                    <Button className="bg-blue-600 hover:bg-blue-700">
+                    <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out">
                       Go to Revenue Dashboard
                     </Button>
                   </Link>

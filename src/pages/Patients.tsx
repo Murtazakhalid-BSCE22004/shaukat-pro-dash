@@ -334,9 +334,9 @@ const Patients: React.FC = () => {
           <div className="flex gap-3">
             <Button 
               onClick={() => { resetForm(); setShowAddForm(true); }}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200"
+              className="px-5 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group border-0"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2 group-hover:scale-110 group-hover:rotate-90 transition-all duration-200" />
               Add Patient
             </Button>
           </div>
@@ -351,7 +351,7 @@ const Patients: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             <div className="space-y-2 group">
               <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Search</Label>
               <div className="relative">
@@ -428,7 +428,7 @@ const Patients: React.FC = () => {
                 <h3 className="text-base font-medium text-gray-700 border-b border-gray-200 pb-2">
                   Basic Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div className="space-y-2 group">
                     <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                       Patient Name <span className="text-red-500">*</span>
@@ -504,7 +504,7 @@ const Patients: React.FC = () => {
                 <h3 className="text-base font-medium text-gray-700 border-b border-gray-200 pb-2">
                   Fee Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                   <div className="space-y-2 group">
                     <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">
                       OPD Fee <span className="text-red-500">*</span>
@@ -674,7 +674,7 @@ const Patients: React.FC = () => {
                 <Button 
                   type="submit" 
                   disabled={savePatientMutation.isPending}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                  className="px-5 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-400 disabled:to-gray-500 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group border-0"
                 >
                   {savePatientMutation.isPending ? (
                     <div className="flex items-center gap-2">
@@ -725,81 +725,182 @@ const Patients: React.FC = () => {
               <p className="text-sm text-gray-500">Add your first patient to get started.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50 hover:bg-gray-50">
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">Patient Name</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">Contact</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">Doctor</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">OPD Fee</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">Lab Fee</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">Ultrasound</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">ECG</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">OT</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">Total</TableHead>
-                    <TableHead className="font-medium text-gray-700 py-3 text-sm">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPatients.map((patient, index) => (
-                    <TableRow 
-                      key={patient.id} 
-                      className={`hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
-                    >
-                      <TableCell className="font-medium text-gray-900 py-3">{patient.patient_name}</TableCell>
-                      <TableCell className="text-gray-700 py-3">{patient.contact_number}</TableCell>
-                      <TableCell className="text-gray-700 py-3">{patient.doctor_name}</TableCell>
-                      <TableCell className="text-gray-700 py-3">Rs. {patient.opd_fee}</TableCell>
-                      <TableCell className="text-gray-700 py-3">Rs. {patient.lab_fee}</TableCell>
-                      <TableCell className="text-gray-700 py-3">Rs. {patient.ultrasound_fee}</TableCell>
-                      <TableCell className="text-gray-700 py-3">Rs. {patient.ecg_fee}</TableCell>
-                      <TableCell className="text-gray-700 py-3">Rs. {patient.ot_fee || 0}</TableCell>
-                      <TableCell className="text-gray-900 py-3 font-medium">
-                        Rs. {(patient.opd_fee || 0) + (patient.lab_fee || 0) + (patient.ultrasound_fee || 0) + (patient.ecg_fee || 0) + (patient.ot_fee || 0)}
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setEditingId(patient.id);
-                              setNewPatient({
-                                patient_name: patient.patient_name,
-                                contact_number: patient.contact_number,
-                                doctor_name: patient.doctor_name,
-                                opd_fee: patient.opd_fee ? patient.opd_fee.toString() : '',
-                                lab_fee: patient.lab_fee ? patient.lab_fee.toString() : '',
-                                ultrasound_fee: patient.ultrasound_fee ? patient.ultrasound_fee.toString() : '',
-                                ecg_fee: patient.ecg_fee ? patient.ecg_fee.toString() : '',
-                                ot_fee: patient.ot_fee ? patient.ot_fee.toString() : ''
-                              });
-                              setShowAddForm(true);
-                            }}
-                            className="h-7 px-2.5 text-xs border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => {
-                              if (confirm('Are you sure you want to delete this patient?')) {
-                                deletePatient(patient.id);
-                              }
-                            }}
-                            className="h-7 px-2.5 text-xs bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
+            <>
+              {/* Desktop Table View - Hidden on mobile */}
+              <div className="hidden lg:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 hover:bg-gray-50">
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Patient Name</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Contact</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Doctor</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">OPD Fee</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Lab Fee</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Ultrasound</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">ECG</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">OT</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Total</TableHead>
+                      <TableHead className="font-medium text-gray-700 py-3 text-sm">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredPatients.map((patient, index) => (
+                      <TableRow 
+                        key={patient.id} 
+                        className={`hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                      >
+                        <TableCell className="font-medium text-gray-900 py-3">{patient.patient_name}</TableCell>
+                        <TableCell className="text-gray-700 py-3">{patient.contact_number}</TableCell>
+                        <TableCell className="text-gray-700 py-3">{patient.doctor_name}</TableCell>
+                        <TableCell className="text-gray-700 py-3">Rs. {patient.opd_fee}</TableCell>
+                        <TableCell className="text-gray-700 py-3">Rs. {patient.lab_fee}</TableCell>
+                        <TableCell className="text-gray-700 py-3">Rs. {patient.ultrasound_fee}</TableCell>
+                        <TableCell className="text-gray-700 py-3">Rs. {patient.ecg_fee}</TableCell>
+                        <TableCell className="text-gray-700 py-3">Rs. {patient.ot_fee || 0}</TableCell>
+                        <TableCell className="text-gray-900 py-3 font-medium">
+                          Rs. {(patient.opd_fee || 0) + (patient.lab_fee || 0) + (patient.ultrasound_fee || 0) + (patient.ecg_fee || 0) + (patient.ot_fee || 0)}
+                        </TableCell>
+                        <TableCell className="py-3">
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setEditingId(patient.id);
+                                setNewPatient({
+                                  patient_name: patient.patient_name,
+                                  contact_number: patient.contact_number,
+                                  doctor_name: patient.doctor_name,
+                                  opd_fee: patient.opd_fee ? patient.opd_fee.toString() : '',
+                                  lab_fee: patient.lab_fee ? patient.lab_fee.toString() : '',
+                                  ultrasound_fee: patient.ultrasound_fee ? patient.ultrasound_fee.toString() : '',
+                                  ecg_fee: patient.ecg_fee ? patient.ecg_fee.toString() : '',
+                                  ot_fee: patient.ot_fee ? patient.ot_fee.toString() : ''
+                                });
+                                setShowAddForm(true);
+                              }}
+                              className="h-7 px-2.5 text-xs border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                if (confirm('Are you sure you want to delete this patient?')) {
+                                  deletePatient(patient.id);
+                                }
+                              }}
+                              className="h-7 px-2.5 text-xs bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Card View - Visible only on mobile */}
+              <div className="lg:hidden space-y-4">
+                {filteredPatients.map((patient) => {
+                  const totalFee = (patient.opd_fee || 0) + (patient.lab_fee || 0) + (patient.ultrasound_fee || 0) + (patient.ecg_fee || 0) + (patient.ot_fee || 0);
+                  return (
+                    <Card key={patient.id} className="border border-gray-200 hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex flex-col space-y-3">
+                          {/* Patient Info Header */}
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-900 text-lg">{patient.patient_name}</h3>
+                              <p className="text-sm text-gray-600">{patient.contact_number}</p>
+                              <p className="text-sm text-blue-600 font-medium">{patient.doctor_name || 'No doctor assigned'}</p>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-green-600">Rs. {totalFee}</div>
+                              <div className="text-xs text-gray-500">Total</div>
+                            </div>
+                          </div>
+
+                          {/* Fee Breakdown Grid */}
+                          <div className="grid grid-cols-2 gap-3 mt-4">
+                            {patient.opd_fee && patient.opd_fee > 0 && (
+                              <div className="bg-blue-50 p-3 rounded-lg">
+                                <div className="text-xs text-blue-600 font-medium">OPD Fee</div>
+                                <div className="text-sm font-bold text-blue-700">Rs. {patient.opd_fee}</div>
+                              </div>
+                            )}
+                            {patient.lab_fee && patient.lab_fee > 0 && (
+                              <div className="bg-green-50 p-3 rounded-lg">
+                                <div className="text-xs text-green-600 font-medium">Lab Fee</div>
+                                <div className="text-sm font-bold text-green-700">Rs. {patient.lab_fee}</div>
+                              </div>
+                            )}
+                            {patient.ultrasound_fee && patient.ultrasound_fee > 0 && (
+                              <div className="bg-purple-50 p-3 rounded-lg">
+                                <div className="text-xs text-purple-600 font-medium">Ultrasound</div>
+                                <div className="text-sm font-bold text-purple-700">Rs. {patient.ultrasound_fee}</div>
+                              </div>
+                            )}
+                            {patient.ecg_fee && patient.ecg_fee > 0 && (
+                              <div className="bg-orange-50 p-3 rounded-lg">
+                                <div className="text-xs text-orange-600 font-medium">ECG</div>
+                                <div className="text-sm font-bold text-orange-700">Rs. {patient.ecg_fee}</div>
+                              </div>
+                            )}
+                            {patient.ot_fee && patient.ot_fee > 0 && (
+                              <div className="bg-red-50 p-3 rounded-lg">
+                                <div className="text-xs text-red-600 font-medium">Operation Theater</div>
+                                <div className="text-sm font-bold text-red-700">Rs. {patient.ot_fee}</div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 pt-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setEditingId(patient.id);
+                                setNewPatient({
+                                  patient_name: patient.patient_name,
+                                  contact_number: patient.contact_number,
+                                  doctor_name: patient.doctor_name,
+                                  opd_fee: patient.opd_fee ? patient.opd_fee.toString() : '',
+                                  lab_fee: patient.lab_fee ? patient.lab_fee.toString() : '',
+                                  ultrasound_fee: patient.ultrasound_fee ? patient.ultrasound_fee.toString() : '',
+                                  ecg_fee: patient.ecg_fee ? patient.ecg_fee.toString() : '',
+                                  ot_fee: patient.ot_fee ? patient.ot_fee.toString() : ''
+                                });
+                                setShowAddForm(true);
+                              }}
+                              className="flex-1 h-9 text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                if (confirm('Are you sure you want to delete this patient?')) {
+                                  deletePatient(patient.id);
+                                }
+                              }}
+                              className="flex-1 h-9 text-sm bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

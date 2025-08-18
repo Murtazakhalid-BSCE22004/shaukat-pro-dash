@@ -1,0 +1,330 @@
+/* ========================================
+   PROFESSIONAL PURPLE & ORANGE THEME
+   Hospital Dashboard Color System
+   ======================================== */
+
+:root {
+  /* PRIMARY PURPLE SYSTEM */
+  --primary: #7c3aed;           /* Main purple - professional violet */
+  --primary-dark: #5b21b6;      /* Dark purple for hover states */
+  --primary-light: #a78bfa;     /* Light purple for accents */
+  --primary-bg: #ede9fe;        /* Light purple backgrounds */
+  --primary-bg-light: #f5f3ff;  /* Ultra light purple */
+
+  /* ACCENT ORANGE SYSTEM */
+  --accent: #ea580c;            /* Professional orange - not striking */
+  --accent-warm: #f97316;       /* Warm orange for highlights */
+  --accent-light: #fed7aa;      /* Light orange for backgrounds */
+  --accent-bg-light: #fff7ed;   /* Ultra light orange */
+
+  /* SUCCESS & SEMANTIC COLORS */
+  --success: #059669;           /* Emerald green for success */
+  --warning: #d97706;           /* Amber for warnings */
+  --danger: #dc2626;            /* Red for critical actions */
+  --info: #0284c7;             /* Sky blue for information */
+
+  /* NEUTRAL FOUNDATION */
+  --text-primary: #1f2937;      /* Main text - dark gray */
+  --text-secondary: #6b7280;    /* Secondary text - medium gray */
+  --text-muted: #9ca3af;        /* Muted text - light gray */
+  --border: #e5e7eb;           /* Borders - very light gray */
+  --border-light: #f3f4f6;     /* Light borders */
+  --background: #fafafa;        /* Page background */
+  --card: #ffffff;             /* Card backgrounds */
+  --card-hover: #f9fafb;       /* Card hover states */
+
+  /* GRADIENTS */
+  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  --gradient-accent: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  --gradient-subtle: linear-gradient(135deg, #f5f3ff 0%, #fff7ed 100%);
+
+  /* SHADOWS */
+  --shadow-sm: 0 1px 2px 0 rgb(124 58 237 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(124 58 237 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(124 58 237 / 0.1);
+}
+
+/* COMPONENT SPECIFIC VARIABLES */
+.theme-purple-orange {
+  /* Headers */
+  --header-bg: var(--primary);
+  --header-text: white;
+  --header-border: var(--primary-dark);
+
+  /* Navigation */
+  --nav-bg: var(--primary);
+  --nav-text: white;
+  --nav-hover: var(--primary-dark);
+  --nav-active: var(--accent);
+
+  /* Buttons */
+  --btn-primary-bg: var(--primary);
+  --btn-primary-hover: var(--primary-dark);
+  --btn-primary-text: white;
+  
+  --btn-accent-bg: var(--accent);
+  --btn-accent-hover: #dc2626;
+  --btn-accent-text: white;
+
+  /* Cards */
+  --card-bg: var(--card);
+  --card-border: var(--border);
+  --card-shadow: var(--shadow-sm);
+  --card-hover-shadow: var(--shadow-md);
+
+  /* Stats & Metrics */
+  --stats-primary: var(--primary);
+  --stats-accent: var(--accent);
+  --stats-success: var(--success);
+  --stats-info: var(--info);
+}
+
+/* UTILITY CLASSES */
+.bg-primary { background-color: var(--primary) !important; }
+.bg-primary-light { background-color: var(--primary-bg) !important; }
+.bg-accent { background-color: var(--accent) !important; }
+.bg-accent-light { background-color: var(--accent-light) !important; }
+
+.text-primary-theme { color: var(--primary) !important; }
+.text-accent-theme { color: var(--accent) !important; }
+
+.border-primary { border-color: var(--primary) !important; }
+.border-accent { border-color: var(--accent) !important; }
+
+.gradient-primary { background: var(--gradient-primary) !important; }
+.gradient-accent { background: var(--gradient-accent) !important; }
+
+/* CUSTOM PURPLE VARIATIONS FOR ENHANCED ANIMATIONS */
+.hover\:bg-purple-25:hover {
+  background-color: #fefbff !important;
+}
+
+.bg-purple-25 {
+  background-color: #fefbff !important;
+}
+
+/* ADVANCED HOVER EFFECTS */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.2);
+}
+
+/* SELECT DROPDOWN ENHANCEMENTS */
+[data-radix-select-content] {
+  background: linear-gradient(180deg, #ffffff 0%, #fefbff 100%) !important;
+  border: 1px solid rgb(196 181 253) !important; /* purple-300 */
+  box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25), 0 0 0 1px rgba(124, 58, 237, 0.05) !important;
+  z-index: 999 !important;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+[data-radix-select-item] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+[data-radix-select-item]:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.1), transparent);
+  transition: left 0.5s ease-in-out;
+}
+
+[data-radix-select-item]:hover:before {
+  left: 100%;
+}
+
+[data-radix-select-item]:hover {
+  transform: translateX(4px) !important;
+  background: linear-gradient(90deg, rgb(245 243 255), rgb(237 233 254)) !important;
+  color: rgb(124 58 237) !important;
+  border-left: 3px solid rgb(124 58 237) !important;
+  padding-left: 13px !important;
+}
+
+[data-radix-select-item][data-state="checked"] {
+  background: linear-gradient(90deg, rgb(237 233 254), rgb(221 214 254)) !important;
+  color: rgb(124 58 237) !important;
+  font-weight: 600 !important;
+  border-left: 3px solid rgb(124 58 237) !important;
+  padding-left: 13px !important;
+  position: relative !important;
+}
+
+[data-radix-select-item][data-state="checked"]:after {
+  content: '✓';
+  position: absolute;
+  right: 12px;
+  color: rgb(124 58 237);
+  font-weight: bold;
+  animation: checkmarkPulse 0.3s ease-out;
+}
+
+/* Select Trigger Enhancements */
+[data-radix-select-trigger] {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+[data-radix-select-trigger]:hover {
+  box-shadow: 0 8px 25px -8px rgba(124, 58, 237, 0.3) !important;
+}
+
+[data-radix-select-trigger]:focus {
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1) !important;
+}
+
+/* Enhanced Animations */
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes checkmarkPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Icon animations within dropdown items */
+[data-radix-select-item] svg {
+  transition: all 0.2s ease-in-out !important;
+}
+
+[data-radix-select-item]:hover svg {
+  transform: scale(1.1) !important;
+  filter: drop-shadow(0 2px 4px rgba(124, 58, 237, 0.2)) !important;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+}
+
+.interactive-element {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.interactive-element:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+.interactive-element:active {
+  transform: scale(0.98);
+  transition: all 0.1s ease-in-out;
+}
+
+/* HOVER EFFECTS */
+.hover-primary:hover { 
+  background-color: var(--primary) !important; 
+  color: white !important;
+}
+
+.hover-accent:hover { 
+  background-color: var(--accent) !important; 
+  color: white !important;
+}
+
+/* PROFESSIONAL TRANSITIONS */
+.theme-transition {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-shadow-hover:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+/* FORM INPUT STYLING - REMOVE BLACK BORDERS */
+input, textarea, select, [data-radix-select-trigger] {
+  border: 1px solid #e5e7eb !important; /* gray-200 */
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input:focus, textarea:focus, select:focus, [data-radix-select-trigger]:focus {
+  border-color: #f97316 !important; /* orange-500 */
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1) !important;
+  outline: none !important;
+}
+
+input:hover, textarea:hover, select:hover, [data-radix-select-trigger]:hover {
+  border-color: #fb923c !important; /* orange-400 */
+}
+
+/* Remove any default browser styling */
+input[type="text"], input[type="email"], input[type="number"], input[type="tel"], input[type="date"], textarea {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Dialog form specific styling */
+[data-radix-dialog-content] input,
+[data-radix-dialog-content] textarea,
+[data-radix-dialog-content] [data-radix-select-trigger] {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  background: white !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+[data-radix-dialog-content] input:focus,
+[data-radix-dialog-content] textarea:focus,
+[data-radix-dialog-content] [data-radix-select-trigger]:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1) !important;
+  outline: none !important;
+}
+
+[data-radix-dialog-content] input:hover,
+[data-radix-dialog-content] textarea:hover,
+[data-radix-dialog-content] [data-radix-select-trigger]:hover {
+  border-color: #fb923c !important;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+  :root {
+    --shadow-md: 0 2px 4px -1px rgb(124 58 237 / 0.1);
+    --shadow-lg: 0 4px 6px -1px rgb(124 58 237 / 0.1);
+  }
+}

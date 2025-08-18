@@ -67,16 +67,38 @@ export interface SupabaseVisit {
 export interface Employee {
   id: string;
   name: string;
+  age: number;
+  cnic: string;
+  contact_number: string;
+  address: string;
   position: string;
   department: string;
   salary: number;
   hire_date: string;
   is_active: boolean;
-  contact_number: string;
   email: string;
   created_at: string;
   updated_at: string;
 }
+
+// Hospital position categories
+export type HospitalPositions = 
+  | 'laboratory technician'
+  | 'laboratory engineer'
+  | 'pharmacy attendant'
+  | 'steward'
+  | 'accountant'
+  | 'receptionist'
+  | 'ward'
+  | 'OT'
+  | 'doctor attendant'
+  | 'xray'
+  | 'internee'
+  | 'general'
+  | 'manager'
+  | 'nurse'
+  | 'electrician'
+  | 'LHV';
 
 export interface Expense {
   id: string;

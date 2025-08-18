@@ -137,13 +137,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
           const doctorPatients = filteredPatients.filter((p) => p.doctor_name === doctor.name);
           const doctorRevenue = doctorPatients.reduce((sum, p) => 
             sum + (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0), 0
-          );
-          return {
-            name: doctor.name,
+        );
+        return {
+          name: doctor.name,
             patients: doctorPatients.length,
-            revenue: doctorRevenue,
+          revenue: doctorRevenue,
             avgRevenue: doctorPatients.length > 0 ? doctorRevenue / doctorPatients.length : 0,
-          };
+        };
         })
         .sort((a, b) => b.revenue - a.revenue),
       specializationData: doctors.reduce((acc, doctor) => {
@@ -406,25 +406,25 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
   }, [periodMode, patients, doctorByName]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-            <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-            <p className="text-gray-600 mt-2">Overview of revenue, profit and patient volume</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Analytics</h1>
+            <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Overview of revenue, profit and patient volume</p>
       </div>
 
           {/* Global Period Selector */}
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
             <span className="text-sm font-medium text-gray-700">Time Period:</span>
-            <div className="inline-flex rounded-md border border-gray-200 bg-white p-1">
+            <div className="inline-flex rounded-md border border-gray-200 bg-white p-1 w-full sm:w-auto overflow-x-auto">
               {(['daily','weekly','monthly','yearly'] as const).map((opt) => (
               <Button
                   key={opt}
                   variant={periodMode === opt ? 'default' : 'ghost'}
                   size="sm"
-                  className={periodMode === opt ? 'bg-blue-600 text-white' : 'text-gray-700'}
+                  className={`text-xs sm:text-sm whitespace-nowrap ${periodMode === opt ? 'bg-blue-600 text-white' : 'text-gray-700'}`}
                   onClick={() => setPeriodMode(opt)}
                 >
                   {opt.charAt(0).toUpperCase() + opt.slice(1)}
@@ -440,31 +440,33 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
             {/* Stats cards removed per request */}
 
       {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="patients">Patients</TabsTrigger>
-          <TabsTrigger value="doctors">Doctors</TabsTrigger>
-          <TabsTrigger value="trends">Trends</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <div className="overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-4 min-w-max sm:min-w-0">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm whitespace-nowrap">Overview</TabsTrigger>
+            <TabsTrigger value="patients" className="text-xs sm:text-sm whitespace-nowrap">Patients</TabsTrigger>
+            <TabsTrigger value="doctors" className="text-xs sm:text-sm whitespace-nowrap">Doctors</TabsTrigger>
+            <TabsTrigger value="trends" className="text-xs sm:text-sm whitespace-nowrap">Trends</TabsTrigger>
         </TabsList>
+        </div>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
           {/* Charts - Extended Layout */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Revenue Chart - Full Width */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
-                  Revenue Trend
+              <CardHeader className="pb-3 sm:pb-6">
+                <CardTitle className="text-lg sm:text-xl font-semibold flex items-center">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-600" />
+                  <span className="truncate">Revenue Trend</span>
                   {overviewSeries.revenueSeries.every(item => item.value === 0) && (
-                    <span className="ml-2 text-sm text-gray-500 font-normal">(No visit data)</span>
+                    <span className="ml-2 text-xs sm:text-sm text-gray-500 font-normal">(No visit data)</span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-96">
+                <div className="h-64 sm:h-56 sm:h-72 lg:h-80 lg:h-96">
                   {overviewSeries.revenueSeries.every(item => item.value === 0) ? (
                     <div className="flex items-center justify-center h-full text-gray-500">
                       <div className="text-center">
@@ -500,7 +502,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-96">
+                <div className="h-64 sm:h-56 sm:h-72 lg:h-80 lg:h-96">
                   {overviewSeries.hospitalSeries.every(item => item.value === 0) ? (
                     <div className="flex items-center justify-center h-full text-gray-500">
                   <div className="text-center">
@@ -533,7 +535,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-96">
+                <div className="h-64 sm:h-56 sm:h-72 lg:h-80 lg:h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={overviewSeries.patientsSeries} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -565,7 +567,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-56 sm:h-72 lg:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={[
                       { name: 'OPD', value: analyticsData.patientAnalytics.feeBreakdown.opd },
@@ -594,7 +596,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-56 sm:h-72 lg:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Pie
@@ -652,7 +654,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-56 sm:h-72 lg:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={Object.entries(analyticsData.patientAnalytics.doctorDistribution).map(([name, data]) => ({
                     name,
@@ -685,7 +687,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-56 sm:h-72 lg:h-80">
                   <TopPerformingDoctorsChart data={analyticsData.doctorAnalytics.doctorPerformance.slice(0, 8)} />
                 </div>
               </CardContent>
@@ -700,7 +702,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-56 sm:h-72 lg:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsPieChart>
                       <Pie
@@ -738,7 +740,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-56 sm:h-72 lg:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={analyticsData.doctorAnalytics.doctorPerformance.map(doctor => ({
                     name: doctor.name,
@@ -768,7 +770,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-56 sm:h-72 lg:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.periodTrends}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -792,7 +794,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-56 sm:h-72 lg:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData.periodTrends}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -817,7 +819,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-96">
+              <div className="h-64 sm:h-56 sm:h-72 lg:h-80 lg:h-96">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={analyticsData.periodCategoryTrends} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -897,7 +899,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ initialTab = 'o
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-56 sm:h-72 lg:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={analyticsData.periodTrends}>
                     <CartesianGrid strokeDasharray="3 3" />
