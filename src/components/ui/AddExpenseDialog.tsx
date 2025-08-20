@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Calendar, DollarSign, FileText, CheckCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabaseExpensesService } from '@/services/supabaseExpensesService';
 import { Expense } from '@/types';
 import { toast } from '@/hooks/use-toast';
+import '../../styles/modal-overlay.css';
 
 interface AddExpenseDialogProps {
   open: boolean;
@@ -41,6 +42,24 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
     received_by: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle modal overlay behavior
+  useEffect(() => {
+    const body = document.body;
+    if (open) {
+      body.setAttribute('data-modal-open', 'true');
+      body.style.overflow = 'hidden';
+    } else {
+      body.removeAttribute('data-modal-open');
+      body.style.overflow = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      body.removeAttribute('data-modal-open');
+      body.style.overflow = '';
+    };
+  }, [open]);
 
   const createExpenseMutation = useMutation({
     mutationFn: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) =>
@@ -112,8 +131,11 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
+      <DialogContent 
+        className="max-w-4xl max-h-[95vh] overflow-y-auto border-0 shadow-2xl bg-white rounded-xl"
+        data-modal-open={open ? "true" : "false"}
+      >
         <DialogHeader className="border-b pb-4">
           <DialogTitle className="flex items-center space-x-2 text-xl font-semibold">
             <div className="p-2 bg-green-100 rounded-lg">

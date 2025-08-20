@@ -47,15 +47,13 @@ const expenseCategories = [
 ];
 
 const expenseStatuses = [
-  'approved',
-  'pending', 
-  'rejected'
+  'approved'
 ];
 
 const ExpensesReports: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
+
   const [isPeriodSelectorOpen, setIsPeriodSelectorOpen] = useState(false);
 
   // Fetch expenses data
@@ -97,13 +95,10 @@ const ExpensesReports: React.FC = () => {
       filtered = filtered.filter(expense => expense.category === selectedCategory);
     }
 
-    // Filter by status
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(expense => expense.status === selectedStatus);
-    }
+
 
     return filtered;
-  }, [allExpenses, dateRange, selectedCategory, selectedStatus]);
+  }, [allExpenses, dateRange, selectedCategory]);
 
   // Calculate totals
   const totalExpenses = useMemo(() => {
@@ -154,10 +149,10 @@ const ExpensesReports: React.FC = () => {
   const clearFilters = () => {
     setDateRange(undefined);
     setSelectedCategory('all');
-    setSelectedStatus('all');
+
   };
 
-  const hasActiveFilters = selectedCategory !== 'all' || selectedStatus !== 'all' || (dateRange?.from && dateRange?.to);
+  const hasActiveFilters = selectedCategory !== 'all' || (dateRange?.from && dateRange?.to);
 
   const getPeriodDisplayText = () => {
     if (!dateRange?.from || !dateRange?.to) return 'Select date range';
@@ -236,16 +231,7 @@ const ExpensesReports: React.FC = () => {
   }, [dateRange]);
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Approved</Badge>;
-      case 'pending':
-        return <Badge variant="secondary" className="bg-amber-100 text-amber-800">Pending</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">Rejected</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
+    return <Badge variant="default" className="bg-green-100 text-green-800">Approved</Badge>;
   };
 
   // Export functions
@@ -358,21 +344,7 @@ const ExpensesReports: React.FC = () => {
               </Select>
             </div>
 
-            {/* Status Filter */}
-            <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2">Status</Label>
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-green-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 bg-white shadow-sm hover:shadow-md">
-                  <SelectValue placeholder="All Statuses" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60 z-50 shadow-lg border border-gray-200">
-                  <SelectItem value="all" className="hover:bg-green-50 focus:bg-green-50 cursor-pointer py-3">All Statuses</SelectItem>
-                  <SelectItem value="approved" className="hover:bg-green-50 focus:bg-green-50 cursor-pointer py-3">Approved</SelectItem>
-                  <SelectItem value="pending" className="hover:bg-amber-50 focus:bg-amber-50 cursor-pointer py-3">Pending</SelectItem>
-                  <SelectItem value="rejected" className="hover:bg-red-50 focus:bg-red-50 cursor-pointer py-3">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
 
             {/* Clear Filters */}
             <div>
@@ -399,11 +371,7 @@ const ExpensesReports: React.FC = () => {
                     Category: {selectedCategory}
                   </Badge>
                 )}
-                {selectedStatus !== "all" && (
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
-                    Status: {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}
-                  </Badge>
-                )}
+
               </div>
             </div>
           )}
@@ -427,7 +395,7 @@ const ExpensesReports: React.FC = () => {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">Category</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">Description</th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">Amount (PKR)</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">Status</th>
+
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">Paid By</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Received By</th>
                   </tr>
@@ -447,9 +415,7 @@ const ExpensesReports: React.FC = () => {
                       <td className="px-4 py-3 text-sm font-medium text-green-600 text-right border-r border-gray-200">
                         {formatCurrency(expense.amount)}
                       </td>
-                      <td className="px-4 py-3 text-center border-r border-gray-200">
-                        {getStatusBadge(expense.status)}
-                      </td>
+
                       <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-200">
                         {expense.paid_by || '-'}
                       </td>

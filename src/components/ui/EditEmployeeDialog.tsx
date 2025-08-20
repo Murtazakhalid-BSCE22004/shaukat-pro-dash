@@ -17,10 +17,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Edit } from 'lucide-react';
+import { User } from 'lucide-react';
 import { supabaseEmployeesService } from '@/services/supabaseEmployeesService';
 import { Employee, HospitalPositions } from '@/types';
 import { toast } from 'sonner';
+
+// Custom styles for blurred backdrop
+const dialogStyles = {
+  overlay: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
+  },
+  content: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backdropFilter: 'blur(4px)',
+    WebkitBackdropFilter: 'blur(4px)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+  }
+};
 
 interface EditEmployeeDialogProps {
   open: boolean;
@@ -171,12 +187,12 @@ const EditEmployeeDialog: React.FC<EditEmployeeDialogProps> = ({ open, onOpenCha
   if (!employee) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-orange-700">
             <div className="p-2 bg-orange-100 rounded-lg">
-              <Edit className="h-5 w-5 text-orange-600" />
+              <User className="h-5 w-5 text-orange-600" />
             </div>
             Edit Employee
           </DialogTitle>

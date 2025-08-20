@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { 
   DollarSign, 
   TrendingUp, 
@@ -10,6 +11,7 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
+import '../styles/themes/professional-theme.css';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/currency';
@@ -20,6 +22,7 @@ import EditExpenseDialog from '@/components/ui/EditExpenseDialog';
 import DeleteExpenseDialog from '@/components/ui/DeleteExpenseDialog';
 
 const ExpensesDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
   const [editExpenseDialogOpen, setEditExpenseDialogOpen] = useState(false);
   const [deleteExpenseDialogOpen, setDeleteExpenseDialogOpen] = useState(false);
@@ -64,34 +67,30 @@ const ExpensesDashboard: React.FC = () => {
     {
       title: 'Total Expenses',
       value: formatCurrency(totalExpenses),
-      change: '+12.3%',
+      change: 'All time hospital expenses',
       icon: DollarSign,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      variant: 'revenue',
     },
     {
       title: "Today's Expenses",
       value: formatCurrency(totalTodayExpenses),
-      change: '+8.1%',
+      change: 'Expenses for today',
       icon: Calendar,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      variant: 'margin',
     },
     {
       title: 'This Month',
       value: formatCurrency(totalThisMonthExpenses),
-      change: '+15.7%',
+      change: 'Current month total',
       icon: TrendingUp,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      variant: 'orders',
     },
     {
       title: 'Average Daily',
       value: formatCurrency(totalThisMonthExpenses / Math.max(1, new Date().getDate())),
-      change: '+2.4%',
+      change: 'Daily average this month',
       icon: BarChart3,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      variant: 'customers',
     },
   ];
 
@@ -106,42 +105,54 @@ const ExpensesDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-green-700">Welcome to Shaukat International Hospital</h1>
-        <p className="text-gray-600 mt-2 text-sm sm:text-base">Expenses Management System</p>
+    <div className="theme-professional-exact min-h-screen p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Welcome Header */}
+        <div className="welcome-header animate-fade-in-up">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+              <DollarSign className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h1>Welcome to Expenses Dashboard</h1>
+              <p>Shaukat International Hospital - Financial Management</p>
+            </div>
+          </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">{stat.title}</CardTitle>
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {stats.map((stat, index) => (
+            <div 
+              key={stat.title} 
+              className={`stat-card ${stat.variant} animate-fade-in-up`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="icon">
+                <stat.icon className="h-6 w-6 text-white" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-green-600 font-medium">{stat.change} from last month</p>
-            </CardContent>
-          </Card>
+              <h3>{stat.title}</h3>
+              <div className="value">{stat.value}</div>
+              <div className="change">{stat.change}</div>
+            </div>
         ))}
       </div>
 
-      {/* Overview Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            {/* Recent Expenses */}
-            <Card>
-              <CardHeader>
-            <CardTitle className="text-base sm:text-lg font-semibold">Recent Expenses</CardTitle>
-              </CardHeader>
-              <CardContent>
-            <div className="space-y-3 sm:space-y-4">
-              {expenses.slice(0, 4).map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Expenses - Left Side */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="chart-container">
+              <div className="chart-header">
+                <h3 className="chart-title">Recent Expenses</h3>
+                <div>
+                  <span className="text-sm text-gray-500">Latest expense records</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                {expenses.slice(0, 5).map((expense, index) => (
+                  <div key={expense.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-200">
                       <div className="flex items-center space-x-3">
                         <div className="p-2 bg-blue-100 rounded-lg">
                           <FileText className="h-4 w-4 text-blue-600" />
@@ -178,58 +189,96 @@ const ExpensesDashboard: React.FC = () => {
                     </div>
                   ))}
                   {expenses.length === 0 && (
-                <p className="text-gray-500 text-center py-4 text-sm">No expenses recorded yet</p>
+                  <div className="text-center text-gray-500 py-8">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                    <p>No expenses recorded yet</p>
+                  </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
-
-        {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-            <CardTitle className="text-base sm:text-lg font-semibold">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-            <div className="space-y-3 sm:space-y-4">
-              <Button 
-                onClick={() => setAddExpenseDialogOpen(true)}
-                className="w-full justify-start text-left h-auto py-3 bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-3 text-white" />
-                <div className="flex flex-col items-start">
-                  <span className="font-medium">Add Expense</span>
-                  <span className="text-xs opacity-80">Record a new expense</span>
-                </div>
-                  </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start text-left h-auto py-3 hover:bg-green-50 hover:border-green-300"
-              >
-                <Calendar className="h-4 w-4 mr-3 text-green-600" />
-                <div className="flex flex-col items-start">
-                  <span className="font-medium">Monthly Report</span>
-                  <span className="text-xs opacity-80">Generate expense summary</span>
-                </div>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            </div>
           </div>
 
-      {/* Add Expense Dialog */}
+          {/* Right Sidebar */}
+          <div className="space-y-6">
+        {/* Quick Actions */}
+            <div className="info-card">
+              <h4>Quick Actions</h4>
+              <div className="space-y-3">
+                <button 
+                onClick={() => setAddExpenseDialogOpen(true)}
+                  className="btn-primary w-full text-left"
+                >
+                  <Plus className="h-4 w-4 inline mr-2" />
+                  Add New Expense
+                </button>
+                <button 
+                  onClick={() => navigate('/expenses/reports')}
+                  className="btn-accent w-full text-left"
+                >
+                  <Calendar className="h-4 w-4 inline mr-2" />
+                  Monthly Report
+                </button>
+                <button 
+                  onClick={() => navigate('/expenses/analytics')}
+                  className="btn-primary w-full text-left"
+                >
+                  <BarChart3 className="h-4 w-4 inline mr-2" />
+                  View Analytics
+                </button>
+              </div>
+            </div>
+
+            {/* Expense Statistics */}
+            <div className="info-card">
+              <h4>Expense Statistics</h4>
+              <div className="metric">
+                <span className="metric-label">Total Expenses</span>
+                <span className="metric-value text-yellow">{formatCurrency(totalExpenses)}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Today's Expenses</span>
+                <span className="metric-value text-red">{formatCurrency(totalTodayExpenses)}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">This Month</span>
+                <span className="metric-value text-blue">{formatCurrency(totalThisMonthExpenses)}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Total Records</span>
+                <span className="metric-value text-green">{expenses.length}</span>
+              </div>
+            </div>
+
+            {/* Expense Management */}
+            <div className="survey-section">
+              <h4 className="survey-title">Expense Management</h4>
+              <div className="survey-content">
+                <p>Track and manage all hospital expenses including operational costs, equipment purchases, and administrative expenses.</p>
+                <br />
+                <p>Monitor spending patterns and generate comprehensive financial reports for better budget management.</p>
+                </div>
+              <div className="mt-4">
+                <button className="btn-primary w-full">
+                  Generate Report
+                </button>
+                </div>
+                </div>
+          </div>
+        </div>
+          </div>
+
+      {/* Dialog Components */}
       <AddExpenseDialog 
         open={addExpenseDialogOpen} 
         onOpenChange={setAddExpenseDialogOpen} 
       />
 
-      {/* Edit Expense Dialog */}
       <EditExpenseDialog
         open={editExpenseDialogOpen}
         onOpenChange={setEditExpenseDialogOpen}
         expense={selectedExpense}
       />
 
-      {/* Delete Expense Dialog */}
       <DeleteExpenseDialog
         open={deleteExpenseDialogOpen}
         onOpenChange={setDeleteExpenseDialogOpen}

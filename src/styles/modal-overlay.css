@@ -1,0 +1,125 @@
+/* FULL SCREEN MODAL OVERLAY STYLES */
+
+/* Ensure modal overlay covers everything */
+.modal-overlay-full {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 10000 !important;
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+  animation: modalFadeIn 0.3s ease-out !important;
+}
+
+/* Modal content container */
+.modal-content-full {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 10001 !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  background: white !important;
+  border-radius: 16px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Hide sidebar and header when modal is open */
+body:has([data-modal-open="true"]) .dashboard-sidebar,
+body:has([data-modal-open="true"]) .professional-header,
+body:has([data-modal-open="true"]) .professional-sidebar {
+  opacity: 0.3 !important;
+  pointer-events: none !important;
+  filter: blur(2px) !important;
+}
+
+/* Prevent body scroll when modal is open */
+body:has([data-modal-open="true"]) {
+  overflow: hidden !important;
+}
+
+/* Modal animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+/* Modal closing animations */
+.modal-overlay-full[data-state="closed"] {
+  animation: modalFadeOut 0.2s ease-in !important;
+}
+
+.modal-content-full[data-state="closed"] {
+  animation: modalSlideOut 0.2s ease-in !important;
+}
+
+/* Ensure proper layering */
+.modal-overlay-full,
+.modal-content-full {
+  isolation: isolate;
+}
+
+/* Close button styling */
+.modal-close-button {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 10002 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.modal-close-button:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}

@@ -11,6 +11,7 @@ import { supabaseDoctorsService, type Doctor } from "@/services/supabaseDoctorsS
 
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Users } from "lucide-react";
+import '../styles/themes/modern-professional.css';
 
 const DoctorsPage = () => {
   const queryClient = useQueryClient();
@@ -128,13 +129,13 @@ const DoctorsPage = () => {
         <meta name="description" content="Manage doctors and their details for the hospital system." />
       </Helmet>
 
-      <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="modern-professional-theme p-6">
+        {/* Modern Header */}
+        <div className="modern-page-header">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Doctors Management</h1>
-              <p className="text-gray-600 mt-2">Manage doctor profiles and their details</p>
+              <h1 className="modern-page-title">Doctors Management</h1>
+              <p className="modern-page-subtitle">Manage doctor profiles and their details efficiently</p>
             </div>
             <div className="flex gap-3">
               <Button 
@@ -142,9 +143,9 @@ const DoctorsPage = () => {
                   resetForm();
                   setShowForm(true);
                 }}
-                className="px-5 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group border-0"
+                className="modern-btn-primary flex items-center gap-2"
               >
-                <Plus className="h-4 w-4 mr-2 group-hover:scale-110 group-hover:rotate-90 transition-all duration-200" />
+                <Plus className="h-4 w-4" />
                 Add Doctor
               </Button>
             </div>

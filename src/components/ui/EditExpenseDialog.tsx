@@ -130,8 +130,8 @@ const EditExpenseDialog: React.FC<EditExpenseDialogProps> = ({ open, onOpenChang
   if (!expense) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl">
         <DialogHeader className="border-b pb-4">
           <DialogTitle className="flex items-center space-x-2 text-xl font-semibold">
             <div className="p-2 bg-gradient-to-r from-orange-100 to-green-100 rounded-lg">

@@ -1,206 +1,169 @@
-import React from 'react';
-import { Menu, ArrowLeft, ChevronDown, Stethoscope, DollarSign, UserCog, Building2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Link, NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
+  ChevronDown,
+  Stethoscope,
+  DollarSign,
+  Users,
+  Building2,
+  User
+} from 'lucide-react';
+import HospitalLogo from '@/components/ui/HospitalLogo';
 
-interface ProfessionalHeaderProps {
-  onMenuClick?: () => void;
-}
+const ProfessionalHeader: React.FC = () => {
+  const location = useLocation();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
 const dashboardOptions = [
   { 
-    name: 'Professional Dashboard', 
-    href: '/professional', 
+      id: 'professional',
+      title: 'Professional Dashboard',
+      description: 'Doctors & Patient Management',
     icon: Stethoscope, 
-    color: 'text-blue-600',
-    description: 'Doctors & Patient Management'
+      path: '/professional'
   },
   { 
-    name: 'Expenses Dashboard', 
-    href: '/expenses', 
+      id: 'expenses',
+      title: 'Expenses Dashboard',
+      description: 'Financial Management',
     icon: DollarSign, 
-    color: 'text-green-600',
-    description: 'Financial Management'
-  },
-  { 
-    name: 'Salaries Dashboard', 
-    href: '/salaries', 
-    icon: UserCog, 
-    color: 'text-blue-600',
-    description: 'Employee Salary Management'
-  },
-  { 
-    name: 'General Hospital', 
-    href: '/general', 
+      path: '/expenses'
+    },
+    {
+      id: 'salaries',
+      title: 'Salaries Dashboard',
+      description: 'HR Management',
+      icon: Users,
+      path: '/salaries'
+    },
+    {
+      id: 'general',
+      title: 'General Hospital',
+      description: 'Executive Overview',
     icon: Building2, 
-    color: 'text-purple-600',
-    description: 'Executive Overview'
-  },
-];
+      path: '/general'
+    }
+  ];
 
-export const ProfessionalHeader: React.FC<ProfessionalHeaderProps> = ({ onMenuClick }) => {
+  // Determine current dashboard based on location
+  const getCurrentDashboard = () => {
+    if (location.pathname.startsWith('/professional')) return dashboardOptions[0];
+    if (location.pathname.startsWith('/expenses')) return dashboardOptions[1];
+    if (location.pathname.startsWith('/salaries')) return dashboardOptions[2];
+    if (location.pathname.startsWith('/general')) return dashboardOptions[3];
+    return dashboardOptions[0]; // Default to professional
+  };
+
+  const currentDashboard = getCurrentDashboard();
+
   return (
-    <header className="bg-white border-b border-gray-200 px-4 py-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72 sm:w-80 p-0">
-              <div className="flex flex-col h-full py-4">
-                <div className="px-4 mb-6">
-                  <div className="flex items-center space-x-3">
-                    <img
-                      src="/lovable-uploads/2b0f0307-afe5-44d4-8238-339c747daa1f.png"
-                      alt="Shaukat International Hospital logo"
-                      className="h-8 w-auto"
-                    />
-                    <div className="flex flex-col leading-tight">
-                      <h1 className="text-lg font-bold text-gray-900">Shaukat International Hospital</h1>
-                      <span className="text-xs text-[hsl(var(--brand))] font-medium">Healthcare System</span>
-                    </div>
-                  </div>
-                </div>
-                <nav className="flex flex-col space-y-1 px-2">
-                  <NavLink
-                    to="/professional/dashboard"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Dashboard
-                  </NavLink>
-                  <NavLink
-                    to="/professional/doctors"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Doctors
-                  </NavLink>
-                  <NavLink
-                    to="/professional/patients"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Patients
-                  </NavLink>
-                  <NavLink
-                    to="/professional/appointments"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Appointments
-                  </NavLink>
-                  <NavLink
-                    to="/professional/analytics"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Analytics
-                  </NavLink>
-                  <NavLink
-                    to="/professional/reports"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Reports
-                  </NavLink>
-                  <NavLink
-                    to="/professional/summary"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Today Report
-                  </NavLink>
-                  <NavLink
-                    to="/professional/billing"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Billing
-                  </NavLink>
-                  <NavLink
-                    to="/professional/revenue"
-                    className={({ isActive }) => cn(
-                      "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                      isActive ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                    )}
-                  >
-                    Revenue
-                  </NavLink>
-              </nav>
-              </div>
-            </SheetContent>
-          </Sheet>
-          
-          <div className="hidden lg:flex items-center space-x-3">
-            <img
-              src="/lovable-uploads/2b0f0307-afe5-44d4-8238-339c747daa1f.png"
-              alt="Shaukat International Hospital logo"
-              className="h-6 sm:h-8 w-auto"
-            />
-            <div className="flex flex-col leading-tight">
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900">Shaukat International Hospital</h1>
-              <span className="text-xs text-[hsl(var(--brand))] font-medium">Healthcare Management System</span>
-            </div>
+    <header className="professional-header">
+      <div className="flex items-center justify-between px-6 py-4 h-full">
+        {/* Hospital Logo and Name */}
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10">
+            <HospitalLogo className="w-full h-full" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Shaukat International Hospital</h1>
+            <p className="text-sm text-purple-600 font-medium">{currentDashboard.description}</p>
           </div>
         </div>
 
-        {/* Dashboard Navigation Dropdown */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3">
-                <Stethoscope className="h-4 w-4 text-blue-600" />
-                <span className="hidden sm:inline text-sm">Switch Dashboard</span>
-                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
-              {dashboardOptions.map((option) => (
-                <DropdownMenuItem key={option.name} asChild>
-                  <Link to={option.href} className="flex items-center gap-3 p-3">
-                    <div className={cn("p-2 rounded-lg", option.color.replace('text-', 'bg-').replace('-600', '-100'))}>
-                      <option.icon className={cn("h-4 w-4", option.color)} />
+        {/* Right Section */}
+        <div className="flex items-center space-x-4">
+          {/* Welcome Message */}
+          <div className="hidden md:block text-right">
+            <p className="text-sm text-gray-600">Welcome,</p>
+            <p className="text-sm font-semibold text-gray-900">Administrator</p>
+          </div>
+
+          {/* Dashboard Switcher Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors text-sm font-medium text-gray-700 border border-gray-200"
+            >
+              <currentDashboard.icon className="w-4 h-4 text-purple-600" />
+              <span>Switch Dashboard</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="p-2">
+                                    {dashboardOptions.map((option) => {
+                    const IconComponent = option.icon;
+                    const isCurrent = option.id === currentDashboard.id;
+                    return (
+                      <Link
+                        key={option.id}
+                        to={option.path}
+                        onClick={() => setDropdownOpen(false)}
+                        className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                          isCurrent 
+                            ? 'bg-purple-50 border-l-4 border-purple-500' 
+                            : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-lg ${
+                          isCurrent ? 'bg-purple-100' : 'bg-gray-100'
+                        }`}>
+                          <IconComponent className={`w-4 h-4 ${
+                            isCurrent ? 'text-purple-600' : 'text-gray-600'
+                          }`} />
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-medium text-gray-900">{option.name}</span>
-                      <span className="text-xs text-gray-500">{option.description}</span>
+                        <div className="flex-1">
+                          <p className={`font-medium text-sm ${
+                            isCurrent ? 'text-purple-900' : 'text-gray-900'
+                          }`}>
+                            {option.title}
+                          </p>
+                          <p className="text-xs text-gray-500">{option.description}</p>
+                  </div>
+                        {isCurrent && (
+                          <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+                <div className="border-t border-gray-100 p-2">
+                  <Link
+                    to="/"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="p-2 rounded-lg bg-gray-100">
+                      <Building2 className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-gray-900">All Dashboards</p>
+                      <p className="text-xs text-gray-500">Return to dashboard selection</p>
                     </div>
                   </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* User Avatar */}
+          <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+            <User className="w-4 h-4 text-white" />
+          </div>
         </div>
       </div>
+
+      {/* Close dropdown when clicking outside */}
+      {dropdownOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setDropdownOpen(false)}
+        />
+      )}
     </header>
   );
 };
+
+export default ProfessionalHeader;

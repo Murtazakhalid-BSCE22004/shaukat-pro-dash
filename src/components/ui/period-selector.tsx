@@ -3,7 +3,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRange } from "react-day-picker";
-import { ChevronLeft, ChevronRight, X, Check, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Check, Calendar as CalendarIcon, Clock, Zap, Sun, BarChart3, Target, FileText } from "lucide-react";
 import { format } from "date-fns";
 
 interface PeriodSelectorProps {
@@ -19,52 +19,12 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   onClose,
   isOpen = false
 }) => {
-  console.log('PeriodSelector: Initial dateRange prop:', dateRange);
   const [localDateRange, setLocalDateRange] = useState<DateRange | undefined>(dateRange);
 
   // Sync local state with prop changes
   useEffect(() => {
-    console.log('PeriodSelector: dateRange prop changed:', dateRange);
     setLocalDateRange(dateRange);
   }, [dateRange]);
-
-  // Log when local state changes
-  useEffect(() => {
-    console.log('PeriodSelector: localDateRange changed:', localDateRange);
-  }, [localDateRange]);
-
-  // Ensure initial state is set correctly
-  useEffect(() => {
-    if (dateRange && !localDateRange) {
-      console.log('PeriodSelector: Setting initial localDateRange from prop');
-      setLocalDateRange(dateRange);
-    }
-  }, [dateRange, localDateRange]);
-
-  // Ensure initial state is set on mount
-  useEffect(() => {
-    if (dateRange) {
-      console.log('PeriodSelector: Setting initial state on mount');
-      setLocalDateRange(dateRange);
-    }
-  }, []);
-
-  // Debug: Log current state
-  console.log('PeriodSelector: Current state:', {
-    dateRange,
-    localDateRange,
-    isToday: localDateRange?.from?.toDateString() === new Date().toDateString() && 
-             localDateRange?.to?.toDateString() === new Date().toDateString(),
-    fromDate: localDateRange?.from?.toDateString(),
-    toDate: localDateRange?.to?.toDateString(),
-    todayDate: new Date().toDateString(),
-    fromLocal: localDateRange?.from?.toLocaleString(),
-    toLocal: localDateRange?.to?.toLocaleString(),
-    todayLocal: new Date().toLocaleString(),
-    fromISO: localDateRange?.from?.toISOString(),
-    toISO: localDateRange?.to?.toISOString(),
-    todayISO: new Date().toISOString()
-  });
 
   const handlePredefinedPeriod = (period: string) => {
     const now = new Date();
@@ -73,38 +33,18 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
 
     switch (period) {
       case "Today":
-        // Create separate Date objects to avoid reference issues
         start = new Date();
-        start.setHours(0, 0, 0, 0); // Set to 00:00:00.000 local time
-        
+        start.setHours(0, 0, 0, 0);
         end = new Date();
-        end.setHours(23, 59, 59, 999); // Set to 23:59:59.999 local time
+        end.setHours(23, 59, 59, 999);
         break;
       case "Yesterday":
-        // Create separate Date objects to avoid reference issues
-        // Get yesterday's date
         const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
-        
         start = new Date(yesterday);
-        start.setHours(0, 0, 0, 0); // Set to 00:00:00.000 local time
-        
+        start.setHours(0, 0, 0, 0);
         end = new Date(yesterday);
-        end.setHours(23, 59, 59, 999); // Set to 23:59:59.999 local time
-        
-        // Debug: Log the exact dates being set
-        console.log('Yesterday period - Setting dates:', {
-          now: now.toDateString(),
-          yesterday: yesterday.toDateString(),
-          startDate: start.toDateString(),
-          endDate: end.toDateString(),
-          startLocal: start.toLocaleString(),
-          endLocal: end.toLocaleString(),
-          startUTC: start.toUTCString(),
-          endUTC: end.toUTCString(),
-          startISO: start.toISOString(),
-          endISO: end.toISOString()
-        });
+        end.setHours(23, 59, 59, 999);
         break;
       case "This week":
         start = new Date(now);
@@ -137,53 +77,6 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
       default:
         return;
     }
-
-    console.log(`Setting ${period} period:`, { start, end, startString: start.toDateString(), endString: end.toDateString() });
-    
-    // Additional debugging for This week
-    if (period === "This week") {
-      console.log('This week calculation details:', {
-        now: now.toDateString(),
-        nowDay: now.getDay(),
-        startDate: start.toDateString(),
-        endDate: end.toDateString(),
-        startISO: start.toISOString(),
-        endISO: end.toISOString()
-      });
-    }
-    
-    // Additional debugging for Today
-    if (period === "Today") {
-      console.log('Today calculation details:', {
-        now: now.toDateString(),
-        startDate: start.toDateString(),
-        startLocal: start.toLocaleString(),
-        endLocal: end.toLocaleString(),
-        startUTC: start.toUTCString(),
-        endUTC: end.toUTCString(),
-        startTime: start.getTime(),
-        endTime: end.getTime(),
-        areSame: start.getTime() === end.getTime()
-      });
-    }
-    
-    // Additional debugging for Yesterday
-    if (period === "Yesterday") {
-      console.log('Yesterday calculation details:', {
-        now: now.toDateString(),
-        startDate: start.toDateString(),
-        endDate: end.toDateString(),
-        startISO: start.toISOString(),
-        endISO: end.toISOString(),
-        startTime: start.getTime(),
-        endTime: end.getTime(),
-        areSame: start.getTime() === end.getTime(),
-        startLocal: start.toLocaleString(),
-        endLocal: end.toLocaleString(),
-        startUTC: start.toUTCString(),
-        endUTC: end.toUTCString()
-      });
-    }
     
     setLocalDateRange({ from: start, to: end });
   };
@@ -213,13 +106,11 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
     
     switch (period) {
       case "Today":
-        // Check if both dates are exactly today (same day)
         const today = new Date();
         const todayString = today.toDateString();
         const fromString = localDateRange.from.toDateString();
         const toString = localDateRange.to.toDateString();
         isActive = fromString === todayString && toString === todayString;
-        console.log('Today button check:', { fromString, toString, todayString, isActive });
         break;
       case "Yesterday":
         const yesterday = new Date(now);
@@ -229,7 +120,6 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                    localDateRange.to.toDateString() === yesterdayString;
         break;
       case "This week":
-        // Check if it's exactly the current week (Sunday to Saturday)
         const weekStart = new Date(now);
         weekStart.setDate(now.getDate() - now.getDay());
         const weekStartString = weekStart.toDateString();
@@ -240,7 +130,6 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                    localDateRange.to.toDateString() === weekEndString;
         break;
       case "Last week":
-        // Check if it's exactly the previous week
         const lastWeekStart = new Date(now);
         lastWeekStart.setDate(now.getDate() - now.getDay() - 7);
         const lastWeekStartString = lastWeekStart.toDateString();
@@ -284,56 +173,71 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
         break;
     }
     
-    console.log(`Button variant for ${period}:`, isActive ? "default" : "outline");
     return isActive ? "default" : "outline";
+  };
+
+  const getPeriodIcon = (period: string) => {
+    switch (period) {
+      case "Today": return <Sun className="h-4 w-4" />;
+      case "Yesterday": return <CalendarIcon className="h-4 w-4" />;
+      case "This week": return <BarChart3 className="h-4 w-4" />;
+      case "Last week": return <BarChart3 className="h-4 w-4" />;
+      case "This month": return <CalendarIcon className="h-4 w-4" />;
+      case "Last month": return <CalendarIcon className="h-4 w-4" />;
+      case "This year": return <Target className="h-4 w-4" />;
+      case "Last Year": return <FileText className="h-4 w-4" />;
+      default: return <CalendarIcon className="h-4 w-4" />;
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-[1000px] max-w-[95vw] max-h-[95vh] overflow-hidden shadow-2xl border-0">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-6 py-4">
+    <div className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-2xl border-0">
+        {/* Header */}
+        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 rounded-t-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <CalendarIcon className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <CalendarIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl font-semibold text-gray-900">Select Date Period</CardTitle>
-                <p className="text-sm text-gray-600 mt-1">Choose your desired date range for analysis</p>
+                <h2 className="text-xl font-semibold">Select Date Period</h2>
+                <p className="text-blue-100 text-sm mt-1">Choose your desired date range for analysis</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-8 w-8 p-0 hover:bg-gray-100"
+              className="h-8 w-8 p-0 hover:bg-white/20 text-white"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
-        </CardHeader>
+        </div>
         
-        <CardContent className="p-6 overflow-y-auto max-h-[calc(95vh-120px)]">
+        {/* Content */}
+        <div className="p-4 lg:p-5">
           {/* Current Selection Display */}
-          <div className="mb-6 text-center">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg">
-              <Clock className="h-4 w-4" />
+          <div className="mb-3 lg:mb-4 text-center">
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 text-blue-800 px-6 py-3 rounded-xl font-medium shadow-lg">
+              <Clock className="h-5 w-5 text-blue-600" />
               <span className="text-sm font-semibold">Selected Period:</span>
-              <span className="text-base">{formatPeriodDisplay()}</span>
+              <span className="text-base font-bold">{formatPeriodDisplay()}</span>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Main Content Grid - Better responsive layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
             {/* Start Date Calendar */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Start Date</h3>
+                <h3 className="text-base font-semibold text-gray-900 mb-2">Start Date</h3>
                 <div className="w-16 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full"></div>
               </div>
-              <div className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+              <div className="border-2 border-gray-100 rounded-xl p-2 lg:p-3 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
                 <Calendar
                   mode="single"
                   selected={localDateRange?.from}
@@ -343,20 +247,28 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                   classNames={{
                     day_selected: "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
                     day_today: "bg-blue-100 text-blue-900 font-bold",
-                    head_cell: "text-gray-600 font-semibold",
-                    caption: "text-gray-900 font-semibold text-lg"
+                                         head_cell: "text-gray-600 font-semibold text-xs",
+                     caption: "text-gray-900 font-semibold text-sm mb-2",
+                     day: "h-8 w-8 text-xs font-medium hover:bg-blue-50 rounded-md transition-colors",
+                    nav_button: "h-6 w-6 bg-transparent p-0 opacity-50 hover:opacity-100",
+                    nav_button_previous: "absolute left-1",
+                    nav_button_next: "absolute right-1",
+                    table: "w-full border-collapse space-y-1",
+                    head_row: "flex mb-1",
+                    row: "flex w-full mt-1",
+                    cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20"
                   }}
                 />
               </div>
             </div>
 
             {/* End Date Calendar */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">End Date</h3>
+                <h3 className="text-base font-semibold text-gray-900 mb-2">End Date</h3>
                 <div className="w-16 h-1 bg-gradient-to-r from-indigo-400 to-indigo-600 mx-auto rounded-full"></div>
               </div>
-              <div className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+              <div className="border-2 border-gray-100 rounded-xl p-2 lg:p-3 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
                 <Calendar
                   mode="single"
                   selected={localDateRange?.to}
@@ -366,68 +278,92 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                   classNames={{
                     day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 focus:bg-indigo-700",
                     day_today: "bg-indigo-100 text-indigo-900 font-bold",
-                    head_cell: "text-gray-600 font-semibold",
-                    caption: "text-gray-900 font-semibold text-lg"
+                                         head_cell: "text-gray-600 font-semibold text-xs",
+                     caption: "text-gray-900 font-semibold text-sm mb-2",
+                     day: "h-8 w-8 text-xs font-medium hover:bg-indigo-50 rounded-md transition-colors",
+                    nav_button: "h-6 w-6 bg-transparent p-0 opacity-50 hover:opacity-100",
+                    nav_button_previous: "absolute left-1",
+                    nav_button_next: "absolute right-1",
+                    table: "w-full border-collapse space-y-1",
+                    head_row: "flex mb-1",
+                    row: "flex w-full mt-1",
+                    cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-indigo-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20"
                   }}
                 />
               </div>
             </div>
 
-            {/* Predefined Periods */}
-            <div className="space-y-4">
+            {/* Quick Select Periods - Improved layout */}
+            <div className="space-y-3">
               <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Quick Select</h3>
+                <h3 className="text-base font-semibold text-gray-900 mb-2">Quick Select</h3>
                 <div className="w-16 h-1 bg-gradient-to-r from-green-400 to-green-600 mx-auto rounded-full"></div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 {[
-                  "Today",
-                  "Yesterday", 
-                  "This week",
-                  "Last week",
-                  "This month",
-                  "Last month",
-                  "This year",
-                  "Last Year"
+                  { name: "Today", icon: "🌅" },
+                  { name: "Yesterday", icon: "📅" },
+                  { name: "This week", icon: "📊" },
+                  { name: "Last week", icon: "📈" },
+                  { name: "This month", icon: "🗓️" },
+                  { name: "Last month", icon: "📆" },
+                  { name: "This year", icon: "🎯" },
+                  { name: "Last Year", icon: "📋" }
                 ].map((period) => (
                   <Button
-                    key={period}
-                    variant={getPeriodButtonVariant(period)}
+                    key={period.name}
+                    variant={getPeriodButtonVariant(period.name)}
                     size="sm"
-                    className={`h-11 text-sm font-medium transition-all duration-300 hover:scale-102 ${
-                      getPeriodButtonVariant(period) === "default" 
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl border-0" 
-                        : "bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300 hover:shadow-md border-2 border-gray-200 text-gray-700"
+                    className={`h-10 text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                      getPeriodButtonVariant(period.name) === "default" 
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg border-0" 
+                        : "bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300 hover:shadow-sm border border-gray-200 text-gray-700"
                     }`}
-                    onClick={() => handlePredefinedPeriod(period)}
+                    onClick={() => handlePredefinedPeriod(period.name)}
                   >
-                    {period}
+                                         <div className="flex flex-col items-center gap-0.5">
+                       <span className="text-sm">{period.icon}</span>
+                       <span className="text-xs font-medium leading-tight">{period.name}</span>
+                     </div>
                   </Button>
                 ))}
+              </div>
+              
+              {/* Quick Tips - Improved styling */}
+              <div className="mt-3 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="h-3 w-3 text-blue-600" />
+                  <span className="text-xs font-semibold text-blue-800">Quick Tips</span>
+                </div>
+                <ul className="text-xs text-blue-700 leading-relaxed space-y-0.5">
+                  <li>• Use Quick Select for common periods</li>
+                  <li>• Or manually select start and end dates</li>
+                  <li>• Changes are applied immediately</li>
+                </ul>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-center gap-4 mt-6 pt-6 border-t border-gray-200">
+          {/* Action Buttons - Improved spacing */}
+          <div className="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-200">
             <Button 
               onClick={handleOK} 
-              className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+              className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
             >
-              <Check className="h-5 w-5" />
+              <Check className="h-4 w-4" />
               Apply Selection
             </Button>
             <Button 
               variant="outline" 
               onClick={handleCancel} 
-              className="flex items-center gap-2 px-8 py-3 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 font-semibold transition-all duration-200"
+              className="flex items-center gap-2 px-8 py-3 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 font-semibold transition-all duration-200 rounded-xl"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
               Cancel
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

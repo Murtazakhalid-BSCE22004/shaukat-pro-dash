@@ -1,19 +1,42 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { ProfessionalHeader } from './ProfessionalHeader';
-import { ProfessionalSidebar } from './ProfessionalSidebar';
-import { cn } from '@/lib/utils';
+import ProfessionalSidebar from '@/components/ProfessionalSidebar';
+import ProfessionalHeader from './ProfessionalHeader';
+import { SidebarProvider, useSidebar } from './SidebarContext';
+import '../../styles/themes/professional-theme.css';
 
-export const ProfessionalLayout: React.FC = () => {
+const ProfessionalLayoutContent: React.FC = () => {
+  const { isCollapsed } = useSidebar();
+  
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      {/* Full Width Header */}
       <ProfessionalHeader />
-      <div className="flex">
-        <ProfessionalSidebar className="hidden lg:block" />
-        <main className="flex-1 p-3 sm:p-4 lg:p-6">
-          <Outlet />
-        </main>
+      
+      {/* Sidebar */}
+      <ProfessionalSidebar />
+      
+      {/* Main Content */}
+      <div 
+        className="main-content-with-sidebar-and-header"
+        style={{ marginLeft: isCollapsed ? '64px' : '256px' }}
+      >
+        <div className="theme-professional-exact p-6">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
+
+const ProfessionalLayout: React.FC = () => {
+  return (
+    <SidebarProvider>
+      <ProfessionalLayoutContent />
+    </SidebarProvider>
+  );
+};
+
+export default ProfessionalLayout;

@@ -99,13 +99,8 @@ const ExpenseAnalytics: React.FC<ExpenseAnalyticsProps> = ({ initialTab = 'overv
 
     // Basic expense analytics
     const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-    const approvedExpenses = filteredExpenses.filter(exp => exp.status === 'approved');
-    const pendingExpenses = filteredExpenses.filter(exp => exp.status === 'pending');
-    const rejectedExpenses = filteredExpenses.filter(exp => exp.status === 'rejected');
-
-    const totalApproved = approvedExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-    const totalPending = pendingExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-    const totalRejected = rejectedExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+      const approvedExpenses = filteredExpenses; // All expenses are approved
+  const totalApproved = approvedExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
     // Category breakdown
     const categoryData = filteredExpenses.reduce((acc, expense) => {
@@ -125,11 +120,9 @@ const ExpenseAnalytics: React.FC<ExpenseAnalyticsProps> = ({ initialTab = 'overv
       percentage: totalExpenses > 0 ? ((cat.value / totalExpenses) * 100).toFixed(1) : '0'
     }));
 
-    // Status breakdown
+    // Status breakdown (all expenses are approved)
     const statusData = [
-      { name: 'Approved', value: totalApproved, count: approvedExpenses.length, color: '#16A34A' },
-      { name: 'Pending', value: totalPending, count: pendingExpenses.length, color: '#F59E0B' },
-      { name: 'Rejected', value: totalRejected, count: rejectedExpenses.length, color: '#DC2626' }
+      { name: 'Approved', value: totalApproved, count: approvedExpenses.length, color: '#16A34A' }
     ];
 
     // Time-based analytics
@@ -229,17 +222,13 @@ const ExpenseAnalytics: React.FC<ExpenseAnalyticsProps> = ({ initialTab = 'overv
       : 0;
 
     // Approval rate
-    const approvalRate = filteredExpenses.length > 0 
-      ? (approvedExpenses.length / filteredExpenses.length) * 100 
-      : 0;
+        const approvalRate = 100; // All expenses are approved
 
     return {
       summary: {
         totalExpenses,
         totalCount: filteredExpenses.length,
         approvedCount: approvedExpenses.length,
-        pendingCount: pendingExpenses.length,
-        rejectedCount: rejectedExpenses.length,
         averageAmount: averageExpenseAmount,
         averageDaily: averageDailyExpense,
         approvalRate

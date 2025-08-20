@@ -10,10 +10,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Home, UserSquare2, FilePlus2, BarChart3 } from "lucide-react";
+import { Home, UserSquare2, FilePlus2, BarChart3, Building2 } from "lucide-react";
 
 const items = [
   { title: "Dashboard", url: "/", icon: Home },
+  { title: "General Dashboard", url: "/general", icon: Building2 },
   { title: "Doctors", url: "/doctors", icon: UserSquare2 },
   { title: "New Visit", url: "/visits/new", icon: FilePlus2 },
   { title: "Daily Summary", url: "/summary", icon: BarChart3 },

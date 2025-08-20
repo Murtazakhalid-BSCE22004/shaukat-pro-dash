@@ -56,8 +56,8 @@ const DeleteEmployeeDialog: React.FC<DeleteEmployeeDialogProps> = ({
   if (!employee) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
+      <DialogContent className="max-w-md border-0 shadow-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-700">
             <div className="p-2 bg-red-100 rounded-lg">

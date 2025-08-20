@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="testTables()">Test Tables</button>
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = "https://vbabgoucrhkfetoihswx.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiYWJnb3VjcmhrZmV0b2loc3d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2ODI0NTksImV4cCI6MjA3MDI1ODQ1OX0.XuDpNGhGDd6QwBUHAdueeCjWWpv7orDTJdYSMhTQfQE";
+
+        function addResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        async function testConnection() {
+            addResult('Testing basic Supabase connection...', 'info');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    addResult('✅ Supabase connection successful', 'success');
+                } else {
+                    addResult(`❌ Supabase connection failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Connection error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testTables() {
+            const tables = ['doctors', 'patients', 'visits', 'employees', 'expenses', 'salary_payments'];
+            
+            for (const table of tables) {
+                addResult(`Testing ${table} table...`, 'info');
+                
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*&limit=1`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        addResult(`✅ ${table} table accessible (${data.length} records)`, 'success');
+                    } else {
+                        addResult(`❌ ${table} table error: ${response.status} ${response.statusText}`, 'error');
+                    }
+                } catch (error) {
+                    addResult(`❌ ${table} table error: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Auto-run connection test on page load
+        window.onload = function() {
+            addResult('Page loaded, ready to test connections', 'info');
+        };
+    </script>
+</body>
+</html>
+

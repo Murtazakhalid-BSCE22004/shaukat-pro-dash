@@ -1,0 +1,118 @@
+/* ========================================
+   PROFESSIONAL DASHBOARD THEMES
+   Four Dashboard Sections - Professional Styling
+   ======================================== */
+
+/* ROOT VARIABLES FOR THEME SYSTEM */
+:root {
+  /* PROFESSIONAL DASHBOARD - Purple & Orange */
+  --professional-primary: #7c3aed;
+  --professional-primary-dark: #5b21b6;
+  --professional-primary-light: #a78bfa;
+  --professional-accent: #ea580c;
+  --professional-accent-dark: #c2410c;
+  --professional-accent-light: #fed7aa;
+  
+  /* REVENUE DASHBOARD - Green & Blue */
+  --revenue-primary: #059669;
+  --revenue-primary-dark: #047857;
+  --revenue-primary-light: #10b981;
+  --revenue-accent: #0284c7;
+  --revenue-accent-dark: #0369a1;
+  --revenue-accent-light: #38bdf8;
+  
+  /* EXPENSES DASHBOARD - Teal & Amber */
+  --expenses-primary: #0d9488;
+  --expenses-primary-dark: #0f766e;
+  --expenses-primary-light: #2dd4bf;
+  --expenses-accent: #f59e0b;
+  --expenses-accent-dark: #d97706;
+  --expenses-accent-light: #fcd34d;
+  
+  /* GENERAL HOSPITAL - Navy & Gold */
+  --general-primary: #1e293b;
+  --general-primary-dark: #0f172a;
+  --general-primary-light: #334155;
+  --general-accent: #f59e0b;
+  --general-accent-dark: #d97706;
+  --general-accent-light: #fcd34d;
+}
+
+/* THEME CLASSES FOR EACH DASHBOARD SECTION */
+
+/* PROFESSIONAL DASHBOARD THEME */
+.theme-professional {
+  --primary: var(--professional-primary);
+  --primary-dark: var(--professional-primary-dark);
+  --primary-light: var(--professional-primary-light);
+  --accent: var(--professional-accent);
+  --accent-dark: var(--professional-accent-dark);
+  --accent-light: var(--professional-accent-light);
+}
+
+/* REVENUE DASHBOARD THEME */
+.theme-revenue {
+  --primary: var(--revenue-primary);
+  --primary-dark: var(--revenue-primary-dark);
+  --primary-light: var(--revenue-primary-light);
+  --accent: var(--revenue-accent);
+  --accent-dark: var(--revenue-accent-dark);
+  --accent-light: var(--revenue-accent-light);
+}
+
+/* EXPENSES DASHBOARD THEME */
+.theme-expenses {
+  --primary: var(--expenses-primary);
+  --primary-dark: var(--expenses-primary-dark);
+  --primary-light: var(--expenses-primary-light);
+  --accent: var(--expenses-accent);
+  --accent-dark: var(--expenses-accent-dark);
+  --accent-light: var(--expenses-accent-light);
+}
+
+/* GENERAL HOSPITAL THEME */
+.theme-general {
+  --primary: var(--general-primary);
+  --primary-dark: var(--general-primary-dark);
+  --primary-light: var(--general-primary-light);
+  --accent: var(--general-accent);
+  --accent-dark: var(--general-accent-dark);
+  --accent-light: var(--general-accent-light);
+}
+
+/* GRADIENT BACKGROUNDS */
+.bg-gradient-professional {
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+}
+
+.bg-gradient-revenue {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.bg-gradient-expenses {
+  background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%);
+}
+
+.bg-gradient-general {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+/* CARD STYLES */
+.card-enhanced {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-enhanced:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* RESPONSIVE STYLES */
+@media (max-width: 768px) {
+  .card-enhanced {
+    margin: 0.5rem;
+  }
+}

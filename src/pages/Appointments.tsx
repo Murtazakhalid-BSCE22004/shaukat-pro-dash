@@ -1,16 +1,16 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Calendar, Filter, Search, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Calendar, Filter, Search, RotateCcw, Users, Clock } from 'lucide-react';
 import { supabasePatientsService } from '@/services/supabasePatientsService';
 import { supabaseDoctorsService } from '@/services/supabaseDoctorsService';
 import { useQuery } from '@tanstack/react-query';
 import { Tables } from '@/integrations/supabase/types';
 import DoctorSelect from '@/components/DoctorSelect';
+import '../styles/themes/modern-professional.css';
 
 type Patient = Tables<'patients'>;
 type Doctor = Tables<'doctors'>;
@@ -122,63 +122,51 @@ export default function Appointments() {
   }, [allPatients, searchTerm, selectedDoctor, startDate, endDate, startTime, endTime]);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center gap-4 mb-6">
-        {/* Back Button */}
-        <Link to="/professional">
-          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back to Dashboard</span>
-          </Button>
-        </Link>
-        
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-900">Appointments</h1>
+    <div className="modern-professional-theme p-6">
+      {/* Modern Header */}
+      <div className="modern-page-header">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="modern-page-title">Appointments</h1>
+            <p className="modern-page-subtitle">Manage and filter patient appointments efficiently</p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/50 px-4 py-2 rounded-lg">
+            <Calendar className="w-4 h-4 text-blue-600" />
+            <span className="font-medium">Total: {filteredPatients.length} appointments</span>
+          </div>
         </div>
       </div>
 
       {/* Filter Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
+      <div className="modern-filter-card">
+        <h3 className="modern-filter-title">
+          <Filter className="w-5 h-5" />
             Filter Appointments
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search by Name or Contact */}
-            <div className="space-y-2 group">
-              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Search by Name or Contact</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-300" />
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                <Search className="w-4 h-4 text-blue-600" />
+                Search Patients
+              </Label>
+              <div className="modern-search-container">
+                <Search className="modern-search-icon absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 z-10" />
                 <Input
                   placeholder="Search patients..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
-                  style={{ 
-                    border: '1px solid #d1d5db',
-                    outline: 'none',
-                    boxShadow: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    target.style.borderColor = '#3b82f6';
-                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    target.style.borderColor = '#d1d5db';
-                    target.style.boxShadow = 'none';
-                  }}
+                  className="modern-input pl-12 h-12 text-base font-medium border-2 border-blue-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300"
                 />
               </div>
             </div>
 
             {/* Doctor Selection */}
-            <div className="space-y-2 group">
-              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Doctor</Label>
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                <Users className="w-4 h-4 text-green-600" />
+                Select Doctor
+              </Label>
               <DoctorSelect
                 value={selectedDoctor}
                 onChange={setSelectedDoctor}
@@ -191,14 +179,17 @@ export default function Appointments() {
             </div>
 
             {/* Start Date */}
-            <div className="space-y-2 group">
-              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">Start Date</Label>
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-purple-600" />
+                Start Date
+              </Label>
               <div className="relative">
                 <button
                   type="button"
                   aria-label="Pick start date"
                   onClick={() => openPicker(startDateRef.current)}
-                  className="absolute left-2.5 top-2.5 p-1 rounded hover:bg-accent text-gray-500 group-hover:text-blue-500 transition-colors duration-300"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 p-1 rounded hover:bg-purple-100 text-purple-600 transition-colors duration-300 z-10"
                 >
                   <Calendar className="h-4 w-4" />
                 </button>
@@ -207,29 +198,17 @@ export default function Appointments() {
                   type="date" 
                   value={startDate} 
                   onChange={(e) => setStartDate(e.target.value)} 
-                  className="pl-10 h-10 border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:border-blue-300 bg-white text-gray-900 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 group-hover:border-blue-300"
-                  style={{ 
-                    border: '1px solid #d1d5db',
-                    outline: 'none',
-                    boxShadow: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    target.style.borderColor = '#3b82f6';
-                    target.style.boxShadow = '0 4px 6px -1px rgba(59, 130, 246, 0.15), 0 2px 4px -1px rgba(59, 130, 246, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    target.style.borderColor = '#d1d5db';
-                    target.style.boxShadow = 'none';
-                  }}
+                  className="modern-input pl-12 h-12 border-2 border-purple-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
                 />
               </div>
             </div>
 
             {/* End Date */}
-            <div className="space-y-2 group">
-              <Label className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300 cursor-pointer">End Date</Label>
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-orange-600" />
+                End Date
+              </Label>
               <div className="relative">
                 <button
                   type="button"
@@ -340,62 +319,90 @@ export default function Appointments() {
           </div>
 
           {/* Reset Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-4 border-t border-gray-200">
             <Button 
               onClick={resetFilters} 
-              variant="outline" 
-              className="flex items-center gap-2"
+              className="modern-btn-secondary flex items-center gap-2 px-6 py-3"
             >
               <RotateCcw className="h-4 w-4" />
               Reset All Filters
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Results Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Results ({filteredPatients.length} appointments)</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="modern-content-card">
+        <div className="card-header">
+          <div className="flex items-center justify-between">
+            <h3 className="card-title">Appointment Results</h3>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Showing</span>
+              <span className="modern-badge info">{filteredPatients.length}</span>
+              <span className="text-sm text-gray-600">appointments</span>
+            </div>
+          </div>
+        </div>
+        <div className="card-content p-0">
           {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Loading appointments...</p>
+            <div className="text-center py-20">
+              <div className="modern-empty-icon mb-6">
+                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">Loading appointments...</h3>
+              <p className="text-gray-500">Please wait while we fetch appointment records</p>
             </div>
           ) : filteredPatients.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No appointments found matching your criteria
+            <div className="modern-empty-state">
+              <div className="modern-empty-icon">
+                <Calendar className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="modern-empty-title">No appointments found</h3>
+              <p className="modern-empty-subtitle">
+                Try adjusting your filter criteria to find the appointments you're looking for.
+              </p>
+              <Button 
+                onClick={resetFilters}
+                className="modern-btn-primary px-8 py-3 text-base font-semibold"
+              >
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Clear All Filters
+              </Button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="modern-table-container">
+              <table className="modern-table">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium">Date & Time</th>
-                    <th className="text-left py-3 px-4 font-medium">Patient Name</th>
-                    <th className="text-left py-3 px-4 font-medium">Contact</th>
-                    <th className="text-left py-3 px-4 font-medium">Doctor</th>
-                    <th className="text-left py-3 px-4 font-medium">OPD Fee</th>
-                    <th className="text-left py-3 px-4 font-medium">Lab Fee</th>
-                    <th className="text-left py-3 px-4 font-medium">Total</th>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Patient Name</th>
+                    <th>Contact</th>
+                    <th>Doctor</th>
+                    <th>OPD Fee</th>
+                    <th>Lab Fee</th>
+                    <th>Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredPatients.map((patient) => {
                     const totalFees = (patient.opd_fee || 0) + (patient.lab_fee || 0) + (patient.ultrasound_fee || 0) + (patient.ecg_fee || 0);
                     return (
-                      <tr key={patient.id} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">
+                      <tr key={patient.id}>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-blue-600" />
                           {new Date(patient.created_at).toLocaleString()}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 font-medium">{patient.patient_name}</td>
-                        <td className="py-3 px-4">{patient.contact_number}</td>
-                        <td className="py-3 px-4">{patient.doctor_name}</td>
-                        <td className="py-3 px-4">Rs. {patient.opd_fee || 0}</td>
-                        <td className="py-3 px-4">Rs. {patient.lab_fee || 0}</td>
-                        <td className="py-3 px-4 font-semibold">Rs. {totalFees}</td>
+                        <td className="font-medium">{patient.patient_name}</td>
+                        <td>{patient.contact_number}</td>
+                        <td>
+                          <span className="text-sm font-medium text-green-700 bg-green-100 px-2 py-1 rounded-lg whitespace-nowrap">
+                            {patient.doctor_name}
+                          </span>
+                        </td>
+                        <td>Rs. {patient.opd_fee || 0}</td>
+                        <td>Rs. {patient.lab_fee || 0}</td>
+                        <td className="font-semibold text-green-600">Rs. {totalFees}</td>
                       </tr>
                     );
                   })}
@@ -403,8 +410,8 @@ export default function Appointments() {
               </table>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

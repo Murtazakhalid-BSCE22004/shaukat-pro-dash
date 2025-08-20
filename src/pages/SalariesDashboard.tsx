@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   DollarSign, 
@@ -11,6 +12,7 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
+import '../styles/themes/professional-theme.css';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +25,7 @@ import EditEmployeeDialog from '@/components/ui/EditEmployeeDialog';
 import DeleteEmployeeDialog from '@/components/ui/DeleteEmployeeDialog';
 
 const SalariesDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [addEmployeeDialogOpen, setAddEmployeeDialogOpen] = useState(false);
   const [editEmployeeDialogOpen, setEditEmployeeDialogOpen] = useState(false);
   const [deleteEmployeeDialogOpen, setDeleteEmployeeDialogOpen] = useState(false);
@@ -99,151 +102,185 @@ const SalariesDashboard: React.FC = () => {
     {
       title: 'Total Monthly Salary',
       value: formatCurrency(totalSalaryCost),
-      description: 'Combined salaries of all active employees',
+      change: 'Combined salaries of all active employees',
       icon: DollarSign,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      variant: 'revenue',
     },
     {
       title: 'Active Employees',
       value: activeEmployees.length.toString(),
-      description: 'Currently employed staff members',
+      change: 'Currently employed staff members',
       icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      variant: 'customers',
     },
     {
       title: 'Salary Advances',
       value: salaryAdvances.length.toString(),
-      description: 'Advance payments processed',
+      change: 'Advance payments processed',
       icon: CreditCard,
-      color: 'text-purple-700',
-      bgColor: 'bg-purple-100',
+      variant: 'margin',
     },
     {
       title: 'Departments',
       value: Object.keys(employeesByDepartment).length.toString(),
-      description: 'Active departments with staff',
+      change: 'Active departments with staff',
       icon: Building,
-      color: 'text-orange-700',
-      bgColor: 'bg-orange-100',
+      variant: 'orders',
     },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Salaries Overview</h1>
-            <p className="text-gray-600 mt-1">Monitor employee salaries and department statistics</p>
-          </div>
-          <Button 
-            onClick={() => setAddEmployeeDialogOpen(true)}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group border-0"
-          >
-            <Plus className="h-4 w-4 mr-2 group-hover:scale-110 group-hover:rotate-90 transition-all duration-200" />
-            Add Employee
-          </Button>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {stats.map((stat, index) => (
-          <Card key={index} className="hover:shadow-md transition-shadow duration-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                {stat.title}
-              </CardTitle>
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+    <div className="theme-professional-exact min-h-screen p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Welcome Header */}
+        <div className="welcome-header animate-fade-in-up">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+                <Users className="h-8 w-8 text-white" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-              <p className="text-xs text-gray-500 mt-1">
-                {stat.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Overview Content */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Department Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Object.entries(employeesByDepartment).map(([department, count]) => (
-                <div key={department} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Building className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium text-sm">{department}</span>
-                  </div>
-                  <span className="font-semibold text-sm">{count}</span>
-                </div>
-              ))}
-              {Object.keys(employeesByDepartment).length === 0 && (
-                <p className="text-gray-500 text-center py-4 text-sm">No departments yet</p>
-              )}
+              <div>
+                <h1>Welcome to Salaries Dashboard</h1>
+                <p>Shaukat International Hospital - HR Management</p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+            <button 
+              onClick={() => setAddEmployeeDialogOpen(true)}
+              className="btn-accent flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Employee
+            </button>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Salary Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm">Total Monthly:</span>
-                <span className="font-semibold text-sm">{formatCurrency(totalSalaryCost)}</span>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {stats.map((stat, index) => (
+            <div 
+              key={index} 
+              className={`stat-card ${stat.variant} animate-fade-in-up`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="icon">
+                <stat.icon className="h-6 w-6 text-white" />
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Active Employees:</span>
-                <span className="font-semibold text-green-600 text-sm">{activeEmployees.length}</span>
+              <h3>{stat.title}</h3>
+              <div className="value">{stat.value}</div>
+              <div className="change">{stat.change}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Employee Overview - Left Side */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="chart-container">
+              <div className="chart-header">
+                <h3 className="chart-title">Department Overview</h3>
+                <div>
+                  <span className="text-sm text-gray-500">Employee distribution</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Inactive Employees:</span>
-                <span className="font-semibold text-gray-500 text-sm">{inactiveEmployees.length}</span>
+              
+              <div className="space-y-3">
+                {Object.entries(employeesByDepartment).map(([department, count]) => (
+                  <div key={department} className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Building className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-900 text-sm">{department}</span>
+                        <p className="text-xs text-gray-500">Active department</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-semibold text-gray-900 text-lg">{count}</span>
+                      <p className="text-xs text-gray-500">employees</p>
+                    </div>
+                  </div>
+                ))}
+                {Object.keys(employeesByDepartment).length === 0 && (
+                  <div className="text-center text-gray-500 py-8">
+                    <Building className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                    <p>No departments yet</p>
+                  </div>
+                )}
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Average Salary:</span>
-                <span className="font-semibold text-blue-600 text-sm">
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="space-y-6">
+            {/* Salary Statistics */}
+            <div className="info-card">
+              <h4>Salary Statistics</h4>
+              <div className="metric">
+                <span className="metric-label">Total Monthly</span>
+                <span className="metric-value text-yellow">{formatCurrency(totalSalaryCost)}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Active Employees</span>
+                <span className="metric-value text-green">{activeEmployees.length}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Inactive Employees</span>
+                <span className="metric-value text-red">{inactiveEmployees.length}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Average Salary</span>
+                <span className="metric-value text-blue">
                   {activeEmployees.length > 0 ? formatCurrency(totalSalaryCost / activeEmployees.length) : formatCurrency(0)}
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start text-sm h-8">
-                <Calendar className="h-4 w-4 mr-2" />
-                Generate Salary Report
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-sm h-8">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Process Monthly Salaries
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-sm h-8">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Department Analysis
-              </Button>
+            {/* Quick Actions */}
+            <div className="info-card">
+              <h4>Quick Actions</h4>
+              <div className="space-y-3">
+                <button 
+                  onClick={() => navigate('/salaries/reports')}
+                  className="btn-primary w-full text-left"
+                >
+                  <Calendar className="h-4 w-4 inline mr-2" />
+                  Generate Salary Report
+                </button>
+                <button 
+                  onClick={() => navigate('/salaries/employees')}
+                  className="btn-accent w-full text-left"
+                >
+                  <CreditCard className="h-4 w-4 inline mr-2" />
+                  Process Monthly Salaries
+                </button>
+                <button 
+                  onClick={() => navigate('/salaries/analytics')}
+                  className="btn-primary w-full text-left"
+                >
+                  <TrendingUp className="h-4 w-4 inline mr-2" />
+                  Department Analysis
+                </button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* HR Management */}
+            <div className="survey-section">
+              <h4 className="survey-title">HR Management</h4>
+              <div className="survey-content">
+                <p>Manage employee salaries, track advance payments, and monitor departmental salary distributions.</p>
+                <br />
+                <p>Generate comprehensive salary reports and maintain accurate payroll records for all staff members.</p>
+              </div>
+              <div className="mt-4">
+                <button className="btn-primary w-full">
+                  Generate Report
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Dialog Components */}

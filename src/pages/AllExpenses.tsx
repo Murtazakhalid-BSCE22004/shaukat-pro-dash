@@ -44,9 +44,7 @@ const expenseCategories = [
 ];
 
 const expenseStatuses = [
-  'approved',
-  'pending',
-  'rejected'
+  'approved'
 ];
 
 const AllExpenses: React.FC = () => {
@@ -61,7 +59,7 @@ const AllExpenses: React.FC = () => {
     return { from: today, to: today };
   });
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+
   const [isPeriodSelectorOpen, setIsPeriodSelectorOpen] = useState(false);
 
   // Fetch expenses data
@@ -129,14 +127,11 @@ const AllExpenses: React.FC = () => {
         return false;
       }
       
-      // Status filter
-      if (selectedStatus !== "all" && expense.status !== selectedStatus) {
-        return false;
-      }
+      
       
       return true;
     });
-  }, [allExpenses, dateRange, selectedCategory, selectedStatus]);
+  }, [allExpenses, dateRange, selectedCategory]);
 
   // Calculate expense totals
   const totalExpenses = useMemo(() => {
@@ -149,18 +144,7 @@ const AllExpenses: React.FC = () => {
     return allExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
   }, [allExpenses]);
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Approved</Badge>;
-      case 'pending':
-        return <Badge variant="secondary">Pending</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive">Rejected</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+
 
   const handleEditExpense = (expense: Expense) => {
     setSelectedExpense(expense);
@@ -176,10 +160,10 @@ const AllExpenses: React.FC = () => {
     const today = new Date();
     setDateRange({ from: today, to: today });
     setSelectedCategory("all");
-    setSelectedStatus("all");
+        
   };
 
-  const hasActiveFilters = selectedCategory !== "all" || selectedStatus !== "all";
+  const hasActiveFilters = selectedCategory !== "all";
 
   // Period display function (similar to RevenueDashboard)
   const getPeriodDisplayText = () => {
@@ -352,51 +336,7 @@ const AllExpenses: React.FC = () => {
               </Select>
             </div>
 
-            {/* Status Filter */}
-            <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2">
-                Status
-              </Label>
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-green-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 bg-white shadow-sm hover:shadow-md">
-                  <SelectValue placeholder="All Statuses" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60 z-50 shadow-lg border border-gray-200">
-                  <SelectItem value="all" className="hover:bg-green-50 focus:bg-green-50 cursor-pointer py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 bg-gray-100 rounded">
-                        <CheckCircle className="h-3 w-3 text-gray-600" />
-                      </div>
-                      <span>All Statuses</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="approved" className="hover:bg-green-50 focus:bg-green-50 cursor-pointer py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 bg-green-50 rounded">
-                        <CheckCircle className="h-3 w-3 text-green-600" />
-                      </div>
-                      <span>Approved</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="pending" className="hover:bg-amber-50 focus:bg-amber-50 cursor-pointer py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 bg-amber-50 rounded">
-                        <Clock className="h-3 w-3 text-amber-600" />
-                      </div>
-                      <span>Pending</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="rejected" className="hover:bg-red-50 focus:bg-red-50 cursor-pointer py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 bg-red-50 rounded">
-                        <XCircle className="h-3 w-3 text-red-600" />
-                      </div>
-                      <span>Rejected</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
 
             {/* Clear Filters */}
             <div>
@@ -425,11 +365,7 @@ const AllExpenses: React.FC = () => {
                     Category: {selectedCategory}
                   </Badge>
                 )}
-                {selectedStatus !== "all" && (
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
-                    Status: {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}
-                  </Badge>
-                )}
+
               </div>
             </div>
           )}
@@ -495,7 +431,6 @@ const AllExpenses: React.FC = () => {
                         {formatCurrency(expense.amount)}
                       </div>
                       <div className="flex items-center justify-end space-x-2">
-                        {getStatusBadge(expense.status)}
                         <Button 
                           variant="ghost" 
                           size="sm" 

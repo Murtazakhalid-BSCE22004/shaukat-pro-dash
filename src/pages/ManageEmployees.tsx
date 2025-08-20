@@ -4,6 +4,7 @@ import {
   Users, 
   Edit,
   Trash2,
+  XCircle,
   Search,
   Settings,
   Wallet,
@@ -40,6 +41,7 @@ import { Employee, HospitalPositions } from '@/types';
 import AddEmployeeDialog from '@/components/ui/AddEmployeeDialog';
 import EditEmployeeDialog from '@/components/ui/EditEmployeeDialog';
 import DeleteEmployeeDialog from '@/components/ui/DeleteEmployeeDialog';
+import PermanentDeleteEmployeeDialog from '@/components/ui/PermanentDeleteEmployeeDialog';
 import ActivateEmployeeDialog from '@/components/ui/ActivateEmployeeDialog';
 import PayEmployeeDialog from '@/components/ui/PayEmployeeDialog';
 
@@ -47,6 +49,7 @@ const ManageEmployees: React.FC = () => {
   const [addEmployeeDialogOpen, setAddEmployeeDialogOpen] = useState(false);
   const [editEmployeeDialogOpen, setEditEmployeeDialogOpen] = useState(false);
   const [deleteEmployeeDialogOpen, setDeleteEmployeeDialogOpen] = useState(false);
+  const [permanentDeleteEmployeeDialogOpen, setPermanentDeleteEmployeeDialogOpen] = useState(false);
   const [activateEmployeeDialogOpen, setActivateEmployeeDialogOpen] = useState(false);
   const [payEmployeeDialogOpen, setPayEmployeeDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -140,6 +143,11 @@ const ManageEmployees: React.FC = () => {
   const handleDeleteEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
     setDeleteEmployeeDialogOpen(true);
+  };
+
+  const handlePermanentDeleteEmployee = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setPermanentDeleteEmployeeDialogOpen(true);
   };
 
   const handlePayEmployee = (employee: Employee) => {
@@ -285,6 +293,15 @@ const ManageEmployees: React.FC = () => {
                     >
                       <Trash2 className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
                     </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-9 w-9 p-0 rounded-lg bg-red-900 text-white border border-red-900 hover:bg-red-800 hover:text-white hover:border-red-800 hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group"
+                      onClick={() => handlePermanentDeleteEmployee(employee)}
+                      title="Permanently Delete Employee"
+                    >
+                      <XCircle className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -357,6 +374,15 @@ const ManageEmployees: React.FC = () => {
                     >
                       <Edit className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
                     </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-9 w-9 p-0 rounded-lg bg-red-900 text-white border border-red-900 hover:bg-red-800 hover:text-white hover:border-red-800 hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out group"
+                      onClick={() => handlePermanentDeleteEmployee(employee)}
+                      title="Permanently Delete Employee"
+                    >
+                      <XCircle className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -380,6 +406,12 @@ const ManageEmployees: React.FC = () => {
       <DeleteEmployeeDialog 
         open={deleteEmployeeDialogOpen} 
         onOpenChange={setDeleteEmployeeDialogOpen} 
+        employee={selectedEmployee}
+      />
+      
+      <PermanentDeleteEmployeeDialog 
+        open={permanentDeleteEmployeeDialogOpen} 
+        onOpenChange={setPermanentDeleteEmployeeDialogOpen} 
         employee={selectedEmployee}
       />
       

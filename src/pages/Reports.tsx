@@ -145,7 +145,13 @@ const ReportsPage = () => {
 
   // Print report
   const handlePrint = () => {
-    window.print();
+    const params = new URLSearchParams({
+      type: selectedReport,
+      startDate: startDate,
+      endDate: endDate,
+      timeRange: timeRange
+    });
+    window.open(`/print-report?${params.toString()}`, '_blank');
   };
 
   // Export to PDF (placeholder - you can implement actual PDF generation)

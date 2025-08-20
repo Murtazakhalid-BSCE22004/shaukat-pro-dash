@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import PasswordProtection from "./components/PasswordProtection";
-import { ProfessionalLayout } from "./components/layout/ProfessionalLayout";
+import ProfessionalLayout from "./components/layout/ProfessionalLayout";
 import ExpensesLayout from "./components/layout/ExpensesLayout";
+import SalariesLayout from "./components/layout/SalariesLayout";
+import GeneralLayout from "./components/layout/GeneralLayout";
 import LandingPage from "./pages/LandingPage";
 import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 import NotFound from "./pages/NotFound";
@@ -25,6 +27,7 @@ import AllEmployees from "./pages/AllEmployees";
 import ManageEmployees from "./pages/ManageEmployees";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import ExpenseAnalytics from "./pages/ExpenseAnalytics";
+import SalariesAnalytics from "./pages/SalariesAnalytics";
 import GeneralHospitalDashboard from "./pages/GeneralHospitalDashboard";
 import BillingPage from "./pages/Billing";
 
@@ -75,11 +78,12 @@ const App = () => (
               </Route>
               
               {/* Salaries Dashboard Routes */}
-              <Route path="/salaries" element={<ExpensesLayout />}>
+              <Route path="/salaries" element={<SalariesLayout />}>
                 <Route index element={<SalariesDashboard />} />
                 <Route path="overview" element={<SalariesDashboard />} />
                 <Route path="employees" element={<AllEmployees />} />
                 <Route path="manage" element={<ManageEmployees />} />
+                <Route path="analytics" element={<SalariesAnalytics />} />
                 <Route path="reports" element={<SalariesDashboard />} />
               </Route>
               

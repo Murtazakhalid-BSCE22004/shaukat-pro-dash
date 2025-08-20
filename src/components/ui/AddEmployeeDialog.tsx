@@ -148,8 +148,8 @@ const AddEmployeeDialog: React.FC<AddEmployeeDialogProps> = ({ open, onOpenChang
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-orange-700">
             <div className="p-2 bg-orange-100 rounded-lg">
