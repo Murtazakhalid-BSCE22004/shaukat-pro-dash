@@ -534,8 +534,8 @@ const AllExpenses: React.FC = () => {
       <PeriodSelector
         dateRange={dateRange}
         onDateRangeChange={setDateRange}
-        isOpen={isPeriodSelectorOpen}
-        onClose={() => setIsPeriodSelectorOpen(false)}
+        open={isPeriodSelectorOpen}
+        onOpenChange={setIsPeriodSelectorOpen}
       />
     </div>
   );

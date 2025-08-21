@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader } from '@/components/ui/table';
 import { Plus, Search, Filter, Calendar, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import PeriodSelector from '@/components/ui/period-selector';
@@ -734,42 +734,43 @@ const Patients: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* Desktop Table View - Hidden on mobile */}
-              <div className="modern-table-container hidden lg:block">
-                <table className="modern-table">
+              {/* Desktop Table View - Visible on medium and large screens */}
+              <div className="modern-table-container hidden md:block overflow-x-auto">
+                <table className="modern-table w-full text-xs table-fixed"
+                  style={{ fontSize: '11px', minWidth: '900px' }}>
                   <thead>
-                    <tr>
-                      <th>Patient Name</th>
-                      <th>Contact</th>
-                      <th>Doctor</th>
-                      <th>OPD Fee</th>
-                      <th>Lab Fee</th>
-                      <th>Ultrasound</th>
-                      <th>ECG</th>
-                      <th>OT</th>
-                      <th>Total</th>
-                      <th>Actions</th>
+                    <tr className="text-xs">
+                      <th className="px-1 py-1 text-left" style={{ width: '150px' }}>Patient</th>
+                      <th className="px-1 py-1 text-left" style={{ width: '80px' }}>Contact</th>
+                      <th className="px-1 py-1 text-left" style={{ width: '100px' }}>Doctor</th>
+                      <th className="px-1 py-1 text-right" style={{ width: '60px' }}>OPD</th>
+                      <th className="px-1 py-1 text-right" style={{ width: '60px' }}>Lab</th>
+                      <th className="px-1 py-1 text-right" style={{ width: '60px' }}>Ultra</th>
+                      <th className="px-1 py-1 text-right" style={{ width: '60px' }}>ECG</th>
+                      <th className="px-1 py-1 text-right" style={{ width: '60px' }}>OT</th>
+                      <th className="px-1 py-1 text-right" style={{ width: '80px' }}>Total</th>
+                      <th className="px-1 py-1 text-center" style={{ width: '90px' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredPatients.map((patient, index) => (
-                      <TableRow 
+                      <tr 
                         key={patient.id} 
-                        className={`hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                        className={`hover:bg-gray-50 transition-colors duration-150 text-xs ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                       >
-                        <TableCell className="font-medium text-gray-900 py-3">{patient.patient_name}</TableCell>
-                        <TableCell className="text-gray-700 py-3">{patient.contact_number}</TableCell>
-                        <TableCell className="text-gray-700 py-3">{patient.doctor_name}</TableCell>
-                        <TableCell className="text-gray-700 py-3">Rs. {patient.opd_fee}</TableCell>
-                        <TableCell className="text-gray-700 py-3">Rs. {patient.lab_fee}</TableCell>
-                        <TableCell className="text-gray-700 py-3">Rs. {patient.ultrasound_fee}</TableCell>
-                        <TableCell className="text-gray-700 py-3">Rs. {patient.ecg_fee}</TableCell>
-                        <TableCell className="text-gray-700 py-3">Rs. {patient.ot_fee || 0}</TableCell>
-                        <TableCell className="text-gray-900 py-3 font-medium">
-                          Rs. {(patient.opd_fee || 0) + (patient.lab_fee || 0) + (patient.ultrasound_fee || 0) + (patient.ecg_fee || 0) + (patient.ot_fee || 0)}
-                        </TableCell>
-                        <TableCell className="py-3">
-                          <div className="flex gap-2">
+                                                 <td className="font-medium text-gray-900 py-1 px-1 truncate text-xs" style={{ width: '150px' }} title={patient.patient_name}>{patient.patient_name}</td>
+                         <td className="text-gray-600 py-1 px-1 text-xs truncate" style={{ width: '80px' }} title={patient.contact_number}>{patient.contact_number}</td>
+                         <td className="text-gray-600 py-1 px-1 truncate text-xs" style={{ width: '100px' }} title={patient.doctor_name}>{patient.doctor_name}</td>
+                         <td className="text-gray-700 py-1 px-1 text-right text-xs" style={{ width: '60px' }}>{patient.opd_fee || 0}</td>
+                         <td className="text-gray-700 py-1 px-1 text-right text-xs" style={{ width: '60px' }}>{patient.lab_fee || 0}</td>
+                         <td className="text-gray-700 py-1 px-1 text-right text-xs" style={{ width: '60px' }}>{patient.ultrasound_fee || 0}</td>
+                         <td className="text-gray-700 py-1 px-1 text-right text-xs" style={{ width: '60px' }}>{patient.ecg_fee || 0}</td>
+                         <td className="text-gray-700 py-1 px-1 text-right text-xs" style={{ width: '60px' }}>{patient.ot_fee || 0}</td>
+                         <td className="text-gray-900 py-1 px-1 font-semibold text-right text-xs" style={{ width: '80px' }}>
+                          {(patient.opd_fee || 0) + (patient.lab_fee || 0) + (patient.ultrasound_fee || 0) + (patient.ecg_fee || 0) + (patient.ot_fee || 0)}
+                        </td>
+                                                 <td className="py-1 px-1" style={{ width: '90px' }}>
+                            <div className="flex gap-1 items-center justify-center flex-nowrap">
                             <Button
                               size="sm"
                               variant="outline"
@@ -787,9 +788,10 @@ const Patients: React.FC = () => {
                                 });
                                 setShowAddForm(true);
                               }}
-                              className="h-7 px-2.5 text-xs border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
+                              className="h-7 px-2 text-xs font-medium border border-blue-400 text-blue-700 hover:bg-blue-50 transition-all duration-200 bg-white rounded"
+                              title="Edit Patient"
                             >
-                              Edit
+                              ✏️
                             </Button>
                             <Button
                               size="sm"
@@ -799,20 +801,21 @@ const Patients: React.FC = () => {
                                   deletePatient(patient.id);
                                 }
                               }}
-                              className="h-7 px-2.5 text-xs bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                              className="h-7 px-2 text-xs font-medium bg-red-600 hover:bg-red-700 text-white transition-all duration-200 border-0 rounded"
+                              title="Delete Patient"
                             >
-                              Delete
+                              🗑️
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
-              {/* Mobile Card View - Visible only on mobile */}
-              <div className="lg:hidden space-y-4">
+              {/* Mobile Card View - Visible only on small screens */}
+              <div className="md:hidden space-y-4">
                 {filteredPatients.map((patient) => {
                   const totalFee = (patient.opd_fee || 0) + (patient.lab_fee || 0) + (patient.ultrasound_fee || 0) + (patient.ecg_fee || 0) + (patient.ot_fee || 0);
                   return (
@@ -885,9 +888,10 @@ const Patients: React.FC = () => {
                                 });
                                 setShowAddForm(true);
                               }}
-                              className="flex-1 h-9 text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 bg-white"
+                              className="flex-1 h-11 text-sm font-semibold border-2 border-blue-500 text-blue-700 hover:bg-blue-50 hover:border-blue-600 transition-all duration-200 bg-white rounded-lg shadow-sm hover:shadow-md"
+                              title="Edit Patient"
                             >
-                              Edit
+                              ✏️ Edit Patient
                             </Button>
                             <Button
                               size="sm"
@@ -897,9 +901,10 @@ const Patients: React.FC = () => {
                                   deletePatient(patient.id);
                                 }
                               }}
-                              className="flex-1 h-9 text-sm bg-red-600 hover:bg-red-700 focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0"
+                              className="flex-1 h-11 text-sm font-semibold bg-red-600 hover:bg-red-700 text-white focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-all duration-200 border-0 rounded-lg shadow-sm hover:shadow-md"
+                              title="Delete Patient"
                             >
-                              Delete
+                              🗑️ Delete
                             </Button>
                           </div>
                         </div>
@@ -919,8 +924,8 @@ const Patients: React.FC = () => {
         key={`period-selector-${dateRange?.from?.toDateString()}-${dateRange?.to?.toDateString()}`}
         dateRange={dateRange}
         onDateRangeChange={setDateRange}
-        isOpen={isPeriodSelectorOpen}
-        onClose={() => setIsPeriodSelectorOpen(false)}
+        open={isPeriodSelectorOpen}
+        onOpenChange={setIsPeriodSelectorOpen}
       />
     </div>
   );

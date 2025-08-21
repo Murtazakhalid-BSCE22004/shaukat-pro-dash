@@ -1,30 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DateRange } from "react-day-picker";
-import { ChevronLeft, ChevronRight, X, Check, Calendar as CalendarIcon, Clock, Zap, Sun, BarChart3, Target, FileText } from "lucide-react";
+import { Check, Calendar as CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog";
 
 interface PeriodSelectorProps {
   dateRange: DateRange | undefined;
   onDateRangeChange: (range: DateRange | undefined) => void;
-  onClose?: () => void;
-  isOpen?: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   dateRange,
   onDateRangeChange,
-  onClose,
-  isOpen = false
+  open,
+  onOpenChange
 }) => {
   const [localDateRange, setLocalDateRange] = useState<DateRange | undefined>(dateRange);
 
-  // Sync local state with prop changes
   useEffect(() => {
     setLocalDateRange(dateRange);
   }, [dateRange]);
+
+
 
   const handlePredefinedPeriod = (period: string) => {
     const now = new Date();
@@ -83,12 +89,12 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
 
   const handleOK = () => {
     onDateRangeChange(localDateRange);
-    if (onClose) onClose();
+    onOpenChange(false);
   };
 
   const handleCancel = () => {
     setLocalDateRange(dateRange);
-    if (onClose) onClose();
+    onOpenChange(false);
   };
 
   const formatPeriodDisplay = () => {
@@ -176,195 +182,163 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
     return isActive ? "default" : "outline";
   };
 
-  const getPeriodIcon = (period: string) => {
-    switch (period) {
-      case "Today": return <Sun className="h-4 w-4" />;
-      case "Yesterday": return <CalendarIcon className="h-4 w-4" />;
-      case "This week": return <BarChart3 className="h-4 w-4" />;
-      case "Last week": return <BarChart3 className="h-4 w-4" />;
-      case "This month": return <CalendarIcon className="h-4 w-4" />;
-      case "Last month": return <CalendarIcon className="h-4 w-4" />;
-      case "This year": return <Target className="h-4 w-4" />;
-      case "Last Year": return <FileText className="h-4 w-4" />;
-      default: return <CalendarIcon className="h-4 w-4" />;
-    }
-  };
-
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-2xl border-0">
-        {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 rounded-t-xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                <CalendarIcon className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold">Select Date Period</h2>
-                <p className="text-blue-100 text-sm mt-1">Choose your desired date range for analysis</p>
-              </div>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-blue-700">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <CalendarIcon className="h-5 w-5 text-blue-600" />
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-8 w-8 p-0 hover:bg-white/20 text-white"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-        
-        {/* Content */}
-        <div className="p-4 lg:p-5">
-          {/* Current Selection Display */}
-          <div className="mb-3 lg:mb-4 text-center">
-            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 text-blue-800 px-6 py-3 rounded-xl font-medium shadow-lg">
-              <Clock className="h-5 w-5 text-blue-600" />
-              <span className="text-sm font-semibold">Selected Period:</span>
-              <span className="text-base font-bold">{formatPeriodDisplay()}</span>
+            Select Date Period
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Selected Period Display */}
+          <div className="mb-6 text-center">
+            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2 rounded-lg">
+              <Clock className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium">Selected Period:</span>
+              <span className="font-semibold">{formatPeriodDisplay()}</span>
             </div>
           </div>
 
-          {/* Main Content Grid - Better responsive layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
-            {/* Start Date Calendar */}
-            <div className="space-y-3">
-              <div className="text-center">
-                <h3 className="text-base font-semibold text-gray-900 mb-2">Start Date</h3>
-                <div className="w-16 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full"></div>
-              </div>
-              <div className="border-2 border-gray-100 rounded-xl p-2 lg:p-3 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
-                <Calendar
-                  mode="single"
-                  selected={localDateRange?.from}
-                  onSelect={(date) => setLocalDateRange(prev => ({ ...prev, from: date }))}
-                  className="rounded-lg"
-                  disabled={(date) => localDateRange?.to && date > localDateRange.to}
-                  classNames={{
-                    day_selected: "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
-                    day_today: "bg-blue-100 text-blue-900 font-bold",
-                                         head_cell: "text-gray-600 font-semibold text-xs",
-                     caption: "text-gray-900 font-semibold text-sm mb-2",
-                     day: "h-8 w-8 text-xs font-medium hover:bg-blue-50 rounded-md transition-colors",
-                    nav_button: "h-6 w-6 bg-transparent p-0 opacity-50 hover:opacity-100",
-                    nav_button_previous: "absolute left-1",
-                    nav_button_next: "absolute right-1",
-                    table: "w-full border-collapse space-y-1",
-                    head_row: "flex mb-1",
-                    row: "flex w-full mt-1",
-                    cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20"
-                  }}
-                />
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            {/* Calendars Section */}
+            <div className="space-y-4">
+              <h3 className="text-base font-semibold text-gray-900 mb-4">Select Dates</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Start Date Calendar */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700">Start Date</label>
+                  <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                    <Calendar
+                      mode="single"
+                      selected={localDateRange?.from}
+                      onSelect={(date) => setLocalDateRange(prev => ({ ...prev, from: date }))}
+                      disabled={(date) => localDateRange?.to && date > localDateRange.to}
+                      classNames={{
+                        day_selected: "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
+                        day_today: "bg-blue-100 text-blue-900 font-bold border border-blue-300",
+                        head_cell: "text-gray-600 font-medium text-xs",
+                        caption: "text-gray-900 font-medium text-sm mb-2",
+                        day: "h-8 w-8 text-xs font-medium hover:bg-blue-50 rounded-md transition-colors",
+                        nav_button: "h-6 w-6 bg-transparent p-0 opacity-50 hover:opacity-100",
+                        nav_button_previous: "absolute left-1",
+                        nav_button_next: "absolute right-1",
+                        table: "w-full border-collapse space-y-1",
+                        head_row: "flex mb-1",
+                        row: "flex w-full mt-1",
+                        cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20"
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* End Date Calendar */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-gray-700">End Date</label>
+                  <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                    <Calendar
+                      mode="single"
+                      selected={localDateRange?.to}
+                      onSelect={(date) => setLocalDateRange(prev => ({ ...prev, to: date }))}
+                      disabled={(date) => localDateRange?.from && date < localDateRange.from}
+                      classNames={{
+                        day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 focus:bg-indigo-700",
+                        day_today: "bg-indigo-100 text-indigo-900 font-bold border border-indigo-300",
+                        head_cell: "text-gray-600 font-medium text-xs",
+                        caption: "text-gray-900 font-medium text-sm mb-2",
+                        day: "h-8 w-8 text-xs font-medium hover:bg-indigo-50 rounded-md transition-colors",
+                        nav_button: "h-6 w-6 bg-transparent p-0 opacity-50 hover:opacity-100",
+                        nav_button_previous: "absolute left-1",
+                        nav_button_next: "absolute right-1",
+                        table: "w-full border-collapse space-y-1",
+                        head_row: "flex mb-1",
+                        row: "flex w-full mt-1",
+                        cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-indigo-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20"
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* End Date Calendar */}
-            <div className="space-y-3">
-              <div className="text-center">
-                <h3 className="text-base font-semibold text-gray-900 mb-2">End Date</h3>
-                <div className="w-16 h-1 bg-gradient-to-r from-indigo-400 to-indigo-600 mx-auto rounded-full"></div>
-              </div>
-              <div className="border-2 border-gray-100 rounded-xl p-2 lg:p-3 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
-                <Calendar
-                  mode="single"
-                  selected={localDateRange?.to}
-                  onSelect={(date) => setLocalDateRange(prev => ({ ...prev, to: date }))}
-                  className="rounded-lg"
-                  disabled={(date) => localDateRange?.from && date < localDateRange.from}
-                  classNames={{
-                    day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 focus:bg-indigo-700",
-                    day_today: "bg-indigo-100 text-indigo-900 font-bold",
-                                         head_cell: "text-gray-600 font-semibold text-xs",
-                     caption: "text-gray-900 font-semibold text-sm mb-2",
-                     day: "h-8 w-8 text-xs font-medium hover:bg-indigo-50 rounded-md transition-colors",
-                    nav_button: "h-6 w-6 bg-transparent p-0 opacity-50 hover:opacity-100",
-                    nav_button_previous: "absolute left-1",
-                    nav_button_next: "absolute right-1",
-                    table: "w-full border-collapse space-y-1",
-                    head_row: "flex mb-1",
-                    row: "flex w-full mt-1",
-                    cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-indigo-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20"
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Quick Select Periods - Improved layout */}
-            <div className="space-y-3">
-              <div className="text-center">
-                <h3 className="text-base font-semibold text-gray-900 mb-2">Quick Select</h3>
-                <div className="w-16 h-1 bg-gradient-to-r from-green-400 to-green-600 mx-auto rounded-full"></div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
+            {/* Quick Select Section */}
+            <div className="space-y-4">
+              <h3 className="text-base font-semibold text-gray-900 mb-4">Quick Select</h3>
+              
+              {/* Quick Select Buttons Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { name: "Today", icon: "🌅" },
-                  { name: "Yesterday", icon: "📅" },
-                  { name: "This week", icon: "📊" },
-                  { name: "Last week", icon: "📈" },
-                  { name: "This month", icon: "🗓️" },
-                  { name: "Last month", icon: "📆" },
-                  { name: "This year", icon: "🎯" },
-                  { name: "Last Year", icon: "📋" }
+                  { name: "Today", color: "bg-yellow-500 hover:bg-yellow-600" },
+                  { name: "Yesterday", color: "bg-blue-500 hover:bg-blue-600" },
+                  { name: "This week", color: "bg-purple-500 hover:bg-purple-600" },
+                  { name: "Last week", color: "bg-indigo-500 hover:bg-indigo-600" },
+                  { name: "This month", color: "bg-green-500 hover:bg-green-600" },
+                  { name: "Last month", color: "bg-teal-500 hover:bg-teal-600" },
+                  { name: "This year", color: "bg-red-500 hover:bg-red-600" },
+                  { name: "Last Year", color: "bg-gray-500 hover:bg-gray-600" }
                 ].map((period) => (
                   <Button
                     key={period.name}
                     variant={getPeriodButtonVariant(period.name)}
                     size="sm"
-                    className={`h-10 text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                    className={`h-12 text-sm font-medium transition-all duration-200 rounded-lg ${
                       getPeriodButtonVariant(period.name) === "default" 
-                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg border-0" 
-                        : "bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300 hover:shadow-sm border border-gray-200 text-gray-700"
+                        ? `${period.color} text-white border-0 shadow-sm` 
+                        : "bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 hover:shadow-sm"
                     }`}
                     onClick={() => handlePredefinedPeriod(period.name)}
                   >
-                                         <div className="flex flex-col items-center gap-0.5">
-                       <span className="text-sm">{period.icon}</span>
-                       <span className="text-xs font-medium leading-tight">{period.name}</span>
-                     </div>
+                    {period.name}
                   </Button>
                 ))}
               </div>
               
-              {/* Quick Tips - Improved styling */}
-              <div className="mt-3 p-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="h-3 w-3 text-blue-600" />
-                  <span className="text-xs font-semibold text-blue-800">Quick Tips</span>
-                </div>
-                <ul className="text-xs text-blue-700 leading-relaxed space-y-0.5">
-                  <li>• Use Quick Select for common periods</li>
-                  <li>• Or manually select start and end dates</li>
-                  <li>• Changes are applied immediately</li>
+              {/* Quick Tips Section */}
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">Quick Tips</h4>
+                <ul className="text-xs text-gray-600 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                    <span>Use Quick Select for common periods</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                    <span>Or manually select start and end dates</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                    <span>Changes are applied immediately</span>
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons - Improved spacing */}
-          <div className="flex justify-center gap-4 mt-6 pt-4 border-t border-gray-200">
-            <Button 
-              onClick={handleOK} 
-              className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
-            >
-              <Check className="h-4 w-4" />
-              Apply Selection
-            </Button>
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
             <Button 
               variant="outline" 
               onClick={handleCancel} 
-              className="flex items-center gap-2 px-8 py-3 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 font-semibold transition-all duration-200 rounded-xl"
+              className="px-6 py-2 border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
             >
-              <X className="h-4 w-4" />
               Cancel
+            </Button>
+            <Button 
+              onClick={handleOK} 
+              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 ease-in-out border-0"
+            >
+              <Check className="h-4 w-4 mr-2" />
+              Apply Selection
             </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -479,11 +479,10 @@ const ExpensesReports: React.FC = () => {
 
       {/* Period Selector Modal */}
       <PeriodSelector
-        open={isPeriodSelectorOpen}
-        onOpenChange={setIsPeriodSelectorOpen}
         dateRange={dateRange}
         onDateRangeChange={setDateRange}
-        onPeriodSelect={handlePeriodChange}
+        open={isPeriodSelectorOpen}
+        onOpenChange={setIsPeriodSelectorOpen}
       />
     </div>
   );
