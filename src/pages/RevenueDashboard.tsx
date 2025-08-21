@@ -154,6 +154,7 @@ const RevenueDashboard = () => {
         LAB: patient.lab_fee || 0,
         ULTRASOUND: patient.ultrasound_fee || 0,
         ECG: patient.ecg_fee || 0,
+        OT: patient.ot_fee || 0,
       };
 
       const totalPatientRevenue = Object.values(patientRevenue).reduce((sum, fee) => sum + fee, 0);
@@ -181,18 +182,24 @@ const RevenueDashboard = () => {
               hospital: patientRevenue.ECG * ((100 - (doctor.ecg_percentage || 0)) / 100),
               doctor: patientRevenue.ECG * ((doctor.ecg_percentage || 0) / 100),
             },
+            OT: {
+              total: patientRevenue.OT,
+              hospital: patientRevenue.OT * ((100 - (doctor.ot_percentage || 0)) / 100),
+              doctor: patientRevenue.OT * ((doctor.ot_percentage || 0) / 100),
+            },
           }
         : {
             OPD: { total: patientRevenue.OPD, hospital: patientRevenue.OPD, doctor: 0 },
             LAB: { total: patientRevenue.LAB, hospital: patientRevenue.LAB, doctor: 0 },
             ULTRASOUND: { total: patientRevenue.ULTRASOUND, hospital: patientRevenue.ULTRASOUND, doctor: 0 },
             ECG: { total: patientRevenue.ECG, hospital: patientRevenue.ECG, doctor: 0 },
+            OT: { total: patientRevenue.OT, hospital: patientRevenue.OT, doctor: 0 },
           };
 
       // Update totals
       totalRevenue += totalPatientRevenue;
-      hospitalRevenue += splits.OPD.hospital + splits.LAB.hospital + splits.ULTRASOUND.hospital + splits.ECG.hospital;
-      doctorRevenue += splits.OPD.doctor + splits.LAB.doctor + splits.ULTRASOUND.doctor + splits.ECG.doctor;
+      hospitalRevenue += splits.OPD.hospital + splits.LAB.hospital + splits.ULTRASOUND.hospital + splits.ECG.hospital + splits.OT.hospital;
+      doctorRevenue += splits.OPD.doctor + splits.LAB.doctor + splits.ULTRASOUND.doctor + splits.ECG.doctor + splits.OT.doctor;
       patientCount++;
 
       // Update doctor breakdown
@@ -200,8 +207,8 @@ const RevenueDashboard = () => {
         const doctorData = doctorBreakdown[doctor.id];
         if (doctorData) {
           doctorData.totalRevenue += totalPatientRevenue;
-          doctorData.hospitalRevenue += splits.OPD.hospital + splits.LAB.hospital + splits.ULTRASOUND.hospital + splits.ECG.hospital;
-          doctorData.doctorRevenue += splits.OPD.doctor + splits.LAB.doctor + splits.ULTRASOUND.doctor + splits.ECG.doctor;
+          doctorData.hospitalRevenue += splits.OPD.hospital + splits.LAB.hospital + splits.ULTRASOUND.hospital + splits.ECG.hospital + splits.OT.hospital;
+          doctorData.doctorRevenue += splits.OPD.doctor + splits.LAB.doctor + splits.ULTRASOUND.doctor + splits.ECG.doctor + splits.OT.doctor;
           doctorData.patientCount++;
 
           // Update category breakdown
@@ -216,6 +223,17 @@ const RevenueDashboard = () => {
         }
       }
     });
+
+    // Debug log for today's revenue
+    if (startDate === endDate && startDate === format(new Date(), 'yyyy-MM-dd')) {
+      console.log('Revenue Dashboard Today Breakdown:', {
+        totalRevenue,
+        hospitalRevenue,
+        doctorRevenue,
+        patientCount,
+        dateRange: { startDate, endDate }
+      });
+    }
 
     return {
       totalRevenue,

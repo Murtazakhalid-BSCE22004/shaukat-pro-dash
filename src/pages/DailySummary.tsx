@@ -17,6 +17,7 @@ interface DoctorSummary {
     doctorTotal: number;
     hospitalTotal: number;
     feeTotal: number;
+    patientCount: number;
   };
 }
 
@@ -57,6 +58,7 @@ const DailySummaryPage = () => {
           doctorTotal: 0,
           hospitalTotal: 0,
           feeTotal: 0,
+          patientCount: 0,
         },
       };
     }
@@ -67,6 +69,9 @@ const DailySummaryPage = () => {
       if (!doctor) {
         continue;
       }
+      
+      const bucket = byDoctor[doctor.id];
+      bucket.totals.patientCount += 1;
       
       // Convert patient to the format expected by computeVisitSplit
       const patientData = {
@@ -99,7 +104,6 @@ const DailySummaryPage = () => {
 
       const s = computeVisitSplit(patientData, doctorData);
       
-      const bucket = byDoctor[doctor.id];
       for (const c of FEE_CATEGORIES) {
         bucket.totals.doctorByCat[c] += s.doctorByCat[c] || 0;
         bucket.totals.hospitalByCat[c] += s.hospitalByCat[c] || 0;
@@ -229,6 +233,7 @@ const DailySummaryPage = () => {
                   <TableHeader>
                     <TableRow className="bg-gray-50 hover:bg-gray-50">
                       <TableHead className="font-semibold text-gray-700">Doctor</TableHead>
+                      <TableHead className="font-semibold text-gray-700 text-center">Patients</TableHead>
                       {FEE_CATEGORIES.map((c) => (
                         <TableHead key={c} className="font-semibold text-gray-700 text-center">{c}</TableHead>
                       ))}
@@ -240,12 +245,15 @@ const DailySummaryPage = () => {
                   <TableBody>
                     {summaries.map((s) => (
                       <TableRow key={s.doctor.id} className="hover:bg-gray-50">
-                                                 <TableCell className="font-medium text-gray-900">
-                           <div>
-                             <p className="font-semibold">{s.doctor.name}</p>
-                             <p className="text-sm text-gray-400">Hospital</p>
-                           </div>
-                         </TableCell>
+                        <TableCell className="font-medium text-gray-900">
+                          <div>
+                            <p className="font-semibold">{s.doctor.name}</p>
+                            <p className="text-sm text-gray-400">Hospital</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <span className="font-semibold text-indigo-600">{s.totals.patientCount}</span>
+                        </TableCell>
                         {FEE_CATEGORIES.map((c) => (
                           <TableCell key={c} className="text-center">
                             <div className="space-y-1">
