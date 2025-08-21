@@ -55,7 +55,8 @@ const ProfessionalDashboard: React.FC = () => {
         (p.opd_fee || 0) +
         (p.lab_fee || 0) +
         (p.ultrasound_fee || 0) +
-        (p.ecg_fee || 0)
+        (p.ecg_fee || 0) +
+        (p.ot_fee || 0)  // ✅ Added missing OT fee
       );
     }, 0);
   }, [todaysPatients]);
@@ -105,7 +106,7 @@ const ProfessionalDashboard: React.FC = () => {
         time: new Date(p.created_at).toLocaleString([], { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }),
         type: 'Patient',
         amount: formatCurrency(
-          (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0)
+          (p.opd_fee || 0) + (p.lab_fee || 0) + (p.ultrasound_fee || 0) + (p.ecg_fee || 0) + (p.ot_fee || 0)
         ),
       }));
   }, [recentPatients]);
