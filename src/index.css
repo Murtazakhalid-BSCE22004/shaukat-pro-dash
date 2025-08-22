@@ -5,6 +5,9 @@
 /* Import Professional Purple & Orange Theme */
 @import './styles/theme-colors.css';
 
+/* Import Select Component Fixes */
+@import './styles/select-fixes.css';
+
 /* Print styles for reports */
 @media print {
   /* Hide non-essential elements */

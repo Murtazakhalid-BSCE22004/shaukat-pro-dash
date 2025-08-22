@@ -1,0 +1,194 @@
+/* ========================================
+   SELECT COMPONENT FIXES
+   Fixes for dropdown and border issues
+   ======================================== */
+
+/* Define CSS variables for select component */
+:root {
+  --select-trigger-height: 2.5rem;
+  --select-trigger-width: 100%;
+  --select-content-z-index: 9999;
+  --select-border-color: #e5e7eb;
+  --select-focus-border-color: #16a34a;
+  --select-focus-ring-color: rgba(34, 197, 94, 0.2);
+  --select-hover-border-color: #16a34a;
+  --select-bg-color: #ffffff;
+  --select-hover-bg-color: #f0fdf4;
+}
+
+/* Remove any default black borders on focus */
+*:focus {
+  outline: none !important;
+}
+
+/* Ensure select components have proper styling */
+[data-radix-select-trigger] {
+  outline: none !important;
+}
+
+[data-radix-select-trigger]:focus {
+  outline: none !important;
+  border-color: var(--select-focus-border-color) !important;
+  box-shadow: 0 0 0 2px var(--select-focus-ring-color) !important;
+}
+
+/* Fix dropdown positioning and z-index */
+[data-radix-select-content] {
+  z-index: var(--select-content-z-index) !important;
+  background-color: var(--select-bg-color) !important;
+  border: 1px solid var(--select-border-color) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  position: relative !important;
+}
+
+/* Ensure select items are clickable */
+[data-radix-select-item] {
+  cursor: pointer !important;
+}
+
+[data-radix-select-item]:hover {
+  background-color: var(--select-hover-bg-color) !important;
+}
+
+[data-radix-select-item]:focus {
+  background-color: var(--select-hover-bg-color) !important;
+  outline: none !important;
+}
+
+/* Fix for any remaining black border issues */
+select:focus,
+input:focus,
+button:focus {
+  outline: none !important;
+  border-color: var(--select-focus-border-color) !important;
+  box-shadow: 0 0 0 2px var(--select-focus-ring-color) !important;
+}
+
+/* Ensure proper dropdown animation */
+[data-radix-select-content][data-state="open"] {
+  animation: selectFadeIn 150ms ease-out !important;
+}
+
+[data-radix-select-content][data-state="closed"] {
+  animation: selectFadeOut 150ms ease-in !important;
+}
+
+/* Force high z-index for dropdown */
+[data-radix-popper-content-wrapper] {
+  z-index: var(--select-content-z-index) !important;
+}
+
+/* Ensure portal content is visible */
+[data-radix-portal] {
+  z-index: var(--select-content-z-index) !important;
+}
+
+/* Override conflicting CSS from theme-colors.css */
+[data-radix-select-trigger] {
+  border: 1px solid var(--select-border-color) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+[data-radix-select-trigger]:focus {
+  border-color: var(--select-focus-border-color) !important;
+  box-shadow: 0 0 0 2px var(--select-focus-ring-color) !important;
+  outline: none !important;
+}
+
+[data-radix-select-trigger]:hover {
+  border-color: var(--select-hover-border-color) !important;
+}
+
+/* Ensure select content is visible and properly positioned */
+[data-radix-select-content] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Fix for dialog content select components */
+[data-radix-dialog-content] [data-radix-select-trigger] {
+  border: 1px solid var(--select-border-color) !important;
+  border-radius: 6px !important;
+  background: var(--select-bg-color) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+[data-radix-dialog-content] [data-radix-select-trigger]:focus {
+  border-color: var(--select-focus-border-color) !important;
+  box-shadow: 0 0 0 2px var(--select-focus-ring-color) !important;
+  outline: none !important;
+}
+
+[data-radix-dialog-content] [data-radix-select-trigger]:hover {
+  border-color: var(--select-hover-border-color) !important;
+}
+
+/* Additional fixes for select visibility */
+[data-radix-select-content][data-state="open"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+[data-radix-select-content][data-state="closed"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure select viewport is properly sized */
+[data-radix-select-viewport] {
+  padding: 0.25rem !important;
+}
+
+/* Fix for select items spacing */
+[data-radix-select-item] {
+  position: relative !important;
+  display: flex !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  align-items: center !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  outline: none !important;
+  border-radius: 0.375rem !important;
+}
+
+/* Ensure select icon is visible */
+[data-radix-select-icon] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 1rem !important;
+  width: 1rem !important;
+  opacity: 0.5 !important;
+}
+
+@keyframes selectFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes selectFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}

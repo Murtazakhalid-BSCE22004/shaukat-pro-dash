@@ -153,10 +153,10 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({ open, onOpenChange 
                 Category *
               </Label>
               <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                <SelectTrigger className="h-10 border border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-200 transition-all duration-300 ease-in-out hover:border-green-300 bg-white text-gray-900 focus:outline-none">
+                <SelectTrigger className="h-10 border border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-200 transition-all duration-300 ease-in-out hover:border-green-300 bg-white text-gray-900 focus:outline-none focus:ring-green-200 focus:ring-offset-2">
                   <SelectValue placeholder="Select expense category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-200 shadow-lg">
                   {expenseCategories.map((category) => (
                     <SelectItem key={category} value={category}>
                       {category}

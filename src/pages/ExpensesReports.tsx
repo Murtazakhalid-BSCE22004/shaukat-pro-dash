@@ -330,10 +330,10 @@ const ExpensesReports: React.FC = () => {
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-2">Category</Label>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-green-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 bg-white shadow-sm hover:shadow-md">
+                <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-green-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-400 bg-white shadow-sm hover:shadow-md focus:ring-green-200 focus:ring-offset-2">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent className="max-h-60 z-50 shadow-lg border border-gray-200">
+                <SelectContent className="max-h-60 z-50 shadow-lg border border-gray-200 bg-white">
                   <SelectItem value="all" className="hover:bg-green-50 focus:bg-green-50 cursor-pointer py-3">All Categories</SelectItem>
                   {expenseCategories.map((category) => (
                     <SelectItem key={category} value={category} className="hover:bg-green-50 focus:bg-green-50 cursor-pointer py-3">
